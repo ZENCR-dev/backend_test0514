@@ -8,6 +8,8 @@ import { UserModule } from "../user/user.module";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { RolesGuard } from "./guards/roles.guard";
+import { PermissionService } from "./services/permission.service";
+import { PermissionInterceptor } from "./interceptors/permission.interceptor";
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { RolesGuard } from "./guards/roles.guard";
     JwtStrategy,
     JwtAuthGuard,
     RolesGuard,
+    PermissionService,
+    PermissionInterceptor,
     {
       provide: "AUTH_CONFIG",
       useFactory: (configService: ConfigService) => ({
@@ -44,6 +48,13 @@ import { RolesGuard } from "./guards/roles.guard";
     },
   ],
   controllers: [AuthController],
-  exports: [AuthService, JwtModule, JwtAuthGuard, RolesGuard],
+  exports: [
+    AuthService,
+    JwtModule,
+    JwtAuthGuard,
+    RolesGuard,
+    PermissionService,
+    PermissionInterceptor,
+  ],
 })
 export class AuthModule {}

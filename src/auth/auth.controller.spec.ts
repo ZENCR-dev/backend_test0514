@@ -5,6 +5,8 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { UserRole, UserStatus } from "@prisma/client";
 import { ConflictException, UnauthorizedException } from "@nestjs/common";
+import { RolesGuard } from "./guards/roles.guard";
+import { PermissionService } from "./services/permission.service";
 
 describe("AuthController (e2e)", () => {
   let app: INestApplication;
@@ -36,6 +38,10 @@ describe("AuthController (e2e)", () => {
     getProfile: jest.fn(),
   };
 
+  const mockPermissionService = {
+    checkPermission: jest.fn().mockResolvedValue({ allowed: true }),
+  };
+
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
@@ -44,8 +50,16 @@ describe("AuthController (e2e)", () => {
           provide: AuthService,
           useValue: mockAuthService,
         },
+        {
+          provide: PermissionService,
+          useValue: mockPermissionService,
+        },
+        RolesGuard,
       ],
-    }).compile();
+    })
+      .overrideGuard(RolesGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
@@ -56,7 +70,9 @@ describe("AuthController (e2e)", () => {
 
   afterEach(async () => {
     jest.clearAllMocks();
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 
   describe("/auth/register (POST)", () => {

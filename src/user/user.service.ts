@@ -15,7 +15,9 @@ import {
   PaginatedUsers,
   UserListQuery,
 } from "./interfaces/user.interface";
-import { User, UserStatus } from "@prisma/client";
+import { User, UserStatus, Prisma } from "@prisma/client";
+import { FindAllUsersDto } from "./dto/find-all-users.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UserService {
@@ -242,5 +244,68 @@ export class UserService {
    */
   private logError(error: any) {
     console.error("UserService Error:", error);
+  }
+
+  async findAll(query: FindAllUsersDto) {
+    const { page = "1", limit = "10", status } = query;
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const where: Prisma.UserWhereInput = {};
+    if (status) {
+      where.status = status;
+    }
+
+    const [users, total] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        where,
+        skip,
+        take: limitNumber,
+        include: { profile: true },
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return {
+      data: users.map((user) => {
+        const { password, ...result } = user;
+        return result;
+      }),
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+    };
+  }
+
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: { profile: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    const { password, ...result } = user;
+    return result as FullUserInfo;
+  }
+
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    // In a real app, you would handle password hashing if it's updated
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
+    const { password, ...result } = user;
+    return result;
+  }
+
+  async remove(id: string) {
+    await this.prisma.user.delete({
+      where: { id },
+    });
+    return { message: `User with ID ${id} deleted successfully` };
   }
 }
