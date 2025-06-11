@@ -21,6 +21,7 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { RolesGuard } from "./guards/roles.guard";
 import { Roles } from "./decorators/roles.decorator";
 import { UserRole } from "@prisma/client";
+import { Auth } from "./decorators/auth.decorator";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -46,19 +47,12 @@ export class AuthController {
   }
 
   @Get("me")
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(
-    UserRole.practitioner,
-    UserRole.pharmacy_operator,
-    UserRole.admin,
-    UserRole.patient,
-  ) // 所有认证用户都可以访问
-  @ApiBearerAuth()
+  @Auth()
   @ApiOperation({ summary: "Get current user profile" })
-  @ApiResponse({ status: 200, description: "User profile retrieved." })
-  @ApiResponse({ status: 401, description: "Unauthorized." })
+  @ApiResponse({ status: 200, description: "Return current user profile." })
   getProfile(@Request() req) {
-    return this.authService.getProfile(req.user.id);
+    // req.user is populated by JwtAuthGuard after successful token validation
+    return this.authService.getUserById(req.user.id);
   }
 
   @Get("admin-data")

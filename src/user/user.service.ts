@@ -1,57 +1,246 @@
-import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { User, UserProfile, UserStatus } from "@prisma/client";
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from "@nestjs/common";
 import * as bcrypt from "bcrypt";
+import { PrismaService } from "../prisma/prisma.service";
+import { UserProfileService } from "./services/user-profile.service";
+import { UserValidationService } from "./services/user-validation.service";
+import {
+  CreateUserData,
+  FullUserInfo,
+  UpdateUserData,
+  UserQueryOptions,
+  PaginatedUsers,
+  UserListQuery,
+} from "./interfaces/user.interface";
+import { User, UserStatus } from "@prisma/client";
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private userProfileService: UserProfileService,
+    private userValidationService: UserValidationService,
+  ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10); // Hash密码
+  /**
+   * 创建新用户
+   */
+  async createUser(data: CreateUserData): Promise<FullUserInfo> {
+    await this.userValidationService.validateRegistrationData({
+      email: data.email,
+      password: data.password,
+      role: data.role,
+      fullName: data.profile.fullName,
+      phone: data.profile.phone,
+    });
 
-    // 创建用户并同时创建用户档案
-    const user = await this.prisma.user.create({
-      data: {
-        email: createUserDto.email,
-        role: createUserDto.role,
-        status: "pending", // 默认状态为待审核
-        referralCode: createUserDto.referralCode, // 如果有推荐码，则保存
-        profile: {
-          create: {
-            fullName: createUserDto.fullName,
-            phone: createUserDto.phone,
-            licenseNumber: createUserDto.licenseNumber, // 医生可能有执照号
-            address: createUserDto.address,
+    const hashedPassword = await this.hashPassword(data.password);
+
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          email: data.email,
+          password: hashedPassword,
+          role: data.role,
+          status: UserStatus.pending, // 默认'pending'，等待管理员审批
+          profile: {
+            create: {
+              fullName: data.profile.fullName,
+              phone: data.profile.phone,
+              address: data.profile.address,
+            },
           },
         },
+        include: { profile: true },
+      });
+
+      const { password, ...result } = user;
+      return result;
+    } catch (error) {
+      this.handlePrismaError(error, "Failed to create user");
+    }
+  }
+
+  /**
+   * 根据ID查找用户
+   */
+  async findById(
+    id: string,
+    options: UserQueryOptions = { includeProfile: true },
+  ): Promise<FullUserInfo | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        profile: options.includeProfile,
       },
     });
 
-    return user;
+    if (!user) return null;
+
+    if (!options.includePassword) {
+      const { password, ...result } = user;
+      return result as FullUserInfo;
+    }
+
+    return user as FullUserInfo;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
+  /**
+   * 根据邮箱查找用户
+   */
+  async findByEmail(
+    email: string,
+    options: UserQueryOptions = { includeProfile: true },
+  ): Promise<FullUserInfo | null> {
+    const user = await this.prisma.user.findUnique({
       where: { email },
-      include: { profile: true },
+      include: {
+        profile: options.includeProfile,
+      },
     });
+
+    if (!user) return null;
+
+    if (!options.includePassword) {
+      const { password, ...result } = user;
+      return result as FullUserInfo;
+    }
+
+    return user as FullUserInfo;
   }
 
-  async findById(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: { id },
-      include: { profile: true },
+  /**
+   * 更新用户信息
+   */
+  async updateUser(id: string, data: UpdateUserData): Promise<FullUserInfo> {
+    const existingUser = await this.findById(id);
+    if (!existingUser) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    await this.userValidationService.validateUpdateData(id, {
+      email: data.email,
+      fullName: data.profile?.fullName,
+      phone: data.profile?.phone,
     });
+
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: { id },
+        data: {
+          email: data.email,
+          status: data.status,
+          profile: data.profile ? { update: data.profile } : undefined,
+          updatedAt: new Date(),
+        },
+        include: { profile: true },
+      });
+
+      const { password, ...result } = updatedUser;
+      return result;
+    } catch (error) {
+      this.handlePrismaError(error, "Failed to update user");
+    }
   }
 
-  async updateStatus(id: string, status: UserStatus): Promise<User> {
+  /**
+   * 删除用户（软删除）
+   */
+  async softDeleteUser(id: string): Promise<User> {
     return this.prisma.user.update({
       where: { id },
-      data: { status },
+      data: { status: UserStatus.suspended, updatedAt: new Date() },
     });
   }
 
-  // ... 其他CRUD方法根据需要添加
+  /**
+   * 永久删除用户
+   */
+  async hardDeleteUser(id: string): Promise<void> {
+    await this.prisma.user.delete({ where: { id } });
+  }
+
+  /**
+   * 获取用户列表（分页）
+   */
+  async getUsers(query: UserListQuery): Promise<PaginatedUsers> {
+    const {
+      page = 1,
+      limit = 10,
+      role,
+      status,
+      search,
+      sortBy,
+      sortOrder,
+    } = query;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+    if (role) where.role = role;
+    if (status) where.status = status;
+    if (search) {
+      where.OR = [
+        { email: { contains: search, mode: "insensitive" } },
+        { profile: { fullName: { contains: search, mode: "insensitive" } } },
+      ];
+    }
+
+    const [users, total] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        where,
+        skip,
+        take: limit,
+        include: { profile: true },
+        orderBy: sortBy
+          ? { [sortBy]: sortOrder || "asc" }
+          : { createdAt: "desc" },
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    const usersWithoutPassword = users.map((user) => {
+      const { password, ...result } = user;
+      return result;
+    });
+
+    return {
+      users: usersWithoutPassword,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  /**
+   * 哈希密码
+   */
+  private async hashPassword(password: string): Promise<string> {
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || "12");
+    return bcrypt.hash(password, saltRounds);
+  }
+
+  /**
+   * Prisma 错误处理
+   */
+  private handlePrismaError(error: any, defaultMessage: string) {
+    if (error.code === "P2002") {
+      // Unique constraint failed
+      throw new NotFoundException(
+        `${error.meta.target.join(", ")} already exists.`,
+      );
+    }
+    this.logError(error);
+    throw new InternalServerErrorException(defaultMessage);
+  }
+
+  /**
+   * 记录错误
+   */
+  private logError(error: any) {
+    console.error("UserService Error:", error);
+  }
 }

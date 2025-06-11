@@ -73,6 +73,7 @@ enum AccountStatus {
 model User {
   id           String     @id @default(cuid()) @map("id")
   email        String     @unique @map("email") @db.VarChar(255)
+  password     String     @map("password") @db.Text
   role         UserRole   @map("role")
   status       UserStatus @default(pending) @map("status")
   referralCode String?    @unique @map("referral_code") @db.VarChar(10)

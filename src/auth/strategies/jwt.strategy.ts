@@ -2,14 +2,14 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { ConfigService } from "@nestjs/config";
-import { UserService } from "../../user/user.service";
-import { User } from "@prisma/client";
+import { AuthService } from "../auth.service";
+import { JwtPayload } from "../interfaces/auth.interface";
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, "jwt") {
   constructor(
-    private userService: UserService,
-    private configService: ConfigService,
+    private readonly configService: ConfigService,
+    private readonly authService: AuthService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,13 +18,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any): Promise<any> {
-    const user = await this.userService.findById(payload.sub);
+  async validate(payload: JwtPayload): Promise<any> {
+    const user = await this.authService.verifyPayload(payload);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("User not found or account inactive.");
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user as any;
-    return result;
+    // Passport会将这个返回值附加到Request对象上，作为request.user
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
   }
 }
