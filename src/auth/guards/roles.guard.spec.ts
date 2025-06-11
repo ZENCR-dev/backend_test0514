@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { Reflector } from '@nestjs/core';
-import { ExecutionContext } from '@nestjs/common';
-import { RolesGuard } from './roles.guard';
-import { UserRole } from '@prisma/client';
-import { ROLES_KEY } from '../decorators/roles.decorator';
+import { Test, TestingModule } from "@nestjs/testing";
+import { Reflector } from "@nestjs/core";
+import { ExecutionContext } from "@nestjs/common";
+import { RolesGuard } from "./roles.guard";
+import { UserRole } from "@prisma/client";
+import { ROLES_KEY } from "../decorators/roles.decorator";
 
-describe('RolesGuard', () => {
+describe("RolesGuard", () => {
   let guard: RolesGuard;
   let reflector: Reflector;
 
@@ -32,19 +32,19 @@ describe('RolesGuard', () => {
     jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(guard).toBeDefined();
   });
 
-  describe('canActivate', () => {
+  describe("canActivate", () => {
     let mockExecutionContext: Partial<ExecutionContext>;
     let mockRequest: any;
 
     beforeEach(() => {
       mockRequest = {
         user: {
-          id: '1',
-          email: 'test@example.com',
+          id: "1",
+          email: "test@example.com",
           role: UserRole.practitioner,
         },
       };
@@ -58,10 +58,12 @@ describe('RolesGuard', () => {
       };
     });
 
-    it('should return true if no roles are required', () => {
+    it("should return true if no roles are required", () => {
       mockReflector.getAllAndOverride.mockReturnValue(undefined);
 
-      const result = guard.canActivate(mockExecutionContext as ExecutionContext);
+      const result = guard.canActivate(
+        mockExecutionContext as ExecutionContext,
+      );
 
       expect(mockReflector.getAllAndOverride).toHaveBeenCalledWith(ROLES_KEY, [
         mockExecutionContext.getHandler(),
@@ -70,42 +72,53 @@ describe('RolesGuard', () => {
       expect(result).toBe(true);
     });
 
-    it('should return true if user has required role', () => {
-      mockReflector.getAllAndOverride.mockReturnValue([UserRole.practitioner, UserRole.admin]);
+    it("should return true if user has required role", () => {
+      mockReflector.getAllAndOverride.mockReturnValue([
+        UserRole.practitioner,
+        UserRole.admin,
+      ]);
 
-      const result = guard.canActivate(mockExecutionContext as ExecutionContext);
+      const result = guard.canActivate(
+        mockExecutionContext as ExecutionContext,
+      );
 
       expect(result).toBe(true);
     });
 
-    it('should return false if user does not have required role', () => {
+    it("should return false if user does not have required role", () => {
       mockReflector.getAllAndOverride.mockReturnValue([UserRole.admin]);
       mockRequest.user.role = UserRole.patient;
 
-      const result = guard.canActivate(mockExecutionContext as ExecutionContext);
+      const result = guard.canActivate(
+        mockExecutionContext as ExecutionContext,
+      );
 
       expect(result).toBe(false);
     });
 
-    it('should return false if user is not present in request', () => {
+    it("should return false if user is not present in request", () => {
       mockReflector.getAllAndOverride.mockReturnValue([UserRole.practitioner]);
       mockRequest.user = undefined;
 
-      const result = guard.canActivate(mockExecutionContext as ExecutionContext);
+      const result = guard.canActivate(
+        mockExecutionContext as ExecutionContext,
+      );
 
       expect(result).toBe(false);
     });
 
-    it('should return false if user does not have role property', () => {
+    it("should return false if user does not have role property", () => {
       mockReflector.getAllAndOverride.mockReturnValue([UserRole.practitioner]);
-      mockRequest.user = { id: '1', email: 'test@example.com' }; // No role property
+      mockRequest.user = { id: "1", email: "test@example.com" }; // No role property
 
-      const result = guard.canActivate(mockExecutionContext as ExecutionContext);
+      const result = guard.canActivate(
+        mockExecutionContext as ExecutionContext,
+      );
 
       expect(result).toBe(false);
     });
 
-    it('should handle multiple required roles correctly', () => {
+    it("should handle multiple required roles correctly", () => {
       mockReflector.getAllAndOverride.mockReturnValue([
         UserRole.admin,
         UserRole.pharmacy_operator,
@@ -113,9 +126,11 @@ describe('RolesGuard', () => {
       ]);
       mockRequest.user.role = UserRole.pharmacy_operator;
 
-      const result = guard.canActivate(mockExecutionContext as ExecutionContext);
+      const result = guard.canActivate(
+        mockExecutionContext as ExecutionContext,
+      );
 
       expect(result).toBe(true);
     });
   });
-}); 
+});

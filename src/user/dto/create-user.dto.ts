@@ -1,5 +1,14 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsEnum, IsObject, IsJSON } from 'class-validator';
-import { UserRole, UserStatus } from '@prisma/client';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  IsOptional,
+  IsEnum,
+  IsObject,
+  IsJSON,
+} from "class-validator";
+import { UserRole, UserStatus } from "@prisma/client";
 
 export class CreateUserDto {
   @IsEmail()
@@ -34,4 +43,4 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   referralCode?: string; // 推荐码
-} 
+}

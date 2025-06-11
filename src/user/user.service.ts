@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { User, UserProfile, UserStatus } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { User, UserProfile, UserStatus } from "@prisma/client";
+import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UserService {
@@ -16,7 +16,7 @@ export class UserService {
       data: {
         email: createUserDto.email,
         role: createUserDto.role,
-        status: 'pending', // 默认状态为待审核
+        status: "pending", // 默认状态为待审核
         referralCode: createUserDto.referralCode, // 如果有推荐码，则保存
         profile: {
           create: {
@@ -54,4 +54,4 @@ export class UserService {
   }
 
   // ... 其他CRUD方法根据需要添加
-} 
+}

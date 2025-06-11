@@ -1,5 +1,14 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsEnum, IsObject, IsJSON } from 'class-validator';
-import { UserRole } from '@prisma/client';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  IsOptional,
+  IsEnum,
+  IsObject,
+  IsJSON,
+} from "class-validator";
+import { UserRole } from "@prisma/client";
 
 export class AuthRegisterDto {
   @IsEmail()
@@ -34,4 +43,4 @@ export class AuthRegisterDto {
   @IsString()
   @IsOptional()
   referralCode?: string; // For practitioner
-} 
+}

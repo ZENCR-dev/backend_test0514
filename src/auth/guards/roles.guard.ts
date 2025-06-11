@@ -1,17 +1,17 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { UserRole } from '@prisma/client';
-import { ROLES_KEY } from '../decorators/roles.decorator';
+import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { UserRole } from "@prisma/client";
+import { ROLES_KEY } from "../decorators/roles.decorator";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     if (!requiredRoles) {
       return true; // 如果没有指定角色，则允许访问
@@ -23,8 +23,8 @@ export class RolesGuard implements CanActivate {
     if (!user || !user.role) {
       return false; // 没有用户信息或角色，拒绝访问
     }
-    
+
     // 检查用户的角色是否在允许的角色列表中
     return requiredRoles.some((role) => user.role === role);
   }
-} 
+}

@@ -1,10 +1,10 @@
-import { IsString, IsOptional, IsNotEmpty, IsIn } from 'class-validator';
-import { plainToInstance } from 'class-transformer';
-import { validateSync, ValidationError } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsIn } from "class-validator";
+import { plainToInstance } from "class-transformer";
+import { validateSync, ValidationError } from "class-validator";
 
 export class EnvironmentVariables {
   @IsString()
-  @IsIn(['development', 'test', 'staging', 'production'])
+  @IsIn(["development", "test", "staging", "production"])
   NODE_ENV: string;
 
   @IsString()
@@ -36,7 +36,7 @@ export class EnvironmentVariables {
   @IsOptional() // 在支付功能开发前可选
   STRIPE_SECRET_KEY?: string;
 
-  // Phase 1 Week 8 必需配置  
+  // Phase 1 Week 8 必需配置
   @IsString()
   @IsOptional() // 在通知功能开发前可选
   SENDGRID_API_KEY?: string;
@@ -55,12 +55,14 @@ export function validate(config: Record<string, unknown>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });
-  
-  const errors = validateSync(validatedConfig, { skipMissingProperties: false });
-  
+
+  const errors = validateSync(validatedConfig, {
+    skipMissingProperties: false,
+  });
+
   if (errors.length > 0) {
     throw new Error(errors.toString());
   }
-  
+
   return validatedConfig;
-} 
+}

@@ -64,10 +64,15 @@
     "prettier": "^3.5.3",
     "supertest": "^7.1.1",
     "ts-jest": "^29.3.4",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "typescript-eslint": "^8.34.0"
   },
   "jest": {
-    "moduleFileExtensions": ["js", "json", "ts"],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
