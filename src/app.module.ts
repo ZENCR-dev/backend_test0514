@@ -6,6 +6,7 @@ import { validate } from "./config/env.validation";
 import { AuthModule } from "./auth/auth.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { UserModule } from "./user/user.module";
+import { ClinicAccountModule } from "./clinic-account/clinic-account.module";
 import { IdempotencyMiddleware } from "./common/middleware/idempotency.middleware";
 
 @Module({
@@ -18,6 +19,7 @@ import { IdempotencyMiddleware } from "./common/middleware/idempotency.middlewar
     PrismaModule,
     AuthModule,
     UserModule,
+    ClinicAccountModule,
   ],
   controllers: [AppController],
   providers: [AppService],
