@@ -1,0 +1,216 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: Core development standards and best practices for the New Zealand TCM Prescription Platform
+globs: **/*
+---
+
+# TCM Prescription Platform - Development Standards
+
+## Project Structure
+
+### Folder Naming
+- Use lowercase with hyphens for folder names
+- Organize feature modules in dedicated directories (auth/, doctor/, pharmacy/, admin/, patient/)
+- Place shared components in the common/ directory
+
+### File Naming
+- Use PascalCase for component files (e.g., LoginModal.tsx)
+- Use camelCase for non-component files (e.g., authService.ts)
+- Use .d.ts suffix for type definition files
+- Name test files with .test.tsx or .spec.tsx suffix
+
+### Import Order
+1. React and Next.js imports
+2. Third-party libraries
+3. Custom components/hooks
+4. Utility functions
+5. Type imports
+6. Style imports
+
+## Code Standards
+
+### TypeScript Guidelines
+- Provide explicit types for all variables, parameters, and return values
+- Use interfaces for object structures
+- Use type for union or intersection types
+- Avoid any, prefer unknown and generics
+- Export all shared types from types/ directory
+
+### React Best Practices
+- Use functional components and React Hooks
+- Name components using PascalCase
+- Name props types as ComponentNameProps
+- Provide meaningful default values
+- Destructure props
+- Provide defaults for optional props
+- Avoid excessive prop drilling
+
+### Hooks Usage
+- Follow Hooks rules (call at top level, only in React functions)
+- Name custom hooks starting with use
+- Ensure correct dependency arrays
+- Extract complex logic into custom hooks
+
+### Performance Optimization
+- Use React.memo to prevent unnecessary re-renders
+- Use useCallback and useMemo to optimize performance
+- Implement virtualization for large datasets
+
+## State Management
+
+### Strategy
+- Use Zustand for global state management
+- Use React Context for state that needs to be shared down multiple levels
+- Prioritize local component state with useState and useReducer
+- Place shared state logic in store/ directory
+
+### Mock API
+- Place all mock API functions in services/ directory
+- Store mock data in mocks/ directory
+- Return Promises from mock APIs to simulate async operations
+- Make mock delays configurable
+
+### Data Persistence
+- Use localStorage for user sessions and application state
+- Use sessionStorage for sensitive data
+
+## UI Standards
+
+### Layout
+- Use Tailwind CSS for responsive design
+- Implement two-column layout for desktop, single column for mobile
+- Keep navigation bar consistent across all pages
+- Apply appropriate padding and margin to main content areas
+
+### Component Reuse
+- Extract common UI patterns into reusable components
+- Use composition over inheritance to extend component functionality
+- Accept children and className props to improve reusability
+
+### Responsive Design
+- Mobile-first approach
+- Use Tailwind's breakpoint system (sm, md, lg, xl, 2xl)
+- Ensure critical functionality is accessible on all devices
+
+### Tailwind Usage
+- Prioritize Tailwind utility classes
+- Use @apply for repetitive styles
+- Maintain consistent class name ordering (layout > sizing > colors > others)
+- Define colors in tailwind.config.js
+- Use CSS variables for theme switching
+- Avoid hardcoded color values
+
+## Testing Standards
+
+### Testing Strategy
+- Test all custom Hooks and utility functions
+- Use Jest and React Testing Library
+- Focus on behavior, not implementation details
+- Test key user interactions
+- Validate component responses to prop changes
+- Test edge cases and error handling
+- Test critical user flows
+- Verify inter-component interactions
+
+### Test Organization
+- Place test files in the same directory as source files
+- Name test files .test.tsx or .spec.tsx
+- Organize tests with describe and it blocks
+- Use factory functions to create test data
+- Set up and reset state in beforeEach
+- Clean up side effects in afterEach
+
+### Quality Tools
+- Use ESLint to enforce code style
+- Run type checking in strict mode
+- Execute tests before commits
+- Target >80% test coverage
+- Achieve 100% coverage for critical paths
+
+## Version Control
+
+### Branch Strategy
+- main: production code
+- develop: development environment code
+- feature/*: new feature development
+- bugfix/*: error fixes
+- release/*: release preparation
+
+### Branch Naming
+- Use lowercase and hyphens
+- Include short but descriptive names
+- Optionally add ticket number (e.g., feature/auth-module-TCM-123)
+
+### Commit Standards
+- Use Conventional Commits format
+- Format: <type>[optional scope]: <description>
+- Types: feat, fix, docs, style, refactor, test, chore
+- Make small, frequent commits
+- Each commit should focus on a single change
+- Avoid mixing unrelated changes
+
+### Code Review
+- Submit code via Pull Requests
+- Require at least one reviewer approval
+- Pass CI checks before merging
+- Ensure code meets project standards
+- Verify test coverage for new features and fixes
+- Confirm documentation is updated
+- Consider performance impacts
+
+## Security Guidelines
+
+### Data Handling
+- Don't store actual user passwords on the frontend
+- Use encryption for sensitive data transmission
+- Avoid passing sensitive information in URL parameters
+
+### Data Validation
+- Validate all inputs with Zod or Yup
+- Implement validation on both frontend and backend
+- Prevent XSS and injection attacks
+
+### Authentication
+- Use JWT to simulate authentication flow
+- Implement token refresh mechanism
+- Auto-logout inactive sessions
+
+### Authorization
+- Implement role-based access control
+- Enforce permission checks at component and route level
+- Hide unauthorized functionality in frontend
+
+### Frontend Security
+- Update dependencies regularly
+- Avoid packages with known vulnerabilities
+- Use secure dependency sources
+- Configure appropriate CSP policies
+- Enable HTTPS
+- Set security-related HTTP headers
+
+## Module-Specific Standards
+
+### Authentication
+- Use JWT simulation for authentication flow
+- Persist login state across application restarts
+- Implement different permissions for different roles (doctor, pharmacy, admin)
+
+### Product Search
+- Support real-time suggestions
+- Enable search by pinyin, Chinese, and English
+- Display key information in search results
+
+### Order Workflow
+- Clearly display order status and progress
+- Provide clear error and success notifications
+- Ensure confirmation steps for important actions
+
+### Admin Features
+- Implement clear access control for admin functionality
+- Provide progress feedback for batch operations
+
+- Require double confirmation for sensitive operations

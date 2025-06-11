@@ -1,0 +1,44 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# NestJS与TypeScript开发规范
+
+## 1. TypeScript 类型安全
+- 为所有变量、函数参数和返回值提供明确的类型声明。
+- 优先使用 `interface` 定义对象结构，使用 `type` 定义联合类型或交叉类型。
+- 避免使用 `any`，优先使用 `unknown` 和泛型。
+- 严格模式下进行类型检查。
+
+## 2. NestJS 模块化
+- 合理划分模块（Module），每个模块应具有单一职责。
+- 避免循环依赖。
+- 明确模块的导入（`imports`）、控制器（`controllers`）、提供者（`providers`）和导出（`exports`）。
+
+## 3. 控制器（Controllers）
+- 控制器应仅处理HTTP请求和响应，不包含业务逻辑。
+- 保持控制器方法简洁，将复杂逻辑委托给服务（Services）。
+- 使用装饰器（`@Get()`, `@Post()`, `@Body()`, `@Param()` 等）进行请求处理。
+
+## 4. 服务（Services）
+- 服务应包含核心业务逻辑和数据处理。
+- 服务应是可注入的（`@Injectable()`）。
+- 避免在服务中直接处理HTTP请求和响应。
+
+## 5. DTOs（Data Transfer Objects）与验证
+- 使用 `class-validator` 和 `class-transformer` 定义和验证DTOs。
+- 为API请求和响应体定义清晰的DTOs。
+- 在控制器中使用 `ValidationPipe` 进行自动验证。
+
+## 6. 异常处理
+- 使用NestJS的 `HttpException` 和自定义异常类处理可预见的业务错误。
+- 结合全局异常过滤器（Exception Filters）提供统一的错误响应。
+
+## 7. 守卫（Guards）与拦截器（Interceptors）
+- 使用守卫进行认证和授权（例如：`AuthGuard`, `RolesGuard`）。
+- 使用拦截器进行日志记录、响应转换、异常映射等通用任务。
+
+## 8. OpenAPI/Swagger 文档
+- 为所有API接口和DTOs添加Swagger装饰器（`@ApiTags()`, `@ApiOperation()`, `@ApiResponse()`, `@ApiProperty()` 等）。
+- 确保API文档与实际代码保持同步。

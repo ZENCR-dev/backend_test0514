@@ -1,0 +1,408 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==================== 枚举定义 ====================
+
+enum UserRole {
+  practitioner
+  patient
+  pharmacy_operator
+  admin
+}
+
+enum UserStatus {
+  pending
+  approved
+  suspended
+}
+
+enum OrderStatus {
+  DRAFT
+  PAYMENT_FAILED
+  PAID
+  PENDING_REVIEW
+  REJECTED
+  FULFILLED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  pending
+  processing
+  completed
+  failed
+  refunded
+}
+
+enum FulfillmentReviewStatus {
+  pending
+  approved
+  rejected
+}
+
+enum TransactionType {
+  DEBIT
+  CREDIT
+  REFUND
+  ADJUSTMENT
+}
+
+enum ReferenceType {
+  ORDER
+  RECHARGE
+  REFUND
+  MANUAL
+}
+
+enum AccountStatus {
+  active
+  suspended
+  frozen
+}
+
+// ==================== 用户相关模型 ====================
+
+model User {
+  id           String     @id @default(cuid()) @map("id")
+  email        String     @unique @map("email") @db.VarChar(255)
+  role         UserRole   @map("role")
+  status       UserStatus @default(pending) @map("status")
+  referralCode String?    @unique @map("referral_code") @db.VarChar(10)
+  referredBy   String?    @map("referred_by")
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime   @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  profile              UserProfile?
+  referredByUser       User?                  @relation("Referrals", fields: [referredBy], references: [id])
+  referrals            User[]                 @relation("Referrals")
+  ownedClinics         Clinic[]               @relation("ClinicOwner")
+  operatedPharmacy     Pharmacy?              @relation("PharmacyOperator")
+  practitionerOrders   Order[]                @relation("PractitionerOrders")
+  patientOrders        Order[]                @relation("PatientOrders")
+  fulfillmentReviews   FulfillmentProof[]     @relation("Reviewer")
+  accountTransactions  AccountTransaction[]   @relation("CreatedBy")
+
+  @@map("users")
+  @@index([role])
+  @@index([status])
+}
+
+model UserProfile {
+  id              String  @id @default(cuid()) @map("id")
+  userId          String  @unique @map("user_id")
+  fullName        String  @map("full_name") @db.VarChar(255)
+  phone           String? @map("phone") @db.VarChar(20)
+  licenseNumber   String? @unique @map("license_number") @db.VarChar(50)
+  address         Json?   @map("address") @db.JsonB
+  preferences     Json?   @map("preferences") @db.JsonB
+  metadata        Json?   @map("metadata") @db.JsonB
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+// ==================== 诊所相关模型 ====================
+
+model Clinic {
+  id            String   @id @default(cuid()) @map("id")
+  name          String   @map("name") @db.VarChar(255)
+  address       Json     @map("address") @db.JsonB
+  contact       Json?    @map("contact") @db.JsonB
+  licenseNumber String?  @map("license_number") @db.VarChar(100)
+  ownerId       String   @map("owner_id")
+  status        String   @default("active") @map("status") @db.VarChar(20)
+  metadata      Json?    @map("metadata") @db.JsonB
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  owner   User           @relation("ClinicOwner", fields: [ownerId], references: [id])
+  account ClinicAccount?
+  orders  Order[]
+
+  @@map("clinics")
+}
+
+model ClinicAccount {
+  id              String        @id @default(cuid()) @map("id")
+  clinicId        String        @unique @map("clinic_id")
+  balance         Decimal       @default(0) @map("balance") @db.Decimal(12, 2)
+  creditLimit     Decimal       @default(0) @map("credit_limit") @db.Decimal(12, 2)
+  usedCredit      Decimal       @default(0) @map("used_credit") @db.Decimal(12, 2)
+  availableCredit Decimal?      @map("available_credit") @db.Decimal(12, 2)
+  status          AccountStatus @default(active) @map("status")
+  version         Int           @default(1) @map("version")
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  clinic       Clinic               @relation(fields: [clinicId], references: [id], onDelete: Restrict)
+  transactions AccountTransaction[]
+
+  @@map("clinic_accounts")
+  @@index([status])
+}
+
+model AccountTransaction {
+  id            String        @id @default(cuid()) @map("id")
+  accountId     String        @map("account_id")
+  transactionType TransactionType @map("transaction_type")
+  amount        Decimal       @map("amount") @db.Decimal(12, 2)
+  balanceBefore Decimal       @map("balance_before") @db.Decimal(12, 2)
+  balanceAfter  Decimal       @map("balance_after") @db.Decimal(12, 2)
+  creditBefore  Decimal       @map("credit_before") @db.Decimal(12, 2)
+  creditAfter   Decimal       @map("credit_after") @db.Decimal(12, 2)
+  referenceType ReferenceType? @map("reference_type")
+  referenceId   String?       @map("reference_id")
+  description   String?       @map("description") @db.Text
+  createdBy     String?       @map("created_by")
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz
+
+  // 关系
+  account ClinicAccount @relation(fields: [accountId], references: [id])
+  creator User?         @relation("CreatedBy", fields: [createdBy], references: [id])
+
+  @@map("account_transactions")
+  @@index([accountId])
+  @@index([createdAt(sort: Desc)])
+  @@index([referenceType, referenceId])
+  @@index([accountId, transactionType])
+  @@index([referenceType, referenceId, createdAt(sort: Desc)])
+}
+
+// ==================== 药品相关模型 ====================
+
+model Medicine {
+  id                   String    @id @default(cuid()) @map("id")
+  name                 String    @map("name") @db.VarChar(255)
+  chineseName          String?   @map("chinese_name") @db.VarChar(255)
+  englishName          String?   @map("english_name") @db.VarChar(255)
+  pinyinName           String?   @map("pinyin_name") @db.VarChar(255)
+  sku                  String    @unique @map("sku") @db.VarChar(100)
+  description          String?   @map("description") @db.Text
+  category             String?   @map("category") @db.VarChar(100)
+  unit                 String    @map("unit") @db.VarChar(50)
+  requiresPrescription Boolean   @default(true) @map("requires_prescription")
+  basePrice            Decimal   @map("base_price") @db.Decimal(10, 2)
+  metadata             Json?     @map("metadata") @db.JsonB
+  status               String    @default("active") @map("status") @db.VarChar(20)
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  orderItems        OrderItem[]
+  pharmacyInventory PharmacyInventory[]
+
+  @@map("medicines")
+  @@index([name])
+  @@index([category])
+  @@index([status])
+}
+
+// ==================== 药房相关模型 ====================
+
+model Pharmacy {
+  id           String   @id @default(cuid()) @map("id")
+  name         String   @map("name") @db.VarChar(255)
+  address      Json     @map("address") @db.JsonB
+  coordinates  String?  @map("coordinates")
+  contact      Json     @map("contact") @db.JsonB
+  licenseInfo  Json?    @map("license_info") @db.JsonB
+  operatorId   String   @unique @map("operator_id")
+  serviceHours Json?    @map("service_hours") @db.JsonB
+  status       String   @default("active") @map("status") @db.VarChar(20)
+  metadata     Json?    @map("metadata") @db.JsonB
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  operator          User                @relation("PharmacyOperator", fields: [operatorId], references: [id])
+  inventory         PharmacyInventory[]
+  assignedOrders    Order[]             @relation("AssignedPharmacy")
+  fulfillmentProofs FulfillmentProof[]
+  settlements       Settlement[]
+
+  @@map("pharmacies")
+  @@index([status])
+}
+
+model PharmacyInventory {
+  id             String   @id @default(cuid()) @map("id")
+  pharmacyId     String   @map("pharmacy_id")
+  medicineId     String   @map("medicine_id")
+  quantity       Int      @default(0) @map("quantity")
+  wholesalePrice Decimal? @map("wholesale_price") @db.Decimal(10, 2)
+  retailPrice    Decimal? @map("retail_price") @db.Decimal(10, 2)
+  lastRestocked  DateTime? @map("last_restocked") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  medicine Medicine @relation(fields: [medicineId], references: [id], onDelete: Cascade)
+
+  @@unique([pharmacyId, medicineId])
+  @@map("pharmacy_inventory")
+}
+
+// ==================== 订单相关模型 ====================
+
+model Order {
+  id                 String      @id @default(cuid()) @map("id")
+  platformOrderId    String      @unique @map("platform_order_id") @db.VarChar(50)
+  practitionerId     String      @map("practitioner_id")
+  patientId          String?     @map("patient_id")
+  clinicId           String      @map("clinic_id")
+  patientInfo        Json        @map("patient_info") @db.JsonB
+  status             OrderStatus @default(DRAFT) @map("status")
+  totalAmount        Decimal     @map("total_amount") @db.Decimal(10, 2)
+  paymentStatus      String?     @default("pending") @map("payment_status") @db.VarChar(20)
+  paymentMethod      String?     @map("payment_method") @db.VarChar(50)
+  assignedPharmacyId String?     @map("assigned_pharmacy_id")
+  dispensedAt        DateTime?   @map("dispensed_at") @db.Timestamptz
+  completedAt        DateTime?   @map("completed_at") @db.Timestamptz
+  qrCodeData         String?     @map("qr_code_data") @db.Text
+  pdfUrl             String?     @map("pdf_url") @db.Text
+  notes              String?     @map("notes") @db.Text
+  version            Int         @default(1) @map("version")
+  idempotencyKey     String?     @unique @map("idempotency_key") @db.VarChar(255)
+  expiresAt          DateTime?   @map("expires_at") @db.Timestamptz
+  createdAt          DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime    @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  practitioner      User                 @relation("PractitionerOrders", fields: [practitionerId], references: [id])
+  patient           User?                @relation("PatientOrders", fields: [patientId], references: [id])
+  clinic            Clinic               @relation(fields: [clinicId], references: [id])
+  assignedPharmacy  Pharmacy?            @relation("AssignedPharmacy", fields: [assignedPharmacyId], references: [id])
+  items             OrderItem[]
+  payments          Payment[]
+  fulfillmentProofs FulfillmentProof[]
+  settlements       Settlement[]
+
+  @@map("orders")
+  @@index([status])
+  @@index([practitionerId])
+  @@index([clinicId])
+  @@index([createdAt(sort: Desc)])
+  @@index([practitionerId, status])
+  @@index([clinicId, status])
+  @@index([status, createdAt(sort: Desc)])
+}
+
+model OrderItem {
+  id                 String   @id @default(cuid()) @map("id")
+  orderId            String   @map("order_id")
+  medicineId         String   @map("medicine_id")
+  medicineSnapshot   Json     @map("medicine_snapshot") @db.JsonB
+  quantity           Int      @map("quantity")
+  unitPrice          Decimal  @map("unit_price") @db.Decimal(10, 2)
+  totalPrice         Decimal  @map("total_price") @db.Decimal(10, 2)
+  dosageInstructions String?  @map("dosage_instructions") @db.Text
+  notes              String?  @map("notes") @db.Text
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // 关系
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+
+  @@map("order_items")
+}
+
+// ==================== 支付相关模型 ====================
+
+model Payment {
+  id                    String        @id @default(cuid()) @map("id")
+  orderId               String        @map("order_id")
+  amount                Decimal       @map("amount") @db.Decimal(10, 2)
+  currency              String        @default("NZD") @map("currency") @db.VarChar(3)
+  paymentMethod         String        @map("payment_method") @db.VarChar(50)
+  provider              String?       @map("provider") @db.VarChar(50)
+  providerTransactionId String?       @map("provider_transaction_id") @db.VarChar(255)
+  providerResponse      Json?         @map("provider_response") @db.JsonB
+  status                PaymentStatus @default(pending) @map("status")
+  processedAt           DateTime?     @map("processed_at") @db.Timestamptz
+  metadata              Json?         @map("metadata") @db.JsonB
+  createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime      @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+// ==================== 履约相关模型 ====================
+
+model FulfillmentProof {
+  id           String                    @id @default(cuid()) @map("id")
+  orderId      String                    @map("order_id")
+  pharmacyId   String                    @map("pharmacy_id")
+  proofFiles   Json                      @map("proof_files") @db.JsonB
+  notes        String?                   @map("notes") @db.Text
+  reviewStatus FulfillmentReviewStatus   @default(pending) @map("review_status")
+  reviewerId   String?                   @map("reviewer_id")
+  reviewNotes  String?                   @map("review_notes") @db.Text
+  reviewedAt   DateTime?                 @map("reviewed_at") @db.Timestamptz
+  metadata     Json?                     @map("metadata") @db.JsonB
+  createdAt    DateTime                  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime                  @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  order    Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  pharmacy Pharmacy  @relation(fields: [pharmacyId], references: [id])
+  reviewer User?     @relation("Reviewer", fields: [reviewerId], references: [id])
+
+  @@map("fulfillment_proofs")
+  @@index([orderId])
+  @@index([pharmacyId])
+  @@index([reviewStatus])
+}
+
+// ==================== 结算相关模型 ====================
+
+model Settlement {
+  id          String   @id @default(cuid()) @map("id")
+  orderId     String   @map("order_id")
+  pharmacyId  String   @map("pharmacy_id")
+  amount      Decimal  @map("amount") @db.Decimal(10, 2)
+  currency    String   @default("NZD") @map("currency") @db.VarChar(3)
+  status      String   @default("pending") @map("status") @db.VarChar(20)
+  paidAt      DateTime? @map("paid_at") @db.Timestamptz
+  paymentRef  String?  @map("payment_ref") @db.VarChar(255)
+  metadata    Json?    @map("metadata") @db.JsonB
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // 关系
+  order    Order    @relation(fields: [orderId], references: [id])
+  pharmacy Pharmacy @relation(fields: [pharmacyId], references: [id])
+
+  @@map("settlements")
+}
+
+// ==================== 系统配置 ====================
+
+model SystemConfig {
+  key         String   @id @map("key") @db.VarChar(255)
+  value       Json     @map("value") @db.JsonB
+  description String?  @map("description") @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+  metadata    Json?    @map("metadata") @db.JsonB
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  @@map("system_configs")
+} 
