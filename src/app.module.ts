@@ -8,6 +8,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { UserModule } from "./user/user.module";
 import { ClinicAccountModule } from "./clinic-account/clinic-account.module";
 import { IdempotencyMiddleware } from "./common/middleware/idempotency.middleware";
+import { MedicinesModule } from "./medicines/medicines.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { IdempotencyMiddleware } from "./common/middleware/idempotency.middlewar
     AuthModule,
     UserModule,
     ClinicAccountModule,
+    MedicinesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

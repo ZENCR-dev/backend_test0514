@@ -1,26 +1,26 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { ClinicAccountService } from './services/clinic-account.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateClinicAccountDto } from './dto/create-clinic-account.dto';
-import { AccountStatus } from '@prisma/client';
-import { UpdateClinicAccountDto } from './dto/update-clinic-account.dto';
-import { QueryClinicAccountDto } from './dto/query-clinic-account.dto';
+import { Test, TestingModule } from "@nestjs/testing";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { ClinicAccountService } from "./services/clinic-account.service";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateClinicAccountDto } from "./dto/create-clinic-account.dto";
+import { AccountStatus } from "@prisma/client";
+import { UpdateClinicAccountDto } from "./dto/update-clinic-account.dto";
+import { QueryClinicAccountDto } from "./dto/query-clinic-account.dto";
 
-describe('ClinicAccountService', () => {
+describe("ClinicAccountService", () => {
   let service: ClinicAccountService;
   let prismaService: PrismaService;
 
   const mockAccount = {
-    id: 'test-account-id',
-    clinicId: 'test-clinic-id',
+    id: "test-account-id",
+    clinicId: "test-clinic-id",
     balance: 1000,
     creditLimit: 5000,
     status: AccountStatus.active,
     version: 1,
     createdAt: new Date(),
     updatedAt: new Date(),
-    clinic: { name: '测试诊所' }, // 模拟关联的clinic数据
+    clinic: { name: "测试诊所" }, // 模拟关联的clinic数据
   };
 
   const mockPrismaService = {
@@ -56,15 +56,15 @@ describe('ClinicAccountService', () => {
     jest.clearAllMocks();
   });
 
-  describe('create', () => {
+  describe("create", () => {
     const createDto: CreateClinicAccountDto = {
-      clinicId: 'test-clinic-id',
+      clinicId: "test-clinic-id",
       initialPrepaidAmount: 1000,
       creditLimit: 5000,
       status: AccountStatus.active,
     };
 
-    it('应该成功创建诊所账户', async () => {
+    it("应该成功创建诊所账户", async () => {
       mockPrismaService.clinicAccount.findFirst.mockResolvedValue(null);
       mockPrismaService.clinicAccount.create.mockResolvedValue(mockAccount);
 
@@ -93,26 +93,28 @@ describe('ClinicAccountService', () => {
       });
 
       expect(result.id).toBe(mockAccount.id);
-      expect(result.clinicName).toBe('测试诊所');
+      expect(result.clinicName).toBe("测试诊所");
     });
 
-    it('当诊所已存在账户时应该抛出错误', async () => {
+    it("当诊所已存在账户时应该抛出错误", async () => {
       mockPrismaService.clinicAccount.findFirst.mockResolvedValue(mockAccount);
 
-      await expect(service.create(createDto)).rejects.toThrow(BadRequestException);
+      await expect(service.create(createDto)).rejects.toThrow(
+        BadRequestException,
+      );
       expect(mockPrismaService.clinicAccount.create).not.toHaveBeenCalled();
     });
   });
 
-  describe('findAll', () => {
+  describe("findAll", () => {
     const queryDto: QueryClinicAccountDto = {
       page: 1,
       limit: 10,
-      search: '测试',
+      search: "测试",
       status: AccountStatus.active,
     };
 
-    it('应该返回分页的诊所账户列表', async () => {
+    it("应该返回分页的诊所账户列表", async () => {
       const mockAccounts = [mockAccount];
       const mockTotal = 1;
 
@@ -128,7 +130,7 @@ describe('ClinicAccountService', () => {
       expect(result.meta.totalPages).toBe(1);
     });
 
-    it('应该支持搜索功能', async () => {
+    it("应该支持搜索功能", async () => {
       mockPrismaService.clinicAccount.findMany.mockResolvedValue([]);
       mockPrismaService.clinicAccount.count.mockResolvedValue(0);
 
@@ -141,7 +143,7 @@ describe('ClinicAccountService', () => {
             clinic: {
               name: {
                 contains: queryDto.search,
-                mode: 'insensitive',
+                mode: "insensitive",
               },
             },
           },
@@ -150,8 +152,8 @@ describe('ClinicAccountService', () => {
     });
   });
 
-  describe('findOne', () => {
-    it('应该返回指定的诊所账户', async () => {
+  describe("findOne", () => {
+    it("应该返回指定的诊所账户", async () => {
       mockPrismaService.clinicAccount.findFirst.mockResolvedValue(mockAccount);
 
       const result = await service.findOne(mockAccount.id);
@@ -171,21 +173,23 @@ describe('ClinicAccountService', () => {
       expect(result.id).toBe(mockAccount.id);
     });
 
-    it('当账户不存在时应该抛出NotFoundException', async () => {
+    it("当账户不存在时应该抛出NotFoundException", async () => {
       mockPrismaService.clinicAccount.findFirst.mockResolvedValue(null);
 
-      await expect(service.findOne('non-existent-id')).rejects.toThrow(NotFoundException);
+      await expect(service.findOne("non-existent-id")).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
-  describe('update', () => {
+  describe("update", () => {
     const updateDto: UpdateClinicAccountDto = {
       creditLimit: 10000,
     };
 
-    it('应该成功更新诊所账户', async () => {
+    it("应该成功更新诊所账户", async () => {
       const updatedAccount = { ...mockAccount, ...updateDto };
-      
+
       mockPrismaService.clinicAccount.findFirst.mockResolvedValue(mockAccount);
       mockPrismaService.clinicAccount.update.mockResolvedValue(updatedAccount);
 
@@ -206,8 +210,8 @@ describe('ClinicAccountService', () => {
     });
   });
 
-  describe('remove', () => {
-    it('应该成功软删除诊所账户', async () => {
+  describe("remove", () => {
+    it("应该成功软删除诊所账户", async () => {
       mockPrismaService.clinicAccount.findFirst.mockResolvedValue(mockAccount);
       mockPrismaService.clinicAccount.update.mockResolvedValue({
         ...mockAccount,
@@ -224,12 +228,12 @@ describe('ClinicAccountService', () => {
         },
       });
 
-      expect(result.message).toBe('诊所账户删除成功');
+      expect(result.message).toBe("诊所账户删除成功");
     });
   });
 
-  describe('getBalance', () => {
-    it('应该返回账户余额信息', async () => {
+  describe("getBalance", () => {
+    it("应该返回账户余额信息", async () => {
       mockPrismaService.clinicAccount.findFirst.mockResolvedValue(mockAccount);
 
       const result = await service.getBalance(mockAccount.id);
@@ -241,34 +245,50 @@ describe('ClinicAccountService', () => {
     });
   });
 
-  describe('checkAccountAccess', () => {
-    it('admin应该能访问所有账户', async () => {
-      const result = await service.checkAccountAccess('any-account-id', 'user-id', 'admin');
+  describe("checkAccountAccess", () => {
+    it("admin应该能访问所有账户", async () => {
+      const result = await service.checkAccountAccess(
+        "any-account-id",
+        "user-id",
+        "admin",
+      );
       expect(result).toBe(true);
     });
 
-    it('practitioner应该只能访问自己诊所的账户', async () => {
-      const mockAccountWithClinic = { 
-        ...mockAccount, 
-        clinic: { ownerId: 'user-id' } 
+    it("practitioner应该只能访问自己诊所的账户", async () => {
+      const mockAccountWithClinic = {
+        ...mockAccount,
+        clinic: { ownerId: "user-id" },
       };
-      
-      mockPrismaService.clinicAccount.findUnique.mockResolvedValue(mockAccountWithClinic);
 
-      const result = await service.checkAccountAccess(mockAccount.id, 'user-id', 'practitioner');
+      mockPrismaService.clinicAccount.findUnique.mockResolvedValue(
+        mockAccountWithClinic,
+      );
+
+      const result = await service.checkAccountAccess(
+        mockAccount.id,
+        "user-id",
+        "practitioner",
+      );
       expect(result).toBe(true);
     });
 
-    it('practitioner不应该能访问其他诊所的账户', async () => {
-      const mockAccountWithClinic = { 
-        ...mockAccount, 
-        clinic: { ownerId: 'other-user-id' } 
+    it("practitioner不应该能访问其他诊所的账户", async () => {
+      const mockAccountWithClinic = {
+        ...mockAccount,
+        clinic: { ownerId: "other-user-id" },
       };
-      
-      mockPrismaService.clinicAccount.findUnique.mockResolvedValue(mockAccountWithClinic);
 
-      const result = await service.checkAccountAccess(mockAccount.id, 'user-id', 'practitioner');
+      mockPrismaService.clinicAccount.findUnique.mockResolvedValue(
+        mockAccountWithClinic,
+      );
+
+      const result = await service.checkAccountAccess(
+        mockAccount.id,
+        "user-id",
+        "practitioner",
+      );
       expect(result).toBe(false);
     });
   });
-}); 
+});

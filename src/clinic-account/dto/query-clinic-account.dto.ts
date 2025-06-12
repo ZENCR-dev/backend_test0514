@@ -1,11 +1,11 @@
-import { IsOptional, IsString, IsNumber, Min, IsEnum } from 'class-validator';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { AccountStatus } from '@prisma/client';
+import { IsOptional, IsString, IsNumber, Min, IsEnum } from "class-validator";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { Transform, Type } from "class-transformer";
+import { AccountStatus } from "@prisma/client";
 
 export class QueryClinicAccountDto {
   @ApiPropertyOptional({
-    description: '页码',
+    description: "页码",
     example: 1,
     minimum: 1,
   })
@@ -16,7 +16,7 @@ export class QueryClinicAccountDto {
   page?: number = 1;
 
   @ApiPropertyOptional({
-    description: '每页数量',
+    description: "每页数量",
     example: 10,
     minimum: 1,
   })
@@ -27,15 +27,15 @@ export class QueryClinicAccountDto {
   limit?: number = 10;
 
   @ApiPropertyOptional({
-    description: '按诊所名称搜索',
-    example: '中医',
+    description: "按诊所名称搜索",
+    example: "中医",
   })
   @IsOptional()
   @IsString()
   search?: string;
 
   @ApiPropertyOptional({
-    description: '按状态筛选',
+    description: "按状态筛选",
     enum: AccountStatus,
     example: AccountStatus.active,
   })
@@ -44,27 +44,27 @@ export class QueryClinicAccountDto {
   status?: AccountStatus;
 
   @ApiPropertyOptional({
-    description: '按诊所ID筛选',
-    example: 'clinic-uuid-123',
+    description: "按诊所ID筛选",
+    example: "clinic-uuid-123",
   })
   @IsOptional()
   @IsString()
   clinicId?: string;
 
   @ApiPropertyOptional({
-    description: '排序字段',
-    example: 'createdAt',
+    description: "排序字段",
+    example: "createdAt",
   })
   @IsOptional()
   @IsString()
-  sortBy?: string = 'createdAt';
+  sortBy?: string = "createdAt";
 
   @ApiPropertyOptional({
-    description: '排序方向',
-    example: 'desc',
-    enum: ['asc', 'desc'],
+    description: "排序方向",
+    example: "desc",
+    enum: ["asc", "desc"],
   })
   @IsOptional()
   @IsString()
-  sortOrder?: 'asc' | 'desc' = 'desc';
-} 
+  sortOrder?: "asc" | "desc" = "desc";
+}

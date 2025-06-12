@@ -1,4 +1,4 @@
-import { AccountStatus } from '@prisma/client';
+import { AccountStatus } from "@prisma/client";
 
 export interface IClinicAccount {
   id: string;
@@ -26,4 +26,4 @@ export interface IUserPermission {
   userId: string;
   role: string;
   clinicId?: string;
-} 
+}
