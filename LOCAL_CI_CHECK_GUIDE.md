@@ -8,7 +8,7 @@
 
 ## 🔧 前置条件
 
-- **Node.js 版本**：建议使用 Node.js 18.x 或 20.x LTS 版本（与 GitHub Actions CI 环境一致）
+- **Node.js 版本**：建议使用 Node.js 20.x 或 22.x LTS 版本（与 GitHub Actions CI 环境一致）
 - **项目依赖**：已通过 `npm install` 或 `npm ci` 正确安装
 - **数据库**：Prisma 客户端已生成（运行过 `npx prisma generate`）
 - **Git钩子**：已安装 pre-push 钩子（可选但强烈推荐）
