@@ -29,13 +29,16 @@ jobs:
       run: npm ci
       
     - name: ESLint检查
-      run: npm run lint
+      run: npm run lint:check
       
     - name: TypeScript类型检查
       run: npx tsc --noEmit
       
     - name: Prettier格式检查
       run: npx prettier --check "src/**/*.{ts,js,json}"
+      
+    - name: Prisma schema验证
+      run: npx prisma validate
 
   # ==================== 测试 ====================
   test:
@@ -59,6 +62,9 @@ jobs:
         
     - name: Install dependencies
       run: npm ci
+      
+    - name: Prisma生成客户端
+      run: npx prisma generate
       
     - name: 运行单元测试
       run: npm test
@@ -129,6 +135,7 @@ jobs:
       
     - name: 依赖安全审计
       run: npm audit --audit-level=moderate
+      continue-on-error: false
       
     - name: 检查过时依赖
       run: npm outdated || true
