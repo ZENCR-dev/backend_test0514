@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "4ececd45133c0e1a",
+        "id": "9960833908f5829c",
         "type": "tabs",
         "children": [
           {
-            "id": "82e78e4199f15335",
+            "id": "dd503025608d2d5f",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "SOP1.3devdocs/SOPv1.3FinalMVP1.0.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "新标签页"
+              "title": "SOPv1.3FinalMVP1.0"
             }
           }
         ]
@@ -91,6 +95,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "SOP1.3devdocs/SOPv1.3FinalMVP1.0.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,7 +105,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "反向链接"
+              "title": "SOPv1.3FinalMVP1.0 的反向链接列表"
             }
           },
           {
@@ -137,15 +142,17 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "SOP1.3devdocs/SOPv1.3FinalMVP1.0.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "大纲"
+              "title": "SOPv1.3FinalMVP1.0 的大纲"
             }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
@@ -162,8 +169,10 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "82e78e4199f15335",
+  "active": "dd503025608d2d5f",
   "lastOpenFiles": [
+    "SOP1.3devdocs/downsizedSOPv1.5.md",
+    "DEVELOPMENT_PROGRESS_TRACKER.md",
     "SOP1.3devdocs/SOPv1.3FinalMVP1.0SOPv1.3Final.md"
   ]
 }
