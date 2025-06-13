@@ -1,0 +1,1049 @@
+{
+  "metadata": {
+    "generatedAt": "2025-06-12T10:25:55.549Z",
+    "inputFile": "sample-data/performance-sample.tsv",
+    "processor": "Medicine Data Processor v1.0.0"
+  },
+  "summary": {
+    "processing": {
+      "totalRecords": 100,
+      "successCount": 100,
+      "failureCount": 0,
+      "successRate": "100.00%",
+      "duration": "45ms",
+      "averageTimePerRecord": "0ms"
+    },
+    "sku": {
+      "totalSkus": 100,
+      "initialsCount": 50,
+      "fullPinyinCount": 0,
+      "fallbackCount": 50
+    },
+    "pinyin": {
+      "specialMappingsUsed": 28,
+      "totalGenerated": 100
+    },
+    "categories": {
+      "补益药": 14,
+      "活血药": 4,
+      "其他中药": 56,
+      "理气药": 4,
+      "化痰药": 6,
+      "止咳药": 4,
+      "清热药": 12
+    },
+    "prices": {
+      "min": 0.3,
+      "max": 45.02,
+      "average": 4.46,
+      "median": 1.22
+    }
+  },
+  "details": {
+    "startTime": "2025-06-12T10:25:55.503Z",
+    "endTime": "2025-06-12T10:25:55.548Z",
+    "totalDuration": 45
+  },
+  "results": [
+    {
+      "index": 1,
+      "success": true,
+      "chineseName": "当归_1",
+      "englishName": "Angelica sinensis 1",
+      "pinyinName": "danggui_1",
+      "sku": "DG",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 2,
+      "success": true,
+      "chineseName": "川芎_2",
+      "englishName": "Ligusticum chuanxiong 2",
+      "pinyinName": "chuanxiong_2",
+      "sku": "CX",
+      "category": "活血药",
+      "warnings": []
+    },
+    {
+      "index": 3,
+      "success": true,
+      "chineseName": "白芍_3",
+      "englishName": "Paeonia lactiflora 3",
+      "pinyinName": "baishao_3",
+      "sku": "BS",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 4,
+      "success": true,
+      "chineseName": "熟地黄_4",
+      "englishName": "Rehmannia glutinosa 4",
+      "pinyinName": "shudihuang_4",
+      "sku": "SDH",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 5,
+      "success": true,
+      "chineseName": "人参_5",
+      "englishName": "Panax ginseng 5",
+      "pinyinName": "renshen_5",
+      "sku": "RS",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 6,
+      "success": true,
+      "chineseName": "党参_6",
+      "englishName": "Codonopsis pilosula 6",
+      "pinyinName": "dangshen_6",
+      "sku": "DS",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 7,
+      "success": true,
+      "chineseName": "黄芪_7",
+      "englishName": "Astragalus membranaceus 7",
+      "pinyinName": "huangqi_7",
+      "sku": "HQ",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 8,
+      "success": true,
+      "chineseName": "甘草_8",
+      "englishName": "Glycyrrhiza uralensis 8",
+      "pinyinName": "gancao_8",
+      "sku": "GC",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 9,
+      "success": true,
+      "chineseName": "陈皮_9",
+      "englishName": "Citrus reticulata 9",
+      "pinyinName": "chenpi_9",
+      "sku": "CP",
+      "category": "理气药",
+      "warnings": []
+    },
+    {
+      "index": 10,
+      "success": true,
+      "chineseName": "半夏_10",
+      "englishName": "Pinellia ternata 10",
+      "pinyinName": "banxia_10",
+      "sku": "BX",
+      "category": "化痰药",
+      "warnings": []
+    },
+    {
+      "index": 11,
+      "success": true,
+      "chineseName": "茯苓_11",
+      "englishName": "Poria cocos 11",
+      "pinyinName": "fuling_11",
+      "sku": "FL",
+      "category": "化痰药",
+      "warnings": []
+    },
+    {
+      "index": 12,
+      "success": true,
+      "chineseName": "白术_12",
+      "englishName": "Atractylodes macrocephala 12",
+      "pinyinName": "baizhu_12",
+      "sku": "BZ",
+      "category": "化痰药",
+      "warnings": []
+    },
+    {
+      "index": 13,
+      "success": true,
+      "chineseName": "薄荷_13",
+      "englishName": "Mentha haplocalyx 13",
+      "pinyinName": "bohe_13",
+      "sku": "BH",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 14,
+      "success": true,
+      "chineseName": "厚朴_14",
+      "englishName": "Magnolia officinalis 14",
+      "pinyinName": "houpo_14",
+      "sku": "HP",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 15,
+      "success": true,
+      "chineseName": "杜仲_15",
+      "englishName": "Eucommia ulmoides 15",
+      "pinyinName": "duzhong_15",
+      "sku": "DZ",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 16,
+      "success": true,
+      "chineseName": "枸杞子_16",
+      "englishName": "Lycium barbarum 16",
+      "pinyinName": "gouqizi_16",
+      "sku": "GQZ",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 17,
+      "success": true,
+      "chineseName": "牛膝_17",
+      "englishName": "Achyranthes bidentata 17",
+      "pinyinName": "niuxi_17",
+      "sku": "NX",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 18,
+      "success": true,
+      "chineseName": "车前子_18",
+      "englishName": "Plantago asiatica 18",
+      "pinyinName": "cheqianzi_18",
+      "sku": "CQZ",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 19,
+      "success": true,
+      "chineseName": "知母_19",
+      "englishName": "Anemarrhena asphodeloides 19",
+      "pinyinName": "zhimu_19",
+      "sku": "ZM",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 20,
+      "success": true,
+      "chineseName": "浙贝母_20",
+      "englishName": "Fritillaria thunbergii 20",
+      "pinyinName": "zhebeimu_20",
+      "sku": "ZBM",
+      "category": "止咳药",
+      "warnings": []
+    },
+    {
+      "index": 21,
+      "success": true,
+      "chineseName": "川贝母_21",
+      "englishName": "Fritillaria cirrhosa 21",
+      "pinyinName": "chuanbeimu_21",
+      "sku": "CBM",
+      "category": "止咳药",
+      "warnings": []
+    },
+    {
+      "index": 22,
+      "success": true,
+      "chineseName": "藏红花_22",
+      "englishName": "Crocus sativus 22",
+      "pinyinName": "zanghonghua_22",
+      "sku": "ZHH",
+      "category": "活血药",
+      "warnings": []
+    },
+    {
+      "index": 23,
+      "success": true,
+      "chineseName": "番泻叶_23",
+      "englishName": "Cassia angustifolia 23",
+      "pinyinName": "fanxieye_23",
+      "sku": "FXY",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 24,
+      "success": true,
+      "chineseName": "诃子_24",
+      "englishName": "Terminalia chebula 24",
+      "pinyinName": "hezi_24",
+      "sku": "HZ",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 25,
+      "success": true,
+      "chineseName": "没药_25",
+      "englishName": "Commiphora myrrha 25",
+      "pinyinName": "moyao_25",
+      "sku": "MY",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 26,
+      "success": true,
+      "chineseName": "乳香_26",
+      "englishName": "Boswellia carterii 26",
+      "pinyinName": "ruxiang_26",
+      "sku": "RX",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 27,
+      "success": true,
+      "chineseName": "血竭_27",
+      "englishName": "Daemonorops draco 27",
+      "pinyinName": "xuejie_27",
+      "sku": "XJ",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 28,
+      "success": true,
+      "chineseName": "阿胶_28",
+      "englishName": "Equus asinus 28",
+      "pinyinName": "ajiao_28",
+      "sku": "AJ",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 29,
+      "success": true,
+      "chineseName": "龟板_29",
+      "englishName": "Chinemys reevesii 29",
+      "pinyinName": "guiban_29",
+      "sku": "GB",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 30,
+      "success": true,
+      "chineseName": "鳖甲_30",
+      "englishName": "Trionyx sinensis 30",
+      "pinyinName": "biejia_30",
+      "sku": "BJ",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 31,
+      "success": true,
+      "chineseName": "蛤蚧_31",
+      "englishName": "Gekko gecko 31",
+      "pinyinName": "gejie_31",
+      "sku": "GJ",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 32,
+      "success": true,
+      "chineseName": "海马_32",
+      "englishName": "Hippocampus kelloggii 32",
+      "pinyinName": "haima_32",
+      "sku": "HM",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 33,
+      "success": true,
+      "chineseName": "石决明_33",
+      "englishName": "Haliotis diversicolor 33",
+      "pinyinName": "shijueming_33",
+      "sku": "SJM",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 34,
+      "success": true,
+      "chineseName": "夜明砂_34",
+      "englishName": "Vespertilio superans 34",
+      "pinyinName": "yemingsha_34",
+      "sku": "YMS",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 35,
+      "success": true,
+      "chineseName": "五倍子_35",
+      "englishName": "Rhus chinensis 35",
+      "pinyinName": "wubeizi_35",
+      "sku": "WBZ",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 36,
+      "success": true,
+      "chineseName": "五加皮_36",
+      "englishName": "Acanthopanax gracilistylus 36",
+      "pinyinName": "wujiapi_36",
+      "sku": "WJP",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 37,
+      "success": true,
+      "chineseName": "五味子_37",
+      "englishName": "Schisandra chinensis 37",
+      "pinyinName": "wuweizi_37",
+      "sku": "WWZ",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 38,
+      "success": true,
+      "chineseName": "五指毛桃_38",
+      "englishName": "Ficus hirta 38",
+      "pinyinName": "wuzhimaotao_38",
+      "sku": "WZMT",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 39,
+      "success": true,
+      "chineseName": "仙茅_39",
+      "englishName": "Curculigo orchioides 39",
+      "pinyinName": "xianmao_39",
+      "sku": "XM",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 40,
+      "success": true,
+      "chineseName": "佛手_40",
+      "englishName": "Citrus medica 40",
+      "pinyinName": "foshou_40",
+      "sku": "FS",
+      "category": "理气药",
+      "warnings": []
+    },
+    {
+      "index": 41,
+      "success": true,
+      "chineseName": "金银花_41",
+      "englishName": "Lonicera japonica 41",
+      "pinyinName": "jinyinhua_41",
+      "sku": "JYH",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 42,
+      "success": true,
+      "chineseName": "连翘_42",
+      "englishName": "Forsythia suspensa 42",
+      "pinyinName": "lianqiao_42",
+      "sku": "LQ",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 43,
+      "success": true,
+      "chineseName": "板蓝根_43",
+      "englishName": "Isatis tinctoria 43",
+      "pinyinName": "banlangen_43",
+      "sku": "BLG",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 44,
+      "success": true,
+      "chineseName": "大青叶_44",
+      "englishName": "Isatis indigotica 44",
+      "pinyinName": "daqingye_44",
+      "sku": "DQY",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 45,
+      "success": true,
+      "chineseName": "蒲公英_45",
+      "englishName": "Taraxacum mongolicum 45",
+      "pinyinName": "pugongying_45",
+      "sku": "PGY",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 46,
+      "success": true,
+      "chineseName": "紫花地丁_46",
+      "englishName": "Viola philippica 46",
+      "pinyinName": "zihuadiding_46",
+      "sku": "ZHDD",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 47,
+      "success": true,
+      "chineseName": "野菊花_47",
+      "englishName": "Chrysanthemum indicum 47",
+      "pinyinName": "yejuhua_47",
+      "sku": "YJH",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 48,
+      "success": true,
+      "chineseName": "夏枯草_48",
+      "englishName": "Prunella vulgaris 48",
+      "pinyinName": "xiakucao_48",
+      "sku": "XKC",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 49,
+      "success": true,
+      "chineseName": "决明子_49",
+      "englishName": "Cassia obtusifolia 49",
+      "pinyinName": "juemingzi_49",
+      "sku": "JMZ",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 50,
+      "success": true,
+      "chineseName": "菊花_50",
+      "englishName": "Chrysanthemum morifolium 50",
+      "pinyinName": "juhua_50",
+      "sku": "JH",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 51,
+      "success": true,
+      "chineseName": "当归_51",
+      "englishName": "Angelica sinensis 51",
+      "pinyinName": "danggui_51",
+      "sku": "danggui51",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 52,
+      "success": true,
+      "chineseName": "川芎_52",
+      "englishName": "Ligusticum chuanxiong 52",
+      "pinyinName": "chuanxiong_52",
+      "sku": "chuanxiong52",
+      "category": "活血药",
+      "warnings": []
+    },
+    {
+      "index": 53,
+      "success": true,
+      "chineseName": "白芍_53",
+      "englishName": "Paeonia lactiflora 53",
+      "pinyinName": "baishao_53",
+      "sku": "baishao53",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 54,
+      "success": true,
+      "chineseName": "熟地黄_54",
+      "englishName": "Rehmannia glutinosa 54",
+      "pinyinName": "shudihuang_54",
+      "sku": "shudihuang54",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 55,
+      "success": true,
+      "chineseName": "人参_55",
+      "englishName": "Panax ginseng 55",
+      "pinyinName": "renshen_55",
+      "sku": "renshen55",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 56,
+      "success": true,
+      "chineseName": "党参_56",
+      "englishName": "Codonopsis pilosula 56",
+      "pinyinName": "dangshen_56",
+      "sku": "dangshen56",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 57,
+      "success": true,
+      "chineseName": "黄芪_57",
+      "englishName": "Astragalus membranaceus 57",
+      "pinyinName": "huangqi_57",
+      "sku": "huangqi57",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 58,
+      "success": true,
+      "chineseName": "甘草_58",
+      "englishName": "Glycyrrhiza uralensis 58",
+      "pinyinName": "gancao_58",
+      "sku": "gancao58",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 59,
+      "success": true,
+      "chineseName": "陈皮_59",
+      "englishName": "Citrus reticulata 59",
+      "pinyinName": "chenpi_59",
+      "sku": "chenpi59",
+      "category": "理气药",
+      "warnings": []
+    },
+    {
+      "index": 60,
+      "success": true,
+      "chineseName": "半夏_60",
+      "englishName": "Pinellia ternata 60",
+      "pinyinName": "banxia_60",
+      "sku": "banxia60",
+      "category": "化痰药",
+      "warnings": []
+    },
+    {
+      "index": 61,
+      "success": true,
+      "chineseName": "茯苓_61",
+      "englishName": "Poria cocos 61",
+      "pinyinName": "fuling_61",
+      "sku": "fuling61",
+      "category": "化痰药",
+      "warnings": []
+    },
+    {
+      "index": 62,
+      "success": true,
+      "chineseName": "白术_62",
+      "englishName": "Atractylodes macrocephala 62",
+      "pinyinName": "baizhu_62",
+      "sku": "baizhu62",
+      "category": "化痰药",
+      "warnings": []
+    },
+    {
+      "index": 63,
+      "success": true,
+      "chineseName": "薄荷_63",
+      "englishName": "Mentha haplocalyx 63",
+      "pinyinName": "bohe_63",
+      "sku": "bohe63",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 64,
+      "success": true,
+      "chineseName": "厚朴_64",
+      "englishName": "Magnolia officinalis 64",
+      "pinyinName": "houpo_64",
+      "sku": "houpo64",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 65,
+      "success": true,
+      "chineseName": "杜仲_65",
+      "englishName": "Eucommia ulmoides 65",
+      "pinyinName": "duzhong_65",
+      "sku": "duzhong65",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 66,
+      "success": true,
+      "chineseName": "枸杞子_66",
+      "englishName": "Lycium barbarum 66",
+      "pinyinName": "gouqizi_66",
+      "sku": "gouqizi66",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 67,
+      "success": true,
+      "chineseName": "牛膝_67",
+      "englishName": "Achyranthes bidentata 67",
+      "pinyinName": "niuxi_67",
+      "sku": "niuxi67",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 68,
+      "success": true,
+      "chineseName": "车前子_68",
+      "englishName": "Plantago asiatica 68",
+      "pinyinName": "cheqianzi_68",
+      "sku": "cheqianzi68",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 69,
+      "success": true,
+      "chineseName": "知母_69",
+      "englishName": "Anemarrhena asphodeloides 69",
+      "pinyinName": "zhimu_69",
+      "sku": "zhimu69",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 70,
+      "success": true,
+      "chineseName": "浙贝母_70",
+      "englishName": "Fritillaria thunbergii 70",
+      "pinyinName": "zhebeimu_70",
+      "sku": "zhebeimu70",
+      "category": "止咳药",
+      "warnings": []
+    },
+    {
+      "index": 71,
+      "success": true,
+      "chineseName": "川贝母_71",
+      "englishName": "Fritillaria cirrhosa 71",
+      "pinyinName": "chuanbeimu_71",
+      "sku": "chuanbeimu71",
+      "category": "止咳药",
+      "warnings": []
+    },
+    {
+      "index": 72,
+      "success": true,
+      "chineseName": "藏红花_72",
+      "englishName": "Crocus sativus 72",
+      "pinyinName": "zanghonghua_72",
+      "sku": "zanghonghua72",
+      "category": "活血药",
+      "warnings": []
+    },
+    {
+      "index": 73,
+      "success": true,
+      "chineseName": "番泻叶_73",
+      "englishName": "Cassia angustifolia 73",
+      "pinyinName": "fanxieye_73",
+      "sku": "fanxieye73",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 74,
+      "success": true,
+      "chineseName": "诃子_74",
+      "englishName": "Terminalia chebula 74",
+      "pinyinName": "hezi_74",
+      "sku": "hezi74",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 75,
+      "success": true,
+      "chineseName": "没药_75",
+      "englishName": "Commiphora myrrha 75",
+      "pinyinName": "moyao_75",
+      "sku": "moyao75",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 76,
+      "success": true,
+      "chineseName": "乳香_76",
+      "englishName": "Boswellia carterii 76",
+      "pinyinName": "ruxiang_76",
+      "sku": "ruxiang76",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 77,
+      "success": true,
+      "chineseName": "血竭_77",
+      "englishName": "Daemonorops draco 77",
+      "pinyinName": "xuejie_77",
+      "sku": "xuejie77",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 78,
+      "success": true,
+      "chineseName": "阿胶_78",
+      "englishName": "Equus asinus 78",
+      "pinyinName": "ajiao_78",
+      "sku": "ajiao78",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 79,
+      "success": true,
+      "chineseName": "龟板_79",
+      "englishName": "Chinemys reevesii 79",
+      "pinyinName": "guiban_79",
+      "sku": "guiban79",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 80,
+      "success": true,
+      "chineseName": "鳖甲_80",
+      "englishName": "Trionyx sinensis 80",
+      "pinyinName": "biejia_80",
+      "sku": "biejia80",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 81,
+      "success": true,
+      "chineseName": "蛤蚧_81",
+      "englishName": "Gekko gecko 81",
+      "pinyinName": "gejie_81",
+      "sku": "gejie81",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 82,
+      "success": true,
+      "chineseName": "海马_82",
+      "englishName": "Hippocampus kelloggii 82",
+      "pinyinName": "haima_82",
+      "sku": "haima82",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 83,
+      "success": true,
+      "chineseName": "石决明_83",
+      "englishName": "Haliotis diversicolor 83",
+      "pinyinName": "shijueming_83",
+      "sku": "shijueming83",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 84,
+      "success": true,
+      "chineseName": "夜明砂_84",
+      "englishName": "Vespertilio superans 84",
+      "pinyinName": "yemingsha_84",
+      "sku": "yemingsha84",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 85,
+      "success": true,
+      "chineseName": "五倍子_85",
+      "englishName": "Rhus chinensis 85",
+      "pinyinName": "wubeizi_85",
+      "sku": "wubeizi85",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 86,
+      "success": true,
+      "chineseName": "五加皮_86",
+      "englishName": "Acanthopanax gracilistylus 86",
+      "pinyinName": "wujiapi_86",
+      "sku": "wujiapi86",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 87,
+      "success": true,
+      "chineseName": "五味子_87",
+      "englishName": "Schisandra chinensis 87",
+      "pinyinName": "wuweizi_87",
+      "sku": "wuweizi87",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 88,
+      "success": true,
+      "chineseName": "五指毛桃_88",
+      "englishName": "Ficus hirta 88",
+      "pinyinName": "wuzhimaotao_88",
+      "sku": "wuzhimaotao88",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 89,
+      "success": true,
+      "chineseName": "仙茅_89",
+      "englishName": "Curculigo orchioides 89",
+      "pinyinName": "xianmao_89",
+      "sku": "xianmao89",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 90,
+      "success": true,
+      "chineseName": "佛手_90",
+      "englishName": "Citrus medica 90",
+      "pinyinName": "foshou_90",
+      "sku": "foshou90",
+      "category": "理气药",
+      "warnings": []
+    },
+    {
+      "index": 91,
+      "success": true,
+      "chineseName": "金银花_91",
+      "englishName": "Lonicera japonica 91",
+      "pinyinName": "jinyinhua_91",
+      "sku": "jinyinhua91",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 92,
+      "success": true,
+      "chineseName": "连翘_92",
+      "englishName": "Forsythia suspensa 92",
+      "pinyinName": "lianqiao_92",
+      "sku": "lianqiao92",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 93,
+      "success": true,
+      "chineseName": "板蓝根_93",
+      "englishName": "Isatis tinctoria 93",
+      "pinyinName": "banlangen_93",
+      "sku": "banlangen93",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 94,
+      "success": true,
+      "chineseName": "大青叶_94",
+      "englishName": "Isatis indigotica 94",
+      "pinyinName": "daqingye_94",
+      "sku": "daqingye94",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 95,
+      "success": true,
+      "chineseName": "蒲公英_95",
+      "englishName": "Taraxacum mongolicum 95",
+      "pinyinName": "pugongying_95",
+      "sku": "pugongying95",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 96,
+      "success": true,
+      "chineseName": "紫花地丁_96",
+      "englishName": "Viola philippica 96",
+      "pinyinName": "zihuadiding_96",
+      "sku": "zihuadiding96",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 97,
+      "success": true,
+      "chineseName": "野菊花_97",
+      "englishName": "Chrysanthemum indicum 97",
+      "pinyinName": "yejuhua_97",
+      "sku": "yejuhua97",
+      "category": "清热药",
+      "warnings": []
+    },
+    {
+      "index": 98,
+      "success": true,
+      "chineseName": "夏枯草_98",
+      "englishName": "Prunella vulgaris 98",
+      "pinyinName": "xiakucao_98",
+      "sku": "xiakucao98",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 99,
+      "success": true,
+      "chineseName": "决明子_99",
+      "englishName": "Cassia obtusifolia 99",
+      "pinyinName": "juemingzi_99",
+      "sku": "juemingzi99",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 100,
+      "success": true,
+      "chineseName": "菊花_100",
+      "englishName": "Chrysanthemum morifolium 100",
+      "pinyinName": "juhua_100",
+      "sku": "juhua100",
+      "category": "其他中药",
+      "warnings": []
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "name": "当归",
+    "chineseName": "当归",
+    "englishName": "Angelica sinensis",
+    "pinyinName": "danggui",
+    "sku": "DG",
+    "description": "当归 (Angelica sinensis)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.85,
+    "metadata": {
+      "importIndex": 1,
+      "processedAt": "2025-06-12T10:25:44.237Z",
+      "originalData": {
+        "chineseName": "当归",
+        "englishName": "Angelica sinensis",
+        "pricePerGram": 0.85
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "正常药材",
+    "chineseName": "正常药材",
+    "englishName": "Normal medicine",
+    "pinyinName": "zhengchangyaocai",
+    "sku": "ZCYC",
+    "description": "正常药材 (Normal medicine)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 2.5,
+    "metadata": {
+      "importIndex": 2,
+      "processedAt": "2025-06-12T10:25:44.237Z",
+      "originalData": {
+        "chineseName": "正常药材",
+        "englishName": "Normal medicine",
+        "pricePerGram": 2.5
+      }
+    },
+    "status": "active"
+  }
+]

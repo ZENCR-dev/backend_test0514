@@ -1,0 +1,147 @@
+{
+  "metadata": {
+    "generatedAt": "2025-06-12T10:25:21.749Z",
+    "inputFile": "sample-data/small-sample.tsv",
+    "processor": "Medicine Data Processor v1.0.0"
+  },
+  "summary": {
+    "processing": {
+      "totalRecords": 10,
+      "successCount": 10,
+      "failureCount": 0,
+      "successRate": "100.00%",
+      "duration": "16ms",
+      "averageTimePerRecord": "2ms"
+    },
+    "sku": {
+      "totalSkus": 10,
+      "initialsCount": 10,
+      "fullPinyinCount": 0,
+      "fallbackCount": 0
+    },
+    "pinyin": {
+      "specialMappingsUsed": 28,
+      "totalGenerated": 10
+    },
+    "categories": {
+      "补益药": 5,
+      "活血药": 1,
+      "其他中药": 2,
+      "理气药": 1,
+      "化痰药": 1
+    },
+    "prices": {
+      "min": 0.45,
+      "max": 15.5,
+      "average": 2.39,
+      "median": 0.92
+    }
+  },
+  "details": {
+    "startTime": "2025-06-12T10:25:21.733Z",
+    "endTime": "2025-06-12T10:25:21.749Z",
+    "totalDuration": 16
+  },
+  "results": [
+    {
+      "index": 1,
+      "success": true,
+      "chineseName": "当归",
+      "englishName": "Angelica sinensis",
+      "pinyinName": "danggui",
+      "sku": "DG",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 2,
+      "success": true,
+      "chineseName": "川芎",
+      "englishName": "Ligusticum chuanxiong",
+      "pinyinName": "chuanxiong",
+      "sku": "CX",
+      "category": "活血药",
+      "warnings": []
+    },
+    {
+      "index": 3,
+      "success": true,
+      "chineseName": "白芍",
+      "englishName": "Paeonia lactiflora",
+      "pinyinName": "baishao",
+      "sku": "BS",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 4,
+      "success": true,
+      "chineseName": "熟地黄",
+      "englishName": "Rehmannia glutinosa",
+      "pinyinName": "shudihuang",
+      "sku": "SDH",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 5,
+      "success": true,
+      "chineseName": "人参",
+      "englishName": "Panax ginseng",
+      "pinyinName": "renshen",
+      "sku": "RS",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 6,
+      "success": true,
+      "chineseName": "党参",
+      "englishName": "Codonopsis pilosula",
+      "pinyinName": "dangshen",
+      "sku": "DS",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 7,
+      "success": true,
+      "chineseName": "黄芪",
+      "englishName": "Astragalus membranaceus",
+      "pinyinName": "huangqi",
+      "sku": "HQ",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 8,
+      "success": true,
+      "chineseName": "甘草",
+      "englishName": "Glycyrrhiza uralensis",
+      "pinyinName": "gancao",
+      "sku": "GC",
+      "category": "其他中药",
+      "warnings": []
+    },
+    {
+      "index": 9,
+      "success": true,
+      "chineseName": "陈皮",
+      "englishName": "Citrus reticulata",
+      "pinyinName": "chenpi",
+      "sku": "CP",
+      "category": "理气药",
+      "warnings": []
+    },
+    {
+      "index": 10,
+      "success": true,
+      "chineseName": "半夏",
+      "englishName": "Pinellia ternata",
+      "pinyinName": "banxia",
+      "sku": "BX",
+      "category": "化痰药",
+      "warnings": []
+    }
+  ]
+}

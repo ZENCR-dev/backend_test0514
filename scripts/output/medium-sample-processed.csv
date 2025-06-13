@@ -1,0 +1,26 @@
+中文名,英文名,拼音名,SKU,分类,单位,需要处方,基础价格,状态
+当归,Angelica sinensis,danggui,DG,补益药,g,否,0.85,active
+川芎,Ligusticum chuanxiong,chuanxiong,CX,活血药,g,否,0.92,active
+白芍,Paeonia lactiflora,baishao,BS,其他中药,g,否,1.15,active
+熟地黄,Rehmannia glutinosa,shudihuang,SDH,补益药,g,否,0.78,active
+人参,Panax ginseng,renshen,RS,补益药,g,否,15.5,active
+党参,Codonopsis pilosula,dangshen,DS,补益药,g,否,1.25,active
+黄芪,Astragalus membranaceus,huangqi,HQ,补益药,g,否,0.65,active
+甘草,Glycyrrhiza uralensis,gancao,GC,其他中药,g,否,0.45,active
+陈皮,Citrus reticulata,chenpi,CP,理气药,g,否,0.55,active
+半夏,Pinellia ternata,banxia,BX,化痰药,g,是,1.8,active
+茯苓,Poria cocos,fuling,FL,化痰药,g,否,0.7,active
+白术,Atractylodes macrocephala,baizhu,BZ,化痰药,g,否,1.1,active
+薄荷,Mentha haplocalyx,bohe,BH,其他中药,g,否,0.35,active
+厚朴,Magnolia officinalis,houpo,HP,其他中药,g,否,0.88,active
+杜仲,Eucommia ulmoides,duzhong,DZ,补益药,g,否,1.45,active
+枸杞子,Lycium barbarum,gouqizi,GQZ,补益药,g,否,2.2,active
+牛膝,Achyranthes bidentata,niuxi,NX,其他中药,g,否,0.75,active
+车前子,Plantago asiatica,cheqianzi,CQZ,其他中药,g,否,0.95,active
+知母,Anemarrhena asphodeloides,zhimu,ZM,其他中药,g,否,1.05,active
+浙贝母,Fritillaria thunbergii,zhebeimu,ZBM,止咳药,g,否,8.5,active
+川贝母,Fritillaria cirrhosa,chuanbeimu,CBM,止咳药,g,否,25,active
+藏红花,Crocus sativus,zanghonghua,ZHH,活血药,g,是,45,active
+番泻叶,Cassia angustifolia,fanxieye,FXY,其他中药,g,否,0.3,active
+诃子,Terminalia chebula,hezi,HZ,其他中药,g,否,0.85,active
+没药,Commiphora myrrha,moyao,MY,其他中药,g,否,3.2,active

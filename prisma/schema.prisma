@@ -197,7 +197,7 @@ model Medicine {
   category             String?   @map("category") @db.VarChar(100)
   unit                 String    @map("unit") @db.VarChar(50)
   requiresPrescription Boolean   @default(true) @map("requires_prescription")
-  basePrice            Decimal   @map("base_price") @db.Decimal(10, 2)
+  basePrice            Decimal   @map("base_price") @db.Decimal(15, 9)
   metadata             Json?     @map("metadata") @db.JsonB
   status               String    @default("active") @map("status") @db.VarChar(20)
   createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz

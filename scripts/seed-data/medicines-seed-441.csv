@@ -1,0 +1,442 @@
+中文名,英文名,拼音名,SKU,分类,单位,需要处方,基础价格,状态
+高丽参片,Panax Ginseng,gaolishenpian,GLSP,其他中药,g,否,0.36956,active
+龙齿,Os Draconis,longchi,LC,其他中药,g,否,0.32174,active
+红参片,Panax Ginseng,hongcanpian,HCP,其他中药,g,否,0.28696,active
+胡黄连,Rhizoma Picrorhizae,huhuanglian,HHL,其他中药,g,否,0.26086,active
+黄连,Rhizoma Coptidis,huanglian,HL,其他中药,g,否,0.1913,active
+虎乳菌,Hu Ru Jun,hurujun,HRJ,其他中药,g,否,0.29565,active
+莲须,Stamen Nelumbinis,lianxu,LX,其他中药,g,否,0.17392,active
+蝉蜕,Periostracum Cicadae,chantui,CT,其他中药,g,否,0.1913,active
+通草圆片,Medulla Tetrapanacis,tongcaoyuanpian,TCYP,其他中药,g,否,0.17392,active
+白参须,Panax Ginseng,baicanxu,BCX,其他中药,g,否,0.20652,active
+桂花,Osmanthus fragrans,guihua,GH,其他中药,g,否,0.212,active
+川贝,Bulbus Fritillariae Cirrhosae,chuanbei,CB,止咳药,g,否,0.16086,active
+猫爪草,Radix Ranunculi Ternati,maozhuacao,MZC,其他中药,g,否,0.17392,active
+参芪四宝茶,Si Bao Herbal Tea,canqisibaocha,CQSBC,其他中药,g,否,0.128,active
+白鲜皮,Cortex Dictamni,baixianpi,BXP,其他中药,g,否,0.15218,active
+天麻,Rhizoma Gastrodiae,tianma,TM,其他中药,g,否,0.17391,active
+三七粉,Radix Notoginseng Powder,sanqifen,SQF,活血药,g,否,0.13912,active
+龙胆草,Radix Gentianae,longdancao,LDC,其他中药,g,否,0.16086,active
+炙远志,Radix Polygalae,zhiyuanzhi,ZYZ,安神药,g,否,0.14348,active
+连翘,Fructus Forsythiae,lianqiao,LQ,清热药,g,否,0.08956,active
+蕤仁肉,Nux Prinsepiae,ruirenrou,RRR,其他中药,g,否,0.13478,active
+细辛,Herba Asari,xixin,XX,其他中药,g,否,0.13912,active
+海金沙,Spora Lygodii,haijinsha,HJS,其他中药,g,否,0.12,active
+延胡索,Rhizoma Corydalis,yanhusuo,YHS,其他中药,g,否,0.10434,active
+远志,Radix Polygalae,yuanzhi,YZ,安神药,g,否,0.1287,active
+炒酸枣仁,Semen Ziziphi Spinosae,chaosuanzaoren,CSZR,安神药,g,否,0.0826,active
+北柴胡,Radix Bupleuri,beichaihu,BCH,其他中药,g,否,0.13914,active
+灯芯草,Medulla Junci,dengxincao,DXC,其他中药,g,否,0.084342857,active
+当归全片,Radix Angelicae Sinensis,dangguiquanpian,DGQP,补益药,g,否,0.130433333,active
+炒白术,Rhizoma Atractylodis Macrocephalae,chaobaizhu,CBZ,化痰药,g,否,0.13044,active
+胖大海,Semen Sterculiae Lychnophorae,pangdahai,PDH,其他中药,g,否,0.12174,active
+羌活,Rhizoma et Radix Notopterygii,qianghuo,QH,其他中药,g,否,0.1087,active
+酸枣仁,Semen Ziziphi Spinosae,suanzaoren,SZR,安神药,g,否,0.0826,active
+浙贝母,Bulbus Fritillariae Thunbergii,zhebeimu,ZBM,止咳药,g,否,0.1026,active
+胖大海,Semen Sterculiae Lychnophorae,pangdahai,pangdahai,其他中药,g,否,0.1322,active
+红花特级,Flos Carthami,honghuateji,HHTJ,活血药,g,否,0.10956,active
+田七片,Radix Notoginseng,tianqipian,TQP,其他中药,g,否,0.13044,active
+雪莲子,Gleditsia sinensis Lam.,xuelianzi,XLZ,其他中药,g,否,0.1148,active
+白蔹,Radix Ampelopsis,bailian,BL,其他中药,g,否,0.0826,active
+法半夏,Rhizoma Pinelliae,fabanxia,FBX,化痰药,g,是,0.11304,active
+覆盆子,Fructus Rubi,fupenzi,FPZ,其他中药,g,否,0.09566,active
+姜半夏,Rhizoma Pinelliae (ginger cured),jiangbanxia,JBX,化痰药,g,是,0.11304,active
+蜜紫菀,Radix Asteris,miziwan,MZW,止咳药,g,否,0.09566,active
+清半夏,Pinellia ternata (tuber prepared),qingbanxia,QBX,化痰药,g,是,0.09566,active
+银柴胡,Radix Stellariae,yinchaihu,YCH,其他中药,g,否,0.11304,active
+猪苓,Polyporus,zhuling,ZL,其他中药,g,否,0.09478,active
+紫菀,Radix Asteris,ziwan,ZW,止咳药,g,否,0.09566,active
+刺五加皮,Radix seu Caulis Acanthopanacis Senticosi,ciwujiapi,CWJP,其他中药,g,否,0.1026,active
+扁豆衣,Seed-coat of Semen Lablab Album,biandouyi,BDY,其他中药,g,否,0.09566,active
+党参五级,Radix Codonopsis,dangshenwuji,DSWJ,补益药,g,否,0.11478,active
+肉苁蓉,Herba Cistanches,roucongrong,RCR,其他中药,g,否,0.0913,active
+太子参,Radix Pseudostellariae,taizican,TZC,其他中药,g,否,0.07566,active
+牡丹皮,Cortex Moutan,mudanpi,MDP,其他中药,g,否,0.0913,active
+雪燕,Gum Tragacanth,xueyan,XY,其他中药,g,否,0.098533333,active
+白薇,Radix Cynanchi Atrati,baiwei,BW,其他中药,g,否,0.09392,active
+柏子仁,Semen Platycladi,baiziren,BZR,其他中药,g,否,0.0826,active
+葛花,Pueraria lobata,gehua,gehua,其他中药,g,否,0.07826,active
+金银花,Flos Lonicerae,jinyinhua,JYH,清热药,g,否,0.09566,active
+蔓荆子,Fructus Viticis,manjingzi,MJZ,其他中药,g,否,0.08522,active
+胎菊,Flos Chrysanthemi,taiju,TJ,其他中药,g,否,0.0956,active
+麦冬,Radix Ophiopogonis,maidong,MD,其他中药,g,否,0.0913,active
+谷精草,Flos Eriocauli,gujingcao,GJC,其他中药,g,否,0.0826,active
+蜜升麻,Rhizoma Cimicifugae,mishengma,MSM,其他中药,g,否,0.08696,active
+升麻,Rhizoma Cimicifugae,shengma,SM,其他中药,g,否,0.08696,active
+白术统货,Rhizoma Atractylodis Macrocephalae,baizhutonghuo,BZTH,化痰药,g,否,0.1,active
+海玉竹,Rhizoma Polygonati Odorati,haiyuzhu,HYZ,其他中药,g,否,0.0942,active
+原枝黄芪条,Radix Astragali,yuanzhihuangqitiao,YZHQT,补益药,g,否,0.09295,active
+海螵蛸,Endoconcha Sepiae,haipiaoshao,HPS,其他中药,g,否,0.06956,active
+黑灵芝,Ganoderma,heilingzhi,HLZ,其他中药,g,否,0.052,active
+巴戟天,Radix Morindae Officinalis,bajitian,BJT,其他中药,g,否,0.07392,active
+龙脷叶,Folium Sauropi,longliye,LLY,其他中药,g,否,0.06956,active
+人参花,renshenhua,renshenhua,RSH,补益药,g,否,0.08348,active
+白豆蔻,Fructus Amomi Rotundus,baidoukou,BDK,其他中药,g,否,0.0313,active
+钩藤,Ramulus Uncariae cum Uncis,gouteng,GT,其他中药,g,否,0.07566,active
+玫瑰花,Flos Rosae Chinensis,meiguihua,MGH,其他中药,g,否,0.06956,active
+沙苑子,Semen Astragali Complanati,shayuanzi,SYZ,其他中药,g,否,0.07826,active
+郁李仁,Semen Pruni,yuliren,YLR,其他中药,g,否,0.06956,active
+南沙参,Radix Adenophorae,nanshashen,NSS,其他中药,g,否,0.07218,active
+花椒,Pericarpium Zanthoxyli,huajiao,HJ,其他中药,g,否,0.07826,active
+前胡,Radix Peucedani,qianhu,qianhu,其他中药,g,否,0.06956,active
+燀桃仁,Semen Persicae,chantaoren,CTR,活血药,g,否,0.05218,active
+炒白芍,Radix Paeoniae Alba,chaobaishao,CBS,其他中药,g,否,0.07826,active
+苍术,Rhizoma Atractylodis,cangzhu,CZ,化痰药,g,否,0.06522,active
+龙牙百合,Bulbus Lilii,longyabaihe,LYBH,其他中药,g,否,0.07652,active
+黑枸杞,Lycium ruthenicum Murr,heigouqi,HGQ,补益药,g,否,0.0652,active
+黄精,Rhizoma Polygonati,huangjing,huangjing,其他中药,g,否,0.050433333,active
+柴胡,Radix Bupleuri,chaihu,CH,其他中药,g,否,0.04914,active
+炒黄柏,Cortex Phellodendri,chaohuangbai,CHB,其他中药,g,否,0.05914,active
+赤芍,Radix Paeoniae Rubra,chishao,CS,其他中药,g,否,0.04852,active
+地骨皮,Cortex Lycii,digupi,DGP,其他中药,g,否,0.06522,active
+藁本,Rhizoma Ligustici,gaoben,GB,其他中药,g,否,0.06522,active
+黄柏,Cortex Phellodendri,huangbai,HB,其他中药,g,否,0.05914,active
+莲子芯,Plumula Nelumbinis,lianzixin,LZX,其他中药,g,否,0.05652,active
+洛神花,Hibiscus sabdariffa,luoshenhua,LSH,其他中药,g,否,0.06522,active
+马勃,Carpophorum Calvatial Lilacinae,mabo,MB,其他中药,g,否,0.06086,active
+山茱萸,Fructus Corni,shanzhuyu,SZY,其他中药,g,否,0.06086,active
+威灵仙,Radix Clematidis,weilingxian,WLX,其他中药,g,否,0.05914,active
+月季花,Flos Rosae Chinensis,yuejihua,YJH,其他中药,g,否,0.06522,active
+白芍小圆片,Radix Paeoniae Alba,baishaoxiaoyuanpian,BSXYP,其他中药,g,否,0.05914,active
+无硫玉竹,Rhizoma Polygonati Odorati,wuliuyuzhu,WLYZ,其他中药,g,否,0.0694,active
+合欢花,Flos Albiziae,hehuanhua,HHH,其他中药,g,否,0.06086,active
+炒陈皮丝,Pericarpium Citri Reticulatae,chaochenpisi,CCPS,理气药,g,否,0.01914,active
+琥珀,Succinum,hupo,HP,其他中药,g,否,0.06522,active
+桔梗,Radix Platycodonis,jiegeng,JG,止咳药,g,否,0.04244,active
+砂仁,Fructus Amomi,sharen,SR,其他中药,g,否,0.04348,active
+徐长卿,Radix Cynanchi Paniculati,xuchangqing,XCQ,其他中药,g,否,0.05652,active
+五味子,Fructus Schisandrae Chinensis,wuweizi,WWZ,其他中药,g,否,0.0426,active
+白莲子,Semen Nelumbinis,bailianzi,BLZ,其他中药,g,否,0.06522,active
+北沙参节,Radix Glehniae,beishashenjie,BSSJ,其他中药,g,否,0.05392,active
+黄芩,Radix Scutellariae,huangqin,HQ,其他中药,g,否,0.0513,active
+当归尾,Radix Angelicae Sinensis,dangguiwei,DGW,补益药,g,否,0.04174,active
+人参叶,RenshenYe,renshenye,RSY,补益药,g,否,0.05218,active
+旋覆花,Flos Inulae,xuanfuhua,XFH,其他中药,g,否,0.05216,active
+野菊花,Flos Chrysanthemi Indici,yejuhua,yejuhua,清热药,g,否,0.04782,active
+皂角刺,Spina Gleditsiae,zaojiaoci,ZJC,其他中药,g,否,0.04782,active
+茯神,Poria cum Radix Pini,fushen,FS,其他中药,g,否,0.04696,active
+黄芪顶切,Radix Astragali,huangqidingqie,HQDQ,补益药,g,否,0.04696,active
+石菖蒲片,Rhizoma Acori Talarinowii,shichangpupian,SCPP,其他中药,g,否,0.04,active
+锁阳,Herba Cynomorii,suoyang,SY,其他中药,g,否,0.05218,active
+百部,Radix Stemonae,baibu,BB,其他中药,g,否,0.0487,active
+橘红片,Exocarpium Citri Rubrum,juhongpian,JHP,其他中药,g,否,0.05652,active
+炙百部,Radix Stemonae,zhibaibu,ZBB,其他中药,g,否,0.0487,active
+佛手,Fructus Citri Sarcodactylis,foshou,foshou,理气药,g,否,0.04348,active
+白前,Rhizoma Cynanchi Stauntonii,baiqian,BQ,其他中药,g,否,0.04782,active
+车前子,Semen Plantaginis,cheqianzi,CQZ,其他中药,g,否,0.03086,active
+虫草花,Hemerocallis citrina Baroni,chongcaohua,CCH,其他中药,g,否,0.04782,active
+瓜蒌,Fructus Trichosanthis,gualou,GL,其他中药,g,否,0.05044,active
+鬼羽箭,Buchnera cruciata Hamilt,guiyujian,GYJ,其他中药,g,否,0.05044,active
+怀牛膝,Radix Achyranthis Bidentatae,huainiuxi,HNX,其他中药,g,否,0.04348,active
+金果榄,Radix Tinosporae,jinguolan,JGL,其他中药,g,否,0.04566,active
+荆芥穗,Herba Schizonepetae,jingjiesui,JJS,其他中药,g,否,0.05218,active
+牛大力,Millettia Speciosa,niudali,NDL,其他中药,g,否,0.04782,active
+天冬,Radix Asparagi,tiandong,TD,其他中药,g,否,0.03826,active
+五加皮,Cortex Acanthopanacis,wujiapi,WJP,其他中药,g,否,0.04782,active
+玉竹特级,Rhizoma Polygonati Odorati,yuzhuteji,YZTJ,其他中药,g,否,0.05652,active
+鸡骨草,Chikoo Herb,jigucao,JGC,其他中药,g,否,0.0608,active
+仙茅,Rhizoma Curculiginis,xianmao,XM,其他中药,g,否,0.04782,active
+千层纸,Oroxylum indicum  Kurz,qiancengzhi,QCZ,其他中药,g,否,0.04782,active
+煅龙骨,Os Draconis Ustum,duanlonggu,DLG,安神药,g,否,0.04782,active
+防风,Radix Saposhnikoviae,fangfeng,FF,其他中药,g,否,0.0487,active
+千斤拔,Radix Flemingia philippinensis,qianjinba,QJB,其他中药,g,否,0.05044,active
+乳香,Olibanum,ruxiang,RX,其他中药,g,否,0.04348,active
+五指毛桃,Ficus Simplicissima Lour,wuzhimoutao,WZMT,其他中药,g,否,0.04348,active
+即食桑椹子,Fructus Mori 300g,jishisangshenzi,JSSSZ,其他中药,g,否,0.046366667,active
+荜茇,Fructus Piperis Longi,biba,biba,其他中药,g,否,0.04348,active
+桂圆特级,Arillus Longan,guiyuanteji,GYTJ,其他中药,g,否,0.05218,active
+紫草茸,Laccifer lacca Kerr.,zicaorong,ZCR,其他中药,g,否,0.04522,active
+无花果,Ficus Caric,wuhuaguo,WHG,其他中药,g,否,0.052333333,active
+茯苓卷,Poria,fulingjuan,FLJ,化痰药,g,否,0.046083333,active
+百合小片,Bulbus Lilii,baihexiaopian,BHXP,其他中药,g,否,0.04434,active
+丁香,Flos Caryophylli,dingxiang,DX,其他中药,g,否,0.04782,active
+桂皮粉 +B149,Cortex Cinnamomi Powder,guipifen+b149,GPF,其他中药,g,否,0.05218,active
+杭菊花,Flos Chrysanthemi,hangjuhua,HJH,其他中药,g,否,0.04174,active
+绞股蓝,Herba Gynostemmatis,jiaogulan,jiaogulan,其他中药,g,否,0.04348,active
+腊梅花,Flos Chimonanthi Praecocis,lameihua,LMH,其他中药,g,否,0.04348,active
+梅花椒,Pericarpium Zanthoxyli,meihuajiao,MHJ,其他中药,g,否,0.04,active
+熟地大片,Radix Rehmanniae Preparata,shudidapian,SDDP,补益药,g,否,0.03478,active
+特级红花椒,Pericarpium Zanthoxyli,tejihonghuajiao,TJHHJ,活血药,g,否,0.04,active
+吴茱萸,Fructus Evodiae,wuzhuyu,WZY,其他中药,g,否,0.03914,active
+郁金,Radix Curcumae Wenyujin,yujin,YJ,其他中药,g,否,0.03914,active
+生地大片,Radix Rehmanniae,shengdidapian,shengdidapian,其他中药,g,否,0.034766667,active
+即食脱皮去核红枣,Fructus Jujubae Seedless,jishituopiquhehongzao,JSTPQHHZ,其他中药,g,否,0.05215,active
+香叶,Laurus nobilis,xiangye,xiangye,其他中药,g,否,0.0129,active
+鹿衔草,Herba Pyrolae,luxiancao,LXC,其他中药,g,否,0.03478,active
+秦艽,Radix Gentianae Macrophyllae,qinjiao,QJ,其他中药,g,否,0.04174,active
+五倍子,Galla Chinensis,wubeizi,WBZ,其他中药,g,否,0.03826,active
+知母,Rhizoma Anemarrhenae,zhimu,ZM,其他中药,g,否,0.03392,active
+炒丹皮,Cortex Moutan,chaodanpi,CDP,其他中药,g,否,0.04174,active
+川牛膝,Radix Cyathulae,chuanniuxi,CNX,其他中药,g,否,0.04174,active
+金樱子,Fructus Rosae Laevigatae,jinyingzi,JYZ,其他中药,g,否,0.03914,active
+橘核,Semen Citri Reticulatae,juhe,JH,其他中药,g,否,0.02174,active
+没药,Myrrha,moyao,MY,其他中药,g,否,0.03914,active
+桑白皮,Cortex Mori,sangbaipi,SBP,其他中药,g,否,0.04174,active
+薤白,Bulbus Allii Macrostemonis,xiebai,XB,其他中药,g,否,0.04174,active
+辛夷,Magnolia Bionii,xinyi,xinyi,其他中药,g,否,0.04174,active
+紫丹参片,Radix Salviae Miltiorrhizae,zidanshenpian,ZDSP,活血药,g,否,0.04174,active
+淫羊藿,Herba Epimedii,yinyanghuo,YYH,其他中药,g,否,0.04174,active
+瓜蒌仁,Semen Trichosanthis,gualouren,GLR,其他中药,g,否,0.03914,active
+射干,Rhizoma Belamcandae,shegan,SG,其他中药,g,否,0.03914,active
+大蓟,Herba Cirsii Japonici,daji,DJ,其他中药,g,否,0.03826,active
+蜜桑白皮,Cortex Mori,misangbaipi,MSBP,其他中药,g,否,0.04174,active
+炙黄芪,Radix Astragali,zhihuangqi,ZHQ,补益药,g,否,0.03914,active
+八角,Fructus Anisi Stellati,bajiao,BJ,其他中药,g,否,0.03434,active
+茺蔚子,Fructus Leonuri,chongweizi,CWZ,其他中药,g,否,0.03478,active
+大黄,Radix et Rhizoma Rhei,dahuang,DH,其他中药,g,否,0.04348,active
+甘草,Radix Glycyrrhizae,gancao,GC,其他中药,g,否,0.03044,active
+骨碎补,Rhizoma Drynariae,gusuibu,GSB,其他中药,g,否,0.03652,active
+蒺藜,Fructus Tribuli,jili,JL,其他中药,g,否,0.02782,active
+焦栀子,Fructus Gardeniae,jiaozhizi,JZZ,其他中药,g,否,0.03652,active
+酒大黄,Radix et Rhizoma Rhei,jiudahuang,JDH,其他中药,g,否,0.03914,active
+明党参,Radix Changii,mingdangshen,MDS,补益药,g,否,0.03914,active
+木香,Radix Aucklandiae,muxiang,MX,理气药,g,否,0.02608,active
+土茯苓,Rhizoma Smilacis Glabrae,tufuling,TFL,化痰药,g,否,0.03304,active
+栀子,Fructus Gardeniae,zhizi,ZZ,其他中药,g,否,0.03652,active
+炙甘草,Radix Glycyrrhizae,zhigancao,ZGC,其他中药,g,否,0.03304,active
+炙首乌,Radix Polygoni Multiflori,zhishouwu,ZSW,其他中药,g,否,0.03914,active
+芡实,Semen Euryales,qianshi,QS,其他中药,g,否,0.04125,active
+北杏仁,North Almond,beixingren,BXR,止咳药,g,否,0.0412,active
+南杏仁,Semen Armeniacae Amarum,nanxingren,NXR,止咳药,g,否,0.0412,active
+鹅不食草,Herba Centipedae,ebushicao,EBSC,其他中药,g,否,0.03478,active
+草果,Amomum Tsaoko,caoguo,CG,其他中药,g,否,0.0278,active
+千年健,Rhizoma Homalomenae,qiannianjian,QNJ,其他中药,g,否,0.03392,active
+天花粉,Radix Trichosanthis,tianhuafen,THF,其他中药,g,否,0.03478,active
+夏枯草,Spica Prunellae,xiakucao,XKC,其他中药,g,否,0.02784,active
+黑桂圆,Arillus Longan,heiguiyuan,HGY,其他中药,g,否,0.03218,active
+肉桂,Cortex Cinnamomi,rougui,RG,其他中药,g,否,0.03434,active
+白芷长片,Radix Angelicae Dahuricae,baizhichangpian,BZCP,其他中药,g,否,0.0253,active
+丹参粒,Radix Salviae Miltiorrhizae,danshenli,DSL,活血药,g,否,0.03044,active
+红莲子,Semen Nelumbinis,honglianzi,honglianzi,其他中药,g,否,0.03044,active
+墨旱莲,Herba Ecliptae,mohanlian,MHL,其他中药,g,否,0.0313,active
+山药,Dioscorea Opposita,shanyao,shanyao,其他中药,g,否,0.0374,active
+蛇床子,Fructus Cnidii,shechuangzi,SCZ,其他中药,g,否,0.0313,active
+乌药,Radix Linderae,wuyao,WY,其他中药,g,否,0.03304,active
+益智仁,Fructus Alpiniae Oxyphyllae,yizhiren,YZR,其他中药,g,否,0.03304,active
+黄杭菊,Flos Chrysanthemi,huanghangju,HHJ,其他中药,g,否,0.03848,active
+紫苏叶,Folium Perillae,zisuye,ZSY,其他中药,g,否,0.03044,active
+炒苏子,Fructus Perillae,chaosuzi,CSZ,其他中药,g,否,0.02174,active
+杜仲炭,Cortex Eucommiae,duzhongtan,DZT,补益药,g,否,0.0287,active
+干姜,Rhizoma Zingiberis,ganjiang,GJ,其他中药,g,否,0.02218,active
+石韦,Folium Pyrrosiae,shiwei,SW,其他中药,g,否,0.03044,active
+柿蒂,Calyx Kaki,shidi,SD,其他中药,g,否,0.03044,active
+盐杜仲,Cortex Eucommiae,yanduzhong,YDZ,补益药,g,否,0.0287,active
+地榆炭,Radix Sanguisorbae,diyutan,DYT,其他中药,g,否,0.02608,active
+独活,Radix Angelicae Pubescentis,duhuo,duhuo,其他中药,g,否,0.0313,active
+高良姜,Rhizoma Alpiniae Officinarum,gaoliangjiang,GLJ,其他中药,g,否,0.03044,active
+黄芪,Radix Astragali,huangqi,huangqi,补益药,g,否,0.03304,active
+爆薏仁,Semen Coicis,baoyiren,BYR,其他中药,g,否,0.02608,active
+楮实子,Fructus Broussonetiae,chushizi,chushizi,其他中药,g,否,0.0287,active
+川芎,Rhizoma Chuanxiong,chuanxiong,CX,活血药,g,否,0.03218,active
+刺五加,Radix seu Caulis Acanthopanacis Senticosi,ciwujia,CWJ,其他中药,g,否,0.02174,active
+大黄炭,Radix et Rhizoma Rhei,dahuangtan,DHT,其他中药,g,否,0.02478,active
+冬凌草,Rabdosia rubescens,donglingcao,DLC,其他中药,g,否,0.02608,active
+莪术,Rhizoma Curcumae,eshu,ES,其他中药,g,否,0.03434,active
+麸炒枳壳,Fructus Aurantii,fuchaozhike,FCZK,其他中药,g,否,0.02434,active
+茯苓粒,Poria,fulingli,FLL,化痰药,g,否,0.0313,active
+广藿香,Agastache Rugosa,guanghuoxiang,GHX,其他中药,g,否,0.02696,active
+淮山生晒,Dioscorea Opposita,huaishanshengshai,HSSS,其他中药,g,否,0.03044,active
+炮姜,Rhizoma Zingiberis Praeparata,paojiang,PJ,其他中药,g,否,0.0287,active
+菟丝子,Semen Cuscutae,tusizi,TSZ,其他中药,g,否,0.02956,active
+珍珠无花果,Ficus Caric,zhenzhuwuhuaguo,ZZWHG,其他中药,g,否,0.03044,active
+枳壳,Fructus Aurantii,zhike,ZK,其他中药,g,否,0.02304,active
+乌梅,Fructus Mume,wumei,WM,其他中药,g,否,0.033,active
+蒲公英,Herba Taraxaci,pugongying,PGY,清热药,g,否,0.0226,active
+枸杞子,Fructus Lycii,gouqizi,GQZ,补益药,g,否,0.0313,active
+雪梨干,Pyrus bretschneideri Rehd,xueligan,XLG,其他中药,g,否,0.0261,active
+分心木,Seminis Juglantis Septum,fenxinmu,FXM,其他中药,g,否,0.02608,active
+紫苏子,Fructus Perillae,zisuzi,ZSZ,其他中药,g,否,0.02434,active
+板蓝根,Radix Isatidis,banlangen,BLG,清热药,g,否,0.0313,active
+陈皮丝,Pericarpium Citri Reticulatae,chenpisi,CPS,理气药,g,否,0.0174,active
+川楝子,Fructus Toosendan,chuanlianzi,CLZ,其他中药,g,否,0.01304,active
+诃子,Fructus Chebulae,hezi,HZ,其他中药,g,否,0.0226,active
+厚朴,Cortex Magnoliae Officinalis,houpo,houpo,其他中药,g,否,0.02086,active
+槲寄生,Herba Taxilli,hujisheng,hujisheng,其他中药,g,否,0.02348,active
+姜黄,Rhizoma Curcumae Longae,jianghuang,jianghuang,其他中药,g,否,0.02608,active
+苦参,Radix Sophorae Flavescentis,kucan,KC,其他中药,g,否,0.02566,active
+龙齿,Os Draconis,longchi,longchi,其他中药,g,否,0.02478,active
+龙骨,Os Draconis,longgu,LG,安神药,g,否,0.02174,active
+木瓜,Fructus Chaenomelis,mugua,MG,其他中药,g,否,0.02522,active
+牛蒡片,Arctium Lappa,niubangpian,NBP,其他中药,g,否,0.02434,active
+生首乌,Radix Polygoni Multiflori,shengshouwu,SSW,其他中药,g,否,0.02174,active
+地肤子,Fructus Kochiae,difuzi,DFZ,其他中药,g,否,0.0287,active
+三棱,Rhizoma Sparganii,sanleng,SL,其他中药,g,否,0.02348,active
+苏木,Lignum Sappan,sumu,sumu,其他中药,g,否,0.02434,active
+白茅根,Rhizoma Imperatae,baimaogen,BMG,其他中药,g,否,0.0174,active
+炒神曲,Massa Medicata Fermentata,chaoshenqu,CSQ,其他中药,g,否,0.02086,active
+炒王不留行子,Semen Vaccariae,chaowangbuliuxingzi,CWBLXZ,其他中药,g,否,0.02434,active
+川木通,Caulis Akebiae Quinatae,chuanmutong,CMT,其他中药,g,否,0.02348,active
+垂盆草,Herba Sedi Sarmentosi,chuipencao,CPC,其他中药,g,否,0.02174,active
+韭菜子,Semen Allii Tuberosi,jiucaizi,JCZ,其他中药,g,否,0.02174,active
+六神曲,Massa Medicata Fermentata,liushenqu,LSQ,其他中药,g,否,0.01914,active
+炒荆芥,Herba Schizonepetae,chaojingjie,CJJ,其他中药,g,否,0.01914,active
+地榆,Radix Sanguisorbae,diyu,DY,其他中药,g,否,0.02174,active
+海藻,Sargassum fusiforme,haizao,haizao,其他中药,g,否,0.0226,active
+沙姜片,Rhizoma Kaempferiae,shajiangpian,SJP,其他中药,g,否,0.0226,active
+桑叶,Folium Mori,sangye,sangye,其他中药,g,否,0.0174,active
+矮地茶,Herba Ardisiae Japonicae,aidicha,ADC,其他中药,g,否,0.02088,active
+艾叶炭,Folium Artemisiae Argyi,aiyetan,AYT,其他中药,g,否,0.02174,active
+冬瓜皮,Exocarpium Benincasae,dongguapi,dongguapi,其他中药,g,否,0.02348,active
+杜仲丝,Cortex Eucommiae,duzhongsi,DZS,补益药,g,否,0.02174,active
+煅石膏,Gypsum Fibrosum Ustum,duanshigao,DSG,其他中药,g,否,0.01914,active
+葛根,Radix Puerariae,gegen,GG,其他中药,g,否,0.02044,active
+广金钱草,Herba Lysimachiae,guangjinqiancao,GJQC,其他中药,g,否,0.01914,active
+海风藤,Caulis Piperis Kadsurae,haifengteng,HFT,其他中药,g,否,0.02436,active
+黑老虎根,Kadsura coccinea A. C. Smith,heilaohugen,HLHG,其他中药,g,否,0.02174,active
+胡芦巴,Semen Trigonellae,huluba,HLB,其他中药,g,否,0.0174,active
+金钱草,Herba Lysimachiae,jinqiancao,JQC,其他中药,g,否,0.01392,active
+昆布,Thallus Laminariae,kunbu,KB,其他中药,g,否,0.02086,active
+莱菔子,Semen Raphani,laifuzi,LFZ,其他中药,g,否,0.01652,active
+莲房,Receptaculum Nelumbinis,lianfang,LF,其他中药,g,否,0.0174,active
+硫磺粉,Sulfur,liuhuangfen,LHF,其他中药,g,否,0.02174,active
+芦根,Rhizoma Phragmitis,lugen,lugen,其他中药,g,否,0.02174,active
+密蒙花,Flos Buddlejae,mimenghua,MMH,其他中药,g,否,0.0174,active
+绵萆薢,Rhizoma Dioscoreae Septemlobae,mianbixie,MBX,其他中药,g,否,0.01956,active
+藕节,Nelumbo nucifera Gaertn.,oujie,OJ,其他中药,g,否,0.02,active
+青皮,Pericarpium Citri Reticulatae Viride,qingpi,QP,其他中药,g,否,0.01566,active
+山楂特级,Fructus Crataegi,shanzhateji,SZTJ,其他中药,g,否,0.01566,active
+蛇舌草,Hedyotis diffusa Willd,sheshecao,SSC,其他中药,g,否,0.02174,active
+首乌藤,Caulis Polygoni Multiflori,shouwuteng,SWT,其他中药,g,否,0.01696,active
+豨莶草,Siegesbeckia Pubescens Mak,xixiancao,XXC,其他中药,g,否,0.01566,active
+香橼,Fructus Citri,xiangyuan,xiangyuan,其他中药,g,否,0.02,active
+玄参,Radix Scrophulariae,xuancan,XC,其他中药,g,否,0.02174,active
+雪梨桂花茶,Pear and Sweet Olive Tea,xueliguihuacha,XLGHC,其他中药,g,否,5.09,active
+泽泻,Rhizoma Alismatis,zexie,ZX,其他中药,g,否,0.01914,active
+枳实,Eva Chinese Medical Centre,zhishi,ZS,其他中药,g,否,0.01914,active
+竹茹,Caulis Bambusae in Taeniam,zhuru,ZR,其他中药,g,否,0.01914,active
+紫苏梗,Caulis Perillae,zisugeng,ZSG,其他中药,g,否,0.02608,active
+槐米,Flos Sophorae,huaimi,HM,其他中药,g,否,0.02,active
+马鞭草,Herba Verbenae,mabiancao,MBC,其他中药,g,否,0.0174,active
+青风藤,Caulis Sinomenii,qingfengteng,QFT,其他中药,g,否,0.01566,active
+炙枇杷叶,Folium Eriobotryae,zhipipaye,ZPPY,其他中药,g,否,0.01174,active
+炒白扁豆,Semen Lablab Album,chaobaibiandou,CBBD,其他中药,g,否,0.02174,active
+淡豆豉,Semen Sojae Praepatum,dandouchi,DDC,其他中药,g,否,0.01304,active
+冬瓜子,Semen Benincasae,dongguazi,DGZ,其他中药,g,否,0.0174,active
+番泻叶,Folium Sennae,fanxieye,FXY,其他中药,g,否,0.01564,active
+浮萍,Lemna minor L.,fuping,FP,其他中药,g,否,0.0174,active
+瓜蒌皮,Seed-coat of Fructus Trichosanthis,gualoupi,GLP,其他中药,g,否,0.01914,active
+鸡血藤,Caulis Spatholobi,jixueteng,JXT,其他中药,g,否,0.0174,active
+荆芥,Herba Schizonepetae,jingjie,JJ,其他中药,g,否,0.01566,active
+宽筋藤,Tinospora sinensis,kuanjinteng,KJT,其他中药,g,否,0.01566,active
+佩兰,Herba Eupatorii,peilan,PL,其他中药,g,否,0.01914,active
+青葙子,Semen Celosiae,qingxiangzi,QXZ,其他中药,g,否,0.0174,active
+丝瓜络,Luffa cylindrical,sigualuo,SGL,其他中药,g,否,0.02,active
+玉米须,Zea mays L,yumixu,YMX,其他中药,g,否,0.01914,active
+珍珠透骨草,Impatiens balsamina,zhenzhutougucao,ZZTGC,其他中药,g,否,0.01566,active
+紫花地丁,Viola philippica Car.,zihuadiding,ZHDD,其他中药,g,否,0.01826,active
+布渣叶,Microcos Paniculata Linn,buzhaye,BZY,其他中药,g,否,0.01566,active
+香附,Rhizoma Cyperi,xiangfu,XF,理气药,g,否,0.02,active
+溪黄草,Herba Rabdosiae Serrae,xihuangcao,XHC,其他中药,g,否,0.02175,active
+白扁豆,Semen Lablab Album,baibiandou,BBD,其他中药,g,否,0.02,active
+炒枳实,Fructus Aurantii Immaturus,chaozhishi,CZS,其他中药,g,否,0.01914,active
+大青叶,Folium Isatidis,daqingye,DQY,清热药,g,否,0.01566,active
+淡竹叶,Herba Lophatheri,danzhuye,DZY,其他中药,g,否,0.0174,active
+冬葵子,Malva verticillata L,dongkuizi,DKZ,其他中药,g,否,0.0174,active
+岗梅根,Radix Ilicis Asprellae,gangmeigen,GMG,其他中药,g,否,0.01566,active
+合欢皮,Cortex Albiziae,hehuanpi,HHP,其他中药,g,否,0.01392,active
+虎杖,Rhizoma Polygoni Cuspidati,huzhang,huzhang,其他中药,g,否,0.01566,active
+黄药子,Rhizoma Dioscoreae Bulbiferae,huangyaozi,huangyaozi,其他中药,g,否,0.01652,active
+鸡矢藤,Herba Paederiae,jishiteng,JST,其他中药,g,否,0.0174,active
+菊苣,Cichorium intubus,juju,juju,其他中药,g,否,0.01392,active
+马齿苋,Herba Portulacae,machixian,MCX,其他中药,g,否,0.0174,active
+毛冬青,Ilex pubescens Hook. et Arn.,maodongqing,MDQ,其他中药,g,否,0.01392,active
+桑寄生,Herba Taxilli,sangjisheng,SJS,其他中药,g,否,0.01914,active
+葶苈子,Semen Lepidii,tinglizi,TLZ,其他中药,g,否,0.0174,active
+小茴香,Fructus Foeniculi,xiaohuixiang,XHX,其他中药,g,否,0.01566,active
+绵茵陈,Herba Artemisiae Scopariae,mianyinchen,MYC,其他中药,g,否,0.0174,active
+白矾,Alumen,baifan,BF,其他中药,g,否,0.0087,active
+白芥子,Semen Sinapis,baijiezi,BJZ,其他中药,g,否,0.01696,active
+半枝莲,Herba Scutellariae Barbatae,banzhilian,BZL,其他中药,g,否,0.0174,active
+炒莱菔子,Semen Raphani,chaolaifuzi,CLFZ,其他中药,g,否,0.0174,active
+赤石脂,Halloysitum Rubrum,chishizhi,chishizhi,其他中药,g,否,0.01044,active
+穿心莲,Herba Andrographis,chuanxinlian,CXL,其他中药,g,否,0.01566,active
+海桐皮,Erythrina indica Lam,haitongpi,HTP,其他中药,g,否,0.01304,active
+荷叶,Nelumbo nucifera Gaertn,heye,HY,其他中药,g,否,0.01304,active
+黑枣,Black Jujubae,heizao,heizao,其他中药,g,否,0.02086,active
+酒女贞子,Fructus Ligustri Lucidi,jiunüzhenzi,JNZZ,其他中药,g,否,0.01652,active
+卷柏,Herba Selaginellae,juanbai,JB,其他中药,g,否,0.01478,active
+芒果核,Semen Mangifera indica L,mangguohe,mangguohe,其他中药,g,否,0.0174,active
+青果,Fructus Canarii,qingguo,QG,其他中药,g,否,0.01392,active
+青蒿,Herba Artemisiae Annuae,qinghao,qinghao,其他中药,g,否,0.01044,active
+石决明,Concha Haliotidis,shijueming,SJM,其他中药,g,否,0.01392,active
+王不留行子,Semen Vaccariae,wangbuliuxingzi,WBLXZ,其他中药,g,否,0.01566,active
+香薷,Herba Moslae,xiangru,XR,其他中药,g,否,0.01304,active
+银杏叶,Folium Ginkgo,yinxingye,YXY,其他中药,g,否,0.01044,active
+鸡蛋花,Flos Plumeriae,jidanhua,jidanhua,其他中药,g,否,0.02,active
+枇杷叶,Folium Eriobotryae,pipaye,PPY,其他中药,g,否,0.01304,active
+秦皮,Cortex Fraxini,qinpi,qinpi,其他中药,g,否,0.01566,active
+桂枝,Ramulus Cinnamomi,guizhi,GZ,其他中药,g,否,0.01722,active
+路路通,Fructus Liquidambaris,lulutong,LLT,其他中药,g,否,0.01132,active
+木棉花,Flos Bombacis Malabarici,mumianhua,mumianhua,其他中药,g,否,0.01304,active
+艾叶,Folium Artemisiae Argyi,aiye,AY,其他中药,g,否,0.01478,active
+萹蓄,Herba Polygoni Avicularis,bianxu,BX,其他中药,g,否,0.00956,active
+苍耳子,Fructus Xanthii,cangerzi,CEZ,其他中药,g,否,0.01662,active
+侧柏炭,Cacumen Platycladi,cebaitan,CBT,其他中药,g,否,0.01566,active
+侧柏叶,Cacumen Platycladi,cebaiye,CBY,其他中药,g,否,0.01044,active
+车前草,Herba Plantaginis,cheqiancao,CQC,其他中药,g,否,0.0126,active
+椿树皮,Cortex Ailanthi,chunshupi,CSP,其他中药,g,否,0.01304,active
+大腹皮,Pericarpium Arecae,dafupi,DFP,其他中药,g,否,0.01304,active
+倒扣草,Dao Kou Cao,daokoucao,DKC,其他中药,g,否,0.01044,active
+煅牡蛎,Concha Ostreae Praeparata,duanmuli,DML,安神药,g,否,0.01218,active
+茯苓皮,Poria,fulingpi,FLP,化痰药,g,否,0.0087,active
+浮小麦,Fructus Tritici Levis,fuxiaomai,fuxiaomai,其他中药,g,否,0.0174,active
+红藤,Caulis Sargentodoxae,hongteng,HT,其他中药,g,否,0.01218,active
+花生衣,Arachis hypogaea Linn,huashengyi,HSY,其他中药,g,否,0.01304,active
+火炭母,Herba Polygoni Chinensis,huotanmu,HTM,其他中药,g,否,0.01304,active
+荔枝核,Semen Litchi,lizhihe,LZH,其他中药,g,否,0.01304,active
+木贼,Herba Equiseti Hiemalis,muzei,MZ,其他中药,g,否,0.01304,active
+女贞子,Fructus Ligustri Lucidi,nüzhenzi,NZZ,其他中药,g,否,0.01652,active
+忍冬藤,Caulis Lonicerae,rendongteng,RDT,其他中药,g,否,0.01044,active
+山楂叶,Folium Crataegi,shanzhaye,shanzhaye,其他中药,g,否,0.01392,active
+伸筋草,Herba Lycopodii,shenjincao,SJC,其他中药,g,否,0.01566,active
+神曲茶,Massa Medicata Fermentata,shenqucha,SQC,其他中药,g,否,0.01652,active
+石榴皮,Pericarpium Granati,shiliupi,SLP,其他中药,g,否,0.01304,active
+石楠藤,Piper wallichii,shinanteng,SNT,其他中药,g,否,0.01304,active
+王不留行壳,"Vaccaria hispanica, seed capsule",wangbuliuxingke,WBLXK,其他中药,g,否,0.01218,active
+仙鹤草,Herba Agrimoniae,xianhecao,xianhecao,其他中药,g,否,0.01304,active
+鸭脚皮,Cortex Schefflerae Octophyllae,yajiaopi,YJP,其他中药,g,否,0.00696,active
+阳起石,Actinolitum,yangqishi,YQS,其他中药,g,否,0.01218,active
+益母草,Herba Leonuri,yimucao,YMC,其他中药,g,否,0.01174,active
+油松节,Pini Lignum Nodi,yousongjie,YSJ,其他中药,g,否,0.00956,active
+鱼腥草,Herba Houttuyniae,yuxingcao,YXC,其他中药,g,否,0.01218,active
+赭石,Haematitum,zheshi,zheshi,其他中药,g,否,0.01304,active
+珍珠母,Concha Margaritifera,zhenzhumu,ZZM,其他中药,g,否,0.0087,active
+紫石英,Fluoritum,zishiying,zishiying,其他中药,g,否,0.01304,active
+黑芝麻,Semen Sesami Nigrum,heizhima,HZM,其他中药,g,否,0.01696,active
+薏苡仁,Semen Coicis,yiyiren,YYR,其他中药,g,否,0.01304,active
+白头翁,Radix Pulsatillae,baitouweng,BTW,其他中药,g,否,0.01304,active
+炒谷芽,Fructus Oryzae Germinatus,chaoguya,CGY,其他中药,g,否,0.01086,active
+炉甘石,Calamina,luganshi,LGS,其他中药,g,否,0.0087,active
+络石藤,Caulis Trachelospermi,luoshiteng,LST,其他中药,g,否,0.0087,active
+生石膏,Gypsum Fibrosum,shengshigao,SSG,其他中药,g,否,0.01044,active
+自然铜,Pyrite,zirantong,ZRT,其他中药,g,否,0.00782,active
+棕榈炭,Petiolus Trachycarpi,zonglütan,ZLT,其他中药,g,否,0.01044,active
+败酱草,Herba Patriniae,baijiangcao,BJC,其他中药,g,否,0.01132,active
+磁石,Magnetitum,cishi,cishi,其他中药,g,否,0.01044,active
+栗壳,Pericarpium Papaveris,like,LK,其他中药,g,否,0.01044,active
+两面针,Radix Zanthoxyli,liangmianzhen,LMZ,其他中药,g,否,0.0074,active
+牡蛎,Concha Ostreae,muli,ML,安神药,g,否,0.01044,active
+瞿麦,Herba Dianthi,qumai,QM,其他中药,g,否,0.01174,active
+桑枝,Morus alba L.,sangzhi,SZ,其他中药,g,否,0.01174,active
+雄黄,Realgar,xionghuang,XH,其他中药,g,是,0.00956,active
+炒麦芽,Fructus Hordei Germinatus,chaomaiya,CMY,其他中药,g,否,0.01044,active
+麦芽,Fructus Hordei Germinatus,maiya,maiya,其他中药,g,否,0.01044,active
+青仁黑豆,Black soya bean,qingrenheidou,QRHD,其他中药,g,否,0.01218,active
+新疆小枣,Fructus Jujubae,xinjiangxiaozao,XJXZ,其他中药,g,否,0.01434,active
+谷芽,Fructus Oryzae Germinatus,guya,GY,其他中药,g,否,0.01086,active
+蛤壳,Concha Meretricis seu Cyclinae,hake,HK,其他中药,g,否,0.00782,active
+海浮石,Pumex,haifushi,HFS,其他中药,g,否,0.0087,active
+红枣无核,Fructus Jujubae,hongzaowuhe,HZWH,其他中药,g,否,0.0121,active
+滑石粉,Pulvis Talci,huashifen,HSF,其他中药,g,否,0.01044,active
+决明子,Semen Cassiae,juemingzi,JMZ,其他中药,g,否,0.01566,active
+老鹳草,Herba Geranii,laoguancao,LGC,其他中药,g,否,0.01044,active
+田基王,Tianjiwang,tianjiwang,TJW,其他中药,g,否,0.0074,active
+瓦楞子,Concha Arcae,walengzi,WLZ,其他中药,g,否,0.0087,active
+玄明粉,Xuanmingfen,xuanmingfen,XMF,其他中药,g,否,0.00696,active
+泽兰,Herba Lycopi,zelan,zelan,其他中药,g,否,0.01044,active
+赤小豆,Semen Phaseoli,chixiaodou,CXD,其他中药,g,否,0.01044,active
+凤尾草,Pteris multifida Poir,fengweicao,FWC,其他中药,g,否,0.0087,active
+蜜枣,Fructus Jujubae,mizao,mizao,其他中药,g,否,0.00957,active
+使君子,Fructus Quisqualis,shijunzi,SJZ,其他中药,g,否,0.00956,active
+南姜,Alpinia Galanga  Willd.,nanjiang,NJ,其他中药,g,否,0.00696,active
+金丝蜜枣特级,Fructus Jujubae,jinsimizaoteji,JSMZTJ,其他中药,g,否,0.01,active

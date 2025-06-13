@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "generatedAt": "2025-06-12T10:25:44.240Z",
+    "inputFile": "sample-data/error-sample.tsv",
+    "processor": "Medicine Data Processor v1.0.0"
+  },
+  "summary": {
+    "processing": {
+      "totalRecords": 2,
+      "successCount": 2,
+      "failureCount": 0,
+      "successRate": "100.00%",
+      "duration": "14ms",
+      "averageTimePerRecord": "7ms"
+    },
+    "sku": {
+      "totalSkus": 2,
+      "initialsCount": 2,
+      "fullPinyinCount": 0,
+      "fallbackCount": 0
+    },
+    "pinyin": {
+      "specialMappingsUsed": 28,
+      "totalGenerated": 2
+    },
+    "categories": {
+      "补益药": 1,
+      "其他中药": 1
+    },
+    "prices": {
+      "min": 0.85,
+      "max": 2.5,
+      "average": 1.68,
+      "median": 2.5
+    }
+  },
+  "details": {
+    "startTime": "2025-06-12T10:25:44.226Z",
+    "endTime": "2025-06-12T10:25:44.240Z",
+    "totalDuration": 14
+  },
+  "results": [
+    {
+      "index": 1,
+      "success": true,
+      "chineseName": "当归",
+      "englishName": "Angelica sinensis",
+      "pinyinName": "danggui",
+      "sku": "DG",
+      "category": "补益药",
+      "warnings": []
+    },
+    {
+      "index": 2,
+      "success": true,
+      "chineseName": "正常药材",
+      "englishName": "Normal medicine",
+      "pinyinName": "zhengchangyaocai",
+      "sku": "ZCYC",
+      "category": "其他中药",
+      "warnings": []
+    }
+  ]
+}

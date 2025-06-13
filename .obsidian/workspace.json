@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "9960833908f5829c",
+        "id": "de90ab57de218c97",
         "type": "tabs",
         "children": [
           {
-            "id": "dd503025608d2d5f",
+            "id": "9d4987acb0fd3159",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "SOP1.3devdocs/SOPv1.3FinalMVP1.0.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "SOPv1.3FinalMVP1.0"
+              "title": "新标签页"
             }
           }
         ]
@@ -78,8 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "907047077eb3735c",
@@ -156,8 +151,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -169,8 +163,9 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "dd503025608d2d5f",
+  "active": "9d4987acb0fd3159",
   "lastOpenFiles": [
+    "SOP1.3devdocs/SOPv1.3FinalMVP1.0.md",
     "SOP1.3devdocs/downsizedSOPv1.5.md",
     "DEVELOPMENT_PROGRESS_TRACKER.md",
     "SOP1.3devdocs/SOPv1.3FinalMVP1.0SOPv1.3Final.md"

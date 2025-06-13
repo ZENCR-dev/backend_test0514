@@ -1,0 +1,23 @@
+[
+  {
+    "id": "cmbr6ex8o0005ugb8hzspwwrp",
+    "name": "当归",
+    "chineseName": "当归",
+    "englishName": "Angelica Root",
+    "pinyinName": "danggui",
+    "sku": "MED1749599576518",
+    "description": "补血调经，润燥滑肠",
+    "category": "补血药",
+    "unit": "克",
+    "requiresPrescription": true,
+    "basePrice": "15.5",
+    "metadata": {
+      "grade": "Premium",
+      "origin": "Gansu",
+      "storageConditions": "干燥阴凉处"
+    },
+    "status": "active",
+    "createdAt": "2025-06-10T23:52:56.520Z",
+    "updatedAt": "2025-06-10T23:52:56.520Z"
+  }
+]

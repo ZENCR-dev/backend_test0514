@@ -1,0 +1,10 @@
+{
+  "id": "backup_1749771380824",
+  "timestamp": "2025-06-12T23:36:20.824Z",
+  "recordCount": 442,
+  "description": "A3步骤导入前备份",
+  "metadata": {
+    "tableStatus": "medicines",
+    "version": "1.0"
+  }
+}
