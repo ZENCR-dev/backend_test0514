@@ -1,11 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OrderService } from '../services/order.service';
-import { PrismaService } from '../../prisma/prisma.service';
-import { OrderStatus } from '@prisma/client';
-import { BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
-import { ICreateOrderRequest, IUpdateOrderStatusRequest, IOrderQueryCriteria } from '../interfaces/order-management.interface';
+import { Test, TestingModule } from "@nestjs/testing";
+import { OrderService } from "../services/order.service";
+import { PrismaService } from "../../prisma/prisma.service";
+import { OrderStatus } from "@prisma/client";
+import {
+  BadRequestException,
+  NotFoundException,
+  ConflictException,
+} from "@nestjs/common";
+import {
+  ICreateOrderRequest,
+  IUpdateOrderStatusRequest,
+  IOrderQueryCriteria,
+} from "../interfaces/order-management.interface";
 
-describe('OrderService', () => {
+describe("OrderService", () => {
   let service: OrderService;
   let prismaService: PrismaService;
 
@@ -51,28 +59,28 @@ describe('OrderService', () => {
     jest.clearAllMocks();
   });
 
-  describe('createOrder', () => {
+  describe("createOrder", () => {
     const mockCreateOrderRequest: ICreateOrderRequest = {
-      practitionerId: 'practitioner-1',
-      clinicId: 'clinic-1',
-      patientInfo: { name: '张三', phone: '021-12345678' },
-      totalAmount: 125.50,
+      practitionerId: "practitioner-1",
+      clinicId: "clinic-1",
+      patientInfo: { name: "张三", phone: "021-12345678" },
+      totalAmount: 125.5,
       items: [
         {
-          medicineId: 'medicine-1',
+          medicineId: "medicine-1",
           quantity: 10,
           unitPrice: 12.55,
-          dosageInstructions: '每日三次',
+          dosageInstructions: "每日三次",
         },
       ],
-      idempotencyKey: 'test-key-123',
+      idempotencyKey: "test-key-123",
     };
 
-    it('should create order successfully', async () => {
+    it("should create order successfully", async () => {
       // Arrange
       const mockOrder = {
-        id: 'order-1',
-        platformOrderId: 'ORD20250614001',
+        id: "order-1",
+        platformOrderId: "ORD20250614001",
         ...mockCreateOrderRequest,
         status: OrderStatus.DRAFT,
         version: 1,
@@ -80,9 +88,14 @@ describe('OrderService', () => {
         updatedAt: new Date(),
       };
 
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 'practitioner-1' });
-      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: 'clinic-1' });
-      mockPrismaService.medicine.findUnique.mockResolvedValue({ id: 'medicine-1', basePrice: 12.55 });
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: "practitioner-1",
+      });
+      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: "clinic-1" });
+      mockPrismaService.medicine.findUnique.mockResolvedValue({
+        id: "medicine-1",
+        basePrice: 12.55,
+      });
       mockPrismaService.$transaction.mockResolvedValue(mockOrder);
 
       // Act
@@ -93,52 +106,64 @@ describe('OrderService', () => {
       expect(mockPrismaService.$transaction).toHaveBeenCalled();
     });
 
-    it('should throw BadRequestException for invalid practitioner', async () => {
+    it("should throw BadRequestException for invalid practitioner", async () => {
       // Arrange
       mockPrismaService.user.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.createOrder(mockCreateOrderRequest)).rejects.toThrow(BadRequestException);
+      await expect(service.createOrder(mockCreateOrderRequest)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
-    it('should throw BadRequestException for invalid clinic', async () => {
+    it("should throw BadRequestException for invalid clinic", async () => {
       // Arrange
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 'practitioner-1' });
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: "practitioner-1",
+      });
       mockPrismaService.clinic.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.createOrder(mockCreateOrderRequest)).rejects.toThrow(BadRequestException);
+      await expect(service.createOrder(mockCreateOrderRequest)).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
-    it('should throw ConflictException for duplicate idempotency key', async () => {
+    it("should throw ConflictException for duplicate idempotency key", async () => {
       // Arrange
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 'practitioner-1' });
-      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: 'clinic-1' });
-      mockPrismaService.order.findUnique.mockResolvedValue({ id: 'existing-order' });
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: "practitioner-1",
+      });
+      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: "clinic-1" });
+      mockPrismaService.order.findUnique.mockResolvedValue({
+        id: "existing-order",
+      });
 
       // Act & Assert
-      await expect(service.createOrder(mockCreateOrderRequest)).rejects.toThrow(ConflictException);
+      await expect(service.createOrder(mockCreateOrderRequest)).rejects.toThrow(
+        ConflictException,
+      );
     });
   });
 
-  describe('updateOrderStatus', () => {
+  describe("updateOrderStatus", () => {
     const mockUpdateRequest: IUpdateOrderStatusRequest = {
       status: OrderStatus.CANCELLED,
-      notes: '客户取消',
+      notes: "客户取消",
       version: 1,
     };
 
-    it('should update order status successfully', async () => {
+    it("should update order status successfully", async () => {
       // Arrange
       const mockExistingOrder = {
-        id: 'order-1',
+        id: "order-1",
         status: OrderStatus.DRAFT,
         version: 1,
       };
       const mockUpdatedOrder = {
         ...mockExistingOrder,
         status: OrderStatus.CANCELLED,
-        notes: '客户取消',
+        notes: "客户取消",
         version: 2,
       };
 
@@ -146,90 +171,99 @@ describe('OrderService', () => {
       mockPrismaService.order.update.mockResolvedValue(mockUpdatedOrder);
 
       // Act
-      const result = await service.updateOrderStatus('order-1', mockUpdateRequest);
+      const result = await service.updateOrderStatus(
+        "order-1",
+        mockUpdateRequest,
+      );
 
       // Assert
       expect(result).toEqual(mockUpdatedOrder);
       expect(mockPrismaService.order.update).toHaveBeenCalledWith({
-        where: { id: 'order-1', version: 1 },
+        where: { id: "order-1", version: 1 },
         data: {
           status: OrderStatus.CANCELLED,
-          notes: '客户取消',
+          notes: "客户取消",
           version: { increment: 1 },
         },
       });
     });
 
-    it('should throw NotFoundException for non-existent order', async () => {
+    it("should throw NotFoundException for non-existent order", async () => {
       // Arrange
       mockPrismaService.order.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.updateOrderStatus('order-1', mockUpdateRequest)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.updateOrderStatus("order-1", mockUpdateRequest),
+      ).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw BadRequestException for invalid status transition', async () => {
+    it("should throw BadRequestException for invalid status transition", async () => {
       // Arrange
       const mockExistingOrder = {
-        id: 'order-1',
+        id: "order-1",
         status: OrderStatus.FULFILLED,
         version: 1,
       };
       mockPrismaService.order.findUnique.mockResolvedValue(mockExistingOrder);
 
       // Act & Assert
-      await expect(service.updateOrderStatus('order-1', {
-        status: OrderStatus.DRAFT,
-        version: 1,
-      })).rejects.toThrow(BadRequestException);
+      await expect(
+        service.updateOrderStatus("order-1", {
+          status: OrderStatus.DRAFT,
+          version: 1,
+        }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
-  describe('getOrderById', () => {
-    it('should return order by id', async () => {
+  describe("getOrderById", () => {
+    it("should return order by id", async () => {
       // Arrange
       const mockOrder = {
-        id: 'order-1',
-        platformOrderId: 'ORD20250614001',
+        id: "order-1",
+        platformOrderId: "ORD20250614001",
         status: OrderStatus.DRAFT,
       };
       mockPrismaService.order.findUnique.mockResolvedValue(mockOrder);
 
       // Act
-      const result = await service.getOrderById('order-1');
+      const result = await service.getOrderById("order-1");
 
       // Assert
       expect(result).toEqual(mockOrder);
       expect(mockPrismaService.order.findUnique).toHaveBeenCalledWith({
-        where: { id: 'order-1' },
+        where: { id: "order-1" },
         include: { items: true },
       });
     });
 
-    it('should throw NotFoundException for non-existent order', async () => {
+    it("should throw NotFoundException for non-existent order", async () => {
       // Arrange
       mockPrismaService.order.findUnique.mockResolvedValue(null);
 
       // Act & Assert
-      await expect(service.getOrderById('order-1')).rejects.toThrow(NotFoundException);
+      await expect(service.getOrderById("order-1")).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
-  describe('queryOrders', () => {
+  describe("queryOrders", () => {
     const mockQueryCriteria: IOrderQueryCriteria = {
-      practitionerId: 'practitioner-1',
+      practitionerId: "practitioner-1",
       status: OrderStatus.DRAFT,
       page: 1,
       limit: 20,
-      sortBy: 'createdAt',
-      sortOrder: 'desc',
+      sortBy: "createdAt",
+      sortOrder: "desc",
     };
 
-    it('should return paginated orders', async () => {
+    it("should return paginated orders", async () => {
       // Arrange
       const mockOrders = [
-        { id: 'order-1', status: OrderStatus.DRAFT },
-        { id: 'order-2', status: OrderStatus.DRAFT },
+        { id: "order-1", status: OrderStatus.DRAFT },
+        { id: "order-2", status: OrderStatus.DRAFT },
       ];
       mockPrismaService.order.findMany.mockResolvedValue(mockOrders);
       mockPrismaService.order.count.mockResolvedValue(2);
@@ -248,44 +282,65 @@ describe('OrderService', () => {
     });
   });
 
-  describe('isStatusTransitionAllowed', () => {
-    it('should allow DRAFT to CANCELLED transition', () => {
-      expect(service.isStatusTransitionAllowed(OrderStatus.DRAFT, OrderStatus.CANCELLED)).toBe(true);
+  describe("isStatusTransitionAllowed", () => {
+    it("should allow DRAFT to CANCELLED transition", () => {
+      expect(
+        service.isStatusTransitionAllowed(
+          OrderStatus.DRAFT,
+          OrderStatus.CANCELLED,
+        ),
+      ).toBe(true);
     });
 
-    it('should allow DRAFT to PAID transition', () => {
-      expect(service.isStatusTransitionAllowed(OrderStatus.DRAFT, OrderStatus.PAID)).toBe(true);
+    it("should allow DRAFT to PAID transition", () => {
+      expect(
+        service.isStatusTransitionAllowed(OrderStatus.DRAFT, OrderStatus.PAID),
+      ).toBe(true);
     });
 
-    it('should not allow FULFILLED to DRAFT transition', () => {
-      expect(service.isStatusTransitionAllowed(OrderStatus.FULFILLED, OrderStatus.DRAFT)).toBe(false);
+    it("should not allow FULFILLED to DRAFT transition", () => {
+      expect(
+        service.isStatusTransitionAllowed(
+          OrderStatus.FULFILLED,
+          OrderStatus.DRAFT,
+        ),
+      ).toBe(false);
     });
 
-    it('should not allow CANCELLED to PAID transition', () => {
-      expect(service.isStatusTransitionAllowed(OrderStatus.CANCELLED, OrderStatus.PAID)).toBe(false);
+    it("should not allow CANCELLED to PAID transition", () => {
+      expect(
+        service.isStatusTransitionAllowed(
+          OrderStatus.CANCELLED,
+          OrderStatus.PAID,
+        ),
+      ).toBe(false);
     });
   });
 
-  describe('validateOrderData', () => {
-    it('should validate order data successfully', async () => {
+  describe("validateOrderData", () => {
+    it("should validate order data successfully", async () => {
       // Arrange
       const mockOrderData: ICreateOrderRequest = {
-        practitionerId: 'practitioner-1',
-        clinicId: 'clinic-1',
-        patientInfo: { name: '张三' },
-        totalAmount: 125.50,
+        practitionerId: "practitioner-1",
+        clinicId: "clinic-1",
+        patientInfo: { name: "张三" },
+        totalAmount: 125.5,
         items: [
           {
-            medicineId: 'medicine-1',
+            medicineId: "medicine-1",
             quantity: 10,
             unitPrice: 12.55,
           },
         ],
       };
 
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 'practitioner-1' });
-      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: 'clinic-1' });
-      mockPrismaService.medicine.findUnique.mockResolvedValue({ id: 'medicine-1' });
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: "practitioner-1",
+      });
+      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: "clinic-1" });
+      mockPrismaService.medicine.findUnique.mockResolvedValue({
+        id: "medicine-1",
+      });
 
       // Act
       const result = await service.validateOrderData(mockOrderData);
@@ -294,25 +349,29 @@ describe('OrderService', () => {
       expect(result).toBe(true);
     });
 
-    it('should return false for invalid total amount calculation', async () => {
+    it("should return false for invalid total amount calculation", async () => {
       // Arrange
       const mockOrderData: ICreateOrderRequest = {
-        practitionerId: 'practitioner-1',
-        clinicId: 'clinic-1',
-        patientInfo: { name: '张三' },
-        totalAmount: 100.00, // 错误的总金额
+        practitionerId: "practitioner-1",
+        clinicId: "clinic-1",
+        patientInfo: { name: "张三" },
+        totalAmount: 100.0, // 错误的总金额
         items: [
           {
-            medicineId: 'medicine-1',
+            medicineId: "medicine-1",
             quantity: 10,
             unitPrice: 12.55, // 实际应该是 125.50
           },
         ],
       };
 
-      mockPrismaService.user.findUnique.mockResolvedValue({ id: 'practitioner-1' });
-      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: 'clinic-1' });
-      mockPrismaService.medicine.findUnique.mockResolvedValue({ id: 'medicine-1' });
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: "practitioner-1",
+      });
+      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: "clinic-1" });
+      mockPrismaService.medicine.findUnique.mockResolvedValue({
+        id: "medicine-1",
+      });
 
       // Act
       const result = await service.validateOrderData(mockOrderData);
@@ -321,4 +380,4 @@ describe('OrderService', () => {
       expect(result).toBe(false);
     });
   });
-}); 
+});

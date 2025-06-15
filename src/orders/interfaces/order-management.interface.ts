@@ -1,4 +1,4 @@
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus } from "@prisma/client";
 
 // 订单实体接口
 export interface IOrder {
@@ -67,7 +67,7 @@ export interface IOrderQueryCriteria {
   page?: number;
   limit?: number;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 // 订单状态更新请求接口
@@ -93,7 +93,10 @@ export interface IOrderManagement {
    * @param updateData 状态更新数据
    * @returns 更新后的订单实体
    */
-  updateOrderStatus(orderId: string, updateData: IUpdateOrderStatusRequest): Promise<IOrder>;
+  updateOrderStatus(
+    orderId: string,
+    updateData: IUpdateOrderStatusRequest,
+  ): Promise<IOrder>;
 
   /**
    * 根据ID获取订单
@@ -137,5 +140,8 @@ export interface IOrderManagement {
    * @param targetStatus 目标状态
    * @returns 是否允许转换
    */
-  isStatusTransitionAllowed(currentStatus: OrderStatus, targetStatus: OrderStatus): boolean;
-} 
+  isStatusTransitionAllowed(
+    currentStatus: OrderStatus,
+    targetStatus: OrderStatus,
+  ): boolean;
+}
