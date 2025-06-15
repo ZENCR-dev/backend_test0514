@@ -1,3 +1,4 @@
+```sql
 -- 基于PostgreSQL + Supabase
 
 -- 1. 用户表 (继承Supabase auth.users)

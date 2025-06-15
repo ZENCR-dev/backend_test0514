@@ -691,6 +691,7 @@ export class ProductionConfigGuard {
 ### 11.1 MVP 1.0核心数据库表结构设计.md
 	(**注意：orders.status 的 CHECK 约束需根据 11.8 更新**)
 	基于PostgreSQL + Supabase
+  ```sql
 #### 11.1.1 用户表 (继承Supabase auth.users)
 CREATE TABLE user_profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -946,6 +947,7 @@ CREATE TABLE account_transactions (
 CREATE INDEX idx_account_transactions_account_id ON account_transactions(account_id);
 CREATE INDEX idx_account_transactions_reference ON account_transactions(reference_type, reference_id);
 CREATE INDEX idx_account_transactions_created_at ON account_transactions(created_at DESC);
+```
 
 ### 11.2 MVP 1.0 API设计规范和核心端点.md
 %%(**注意：部分端点描述和请求/响应体可能需根据 11.8 和 11.9 微调**)%%
