@@ -12,10 +12,12 @@ import {
   IUpdateOrderStatusRequest,
   IOrderQueryCriteria,
 } from "../interfaces/order-management.interface";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 describe("OrderService", () => {
   let service: OrderService;
   let prismaService: PrismaService;
+  let eventEmitter: EventEmitter2;
 
   const mockPrismaService = {
     order: {
@@ -40,6 +42,10 @@ describe("OrderService", () => {
     $transaction: jest.fn(),
   };
 
+  const mockEventEmitter = {
+    emitAsync: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -48,11 +54,16 @@ describe("OrderService", () => {
           provide: PrismaService,
           useValue: mockPrismaService,
         },
+        {
+          provide: EventEmitter2,
+          useValue: mockEventEmitter,
+        },
       ],
     }).compile();
 
     service = module.get<OrderService>(OrderService);
     prismaService = module.get<PrismaService>(PrismaService);
+    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
   });
 
   afterEach(() => {

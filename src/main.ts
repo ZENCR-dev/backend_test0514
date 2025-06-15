@@ -4,10 +4,17 @@ import { VersioningType, Logger } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { validationPipeConfig } from "./common/pipes/validation.pipe";
+import * as express from "express";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger("Bootstrap");
+
+  // 配置raw body解析器用于Stripe webhook
+  app.use(
+    "/api/v1/payments/webhook",
+    express.raw({ type: "application/json" }),
+  );
 
   // API版本控制配置
   app.enableVersioning({

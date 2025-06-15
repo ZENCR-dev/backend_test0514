@@ -5,6 +5,7 @@ import {
   NotFoundException,
   ConflictException,
 } from "@nestjs/common";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 import { PrismaService } from "../../prisma/prisma.service";
 import { OrderStatus } from "@prisma/client";
 import {
@@ -16,6 +17,11 @@ import {
   IUpdateOrderStatusRequest,
 } from "../interfaces/order-management.interface";
 import { CreateOrderDto } from "../dto/create-order.dto";
+import {
+  OrderSubmittedForPaymentEvent,
+  OrderCancelledEvent,
+  APP_EVENTS,
+} from "../../common/events/app.events";
 
 /**
  * 订单实体管理服务 - Task 5A
@@ -47,7 +53,10 @@ export class OrderService implements IOrderManagement {
   private readonly DEFAULT_PAGE_SIZE = 20; // 默认分页大小
   private readonly MAX_PAGE_SIZE = 100; // 最大分页大小
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   /**
    * 创建订单 - Task 5A核心方法1
@@ -127,8 +136,16 @@ export class OrderService implements IOrderManagement {
 
     this.logger.log(`Order created successfully: ${result.platformOrderId}`);
 
-    // 转换Decimal类型并返回 - 避免额外的数据库查询
-    return this.convertOrderDecimalFields(result) as IOrder;
+    // 转换Decimal类型
+    const orderResult = this.convertOrderDecimalFields(result) as IOrder;
+
+    // 发布订单创建事件 - 为了通知其他服务（如支付引擎）
+    // 注意：这里暂时不发布支付事件，等订单确认提交时再发布
+    this.logger.log(
+      `Order created, ready for submission: ${result.platformOrderId}`,
+    );
+
+    return orderResult;
   }
 
   /**
@@ -197,6 +214,9 @@ export class OrderService implements IOrderManagement {
       this.logger.log(
         `Order status updated successfully: ${updatedOrder.platformOrderId}`,
       );
+
+      // 根据状态变化发布相应事件
+      await this.publishOrderStatusChangeEvent(updatedOrder, updateData.status);
 
       return this.convertOrderDecimalFields(updatedOrder) as IOrder;
     } catch (error) {
@@ -755,5 +775,78 @@ export class OrderService implements IOrderManagement {
     }
 
     return result;
+  }
+
+  /**
+   * 发布订单状态变化事件
+   *
+   * 根据订单状态变化发布相应的事件，用于通知其他服务（如支付引擎）
+   *
+   * 事件映射：
+   * - CANCELLED -> OrderCancelledEvent
+   * - PAID -> OrderSubmittedForPaymentEvent (支付成功后的确认)
+   * - 其他状态变化暂时不发布事件
+   *
+   * @private
+   * @param order 更新后的订单对象
+   * @param newStatus 新的订单状态
+   */
+  private async publishOrderStatusChangeEvent(
+    order: any,
+    newStatus: OrderStatus,
+  ): Promise<void> {
+    try {
+      switch (newStatus) {
+        case OrderStatus.CANCELLED: {
+          // 发布订单取消事件
+          const cancelEvent = new OrderCancelledEvent(
+            order.id,
+            order.notes || "Order cancelled",
+            order.practitionerId,
+            new Date(),
+          );
+          await this.eventEmitter.emitAsync(
+            APP_EVENTS.ORDER_CANCELLED,
+            cancelEvent,
+          );
+          this.logger.log(
+            `Published OrderCancelledEvent for order: ${order.platformOrderId}`,
+          );
+          break;
+        }
+
+        case OrderStatus.PAID: {
+          // 发布订单支付成功事件（用于后续履约流程）
+          const paymentEvent = new OrderSubmittedForPaymentEvent(
+            order.id,
+            order.clinicId,
+            Number(order.totalAmount),
+            "prepaid", // 默认预付费，实际支付方式由支付引擎确定
+            new Date(),
+          );
+          await this.eventEmitter.emitAsync(
+            APP_EVENTS.ORDER_SUBMITTED_FOR_PAYMENT,
+            paymentEvent,
+          );
+          this.logger.log(
+            `Published OrderSubmittedForPaymentEvent for order: ${order.platformOrderId}`,
+          );
+          break;
+        }
+
+        default:
+          // 其他状态变化暂时不发布事件
+          this.logger.debug(
+            `No event published for status change to: ${newStatus}`,
+          );
+          break;
+      }
+    } catch (error) {
+      // 事件发布失败不应该影响主业务流程
+      this.logger.error(
+        `Failed to publish order status change event: ${error.message}`,
+        error.stack,
+      );
+    }
   }
 }

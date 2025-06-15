@@ -1,0 +1,363 @@
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  Query,
+  Headers,
+  RawBody,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  Logger,
+} from "@nestjs/common";
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+  ApiBearerAuth,
+  ApiHeader,
+} from "@nestjs/swagger";
+import { PaymentService } from "../services/payment.service";
+import {
+  CreatePaymentIntentDto,
+  ConfirmPaymentDto,
+  ClinicAccountDeductionDto,
+  RefundRequestDto,
+  PaymentStatusQueryDto,
+  ClinicAccountBalanceQueryDto,
+  PaymentIntentResponseDto,
+  PaymentConfirmationResponseDto,
+  ClinicAccountDeductionResponseDto,
+  RefundResponseDto,
+  ClinicAccountBalanceResponseDto,
+} from "../dto/payment.dto";
+import { Decimal } from "@prisma/client/runtime/library";
+
+/**
+ * 支付控制器
+ *
+ * 职责范围：
+ * - 处理支付相关的HTTP请求
+ * - 参数验证和响应格式化
+ * - API文档和错误处理
+ *
+ * 严格禁止：
+ * - 包含业务逻辑（委托给PaymentService）
+ * - 直接操作数据库
+ * - 直接调用外部服务
+ */
+@ApiTags("支付管理")
+@Controller("payments")
+export class PaymentController {
+  private readonly logger = new Logger(PaymentController.name);
+
+  constructor(private readonly paymentService: PaymentService) {}
+
+  /**
+   * 创建Stripe支付意图
+   */
+  @Post("stripe/payment-intents")
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({
+    summary: "创建Stripe支付意图",
+    description: "为订单创建Stripe支付意图，用于前端支付流程",
+  })
+  @ApiResponse({
+    status: 201,
+    description: "支付意图创建成功",
+    type: PaymentIntentResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "请求参数无效或支付意图创建失败",
+  })
+  @ApiResponse({
+    status: 409,
+    description: "检测到重复支付",
+  })
+  async createPaymentIntent(
+    @Body() createPaymentIntentDto: CreatePaymentIntentDto,
+  ): Promise<PaymentIntentResponseDto> {
+    this.logger.log(
+      `Creating payment intent for order: ${createPaymentIntentDto.orderId}`,
+    );
+
+    const result = await this.paymentService.createPaymentIntent({
+      amount: new Decimal(createPaymentIntentDto.amount / 100),
+      currency: createPaymentIntentDto.currency,
+      orderId: createPaymentIntentDto.orderId,
+      clinicId: createPaymentIntentDto.clinicId,
+      metadata: createPaymentIntentDto.metadata,
+    });
+
+    return result;
+  }
+
+  /**
+   * 确认支付
+   */
+  @Post("stripe/payment-intents/:id/confirm")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "确认Stripe支付",
+    description: "确认支付意图，完成支付流程",
+  })
+  @ApiParam({
+    name: "id",
+    description: "支付意图ID",
+    example: "pi_1234567890abcdef",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "支付确认成功",
+    type: PaymentConfirmationResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "支付确认失败",
+  })
+  async confirmPayment(
+    @Param("id") paymentIntentId: string,
+    @Body() confirmPaymentDto: ConfirmPaymentDto,
+  ): Promise<PaymentConfirmationResponseDto> {
+    this.logger.log(`Confirming payment intent: ${paymentIntentId}`);
+
+    return await this.paymentService.confirmPayment({
+      paymentIntentId,
+      paymentMethodId: confirmPaymentDto.paymentMethodId,
+      returnUrl: confirmPaymentDto.returnUrl,
+    });
+  }
+
+  /**
+   * 获取支付状态
+   */
+  @Get("stripe/payment-intents/:id")
+  @ApiOperation({
+    summary: "获取支付意图状态",
+    description: "查询支付意图的当前状态和详细信息",
+  })
+  @ApiParam({
+    name: "id",
+    description: "支付意图ID",
+    example: "pi_1234567890abcdef",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "支付状态查询成功",
+    type: PaymentIntentResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "支付意图不存在",
+  })
+  async getPaymentIntent(
+    @Param("id") paymentIntentId: string,
+  ): Promise<PaymentIntentResponseDto> {
+    this.logger.log(`Getting payment intent: ${paymentIntentId}`);
+
+    return await this.paymentService.getPaymentIntent(paymentIntentId);
+  }
+
+  /**
+   * 取消支付意图
+   */
+  @Post("stripe/payment-intents/:id/cancel")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary: "取消支付意图",
+    description: "取消未完成的支付意图",
+  })
+  @ApiParam({
+    name: "id",
+    description: "支付意图ID",
+    example: "pi_1234567890abcdef",
+  })
+  @ApiResponse({
+    status: 204,
+    description: "支付意图取消成功",
+  })
+  @ApiResponse({
+    status: 400,
+    description: "支付意图无法取消",
+  })
+  async cancelPaymentIntent(
+    @Param("id") paymentIntentId: string,
+  ): Promise<void> {
+    this.logger.log(`Cancelling payment intent: ${paymentIntentId}`);
+
+    await this.paymentService.cancelPaymentIntent(paymentIntentId);
+  }
+
+  /**
+   * 诊所账户扣款
+   */
+  @Post("clinic-account/deduct")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "诊所账户扣款",
+    description: "从诊所账户余额中扣除指定金额",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "扣款成功",
+    type: ClinicAccountDeductionResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "余额不足或扣款失败",
+  })
+  async deductFromClinicAccount(
+    @Body() deductionDto: ClinicAccountDeductionDto,
+  ): Promise<ClinicAccountDeductionResponseDto> {
+    this.logger.log(`Deducting from clinic account: ${deductionDto.clinicId}`);
+
+    return await this.paymentService.deductFromClinicAccount({
+      clinicId: deductionDto.clinicId,
+      amount: new Decimal(deductionDto.amount / 100),
+      orderId: deductionDto.orderId,
+      description: deductionDto.description,
+      idempotencyKey: deductionDto.idempotencyKey,
+    });
+  }
+
+  /**
+   * 查询诊所账户余额
+   */
+  @Get("clinic-account/:clinicId/balance")
+  @ApiOperation({
+    summary: "查询诊所账户余额",
+    description: "获取指定诊所的账户余额信息",
+  })
+  @ApiParam({
+    name: "clinicId",
+    description: "诊所ID",
+    example: "clinic_123456789",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "余额查询成功",
+    type: ClinicAccountBalanceResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: "诊所账户不存在",
+  })
+  async getClinicAccountBalance(
+    @Param("clinicId") clinicId: string,
+  ): Promise<ClinicAccountBalanceResponseDto> {
+    this.logger.log(`Getting clinic account balance: ${clinicId}`);
+
+    return await this.paymentService.getClinicAccountBalance(clinicId);
+  }
+
+  /**
+   * 处理退款
+   */
+  @Post("refunds")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "处理退款",
+    description: "处理Stripe支付或诊所账户的退款请求",
+  })
+  @ApiResponse({
+    status: 200,
+    description: "退款处理成功",
+    type: RefundResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: "退款处理失败",
+  })
+  async processRefund(
+    @Body() refundDto: RefundRequestDto,
+  ): Promise<RefundResponseDto> {
+    this.logger.log(`Processing refund for order: ${refundDto.orderId}`);
+
+    // 根据请求类型选择退款方式
+    if (refundDto.paymentIntentId) {
+      return await this.paymentService.processStripeRefund({
+        paymentIntentId: refundDto.paymentIntentId,
+        orderId: refundDto.orderId,
+        amount: refundDto.amount
+          ? new Decimal(refundDto.amount / 100)
+          : undefined,
+        reason: refundDto.reason,
+      });
+    } else if (refundDto.transactionId) {
+      return await this.paymentService.processClinicAccountRefund({
+        transactionId: refundDto.transactionId,
+        orderId: refundDto.orderId,
+        amount: refundDto.amount
+          ? new Decimal(refundDto.amount / 100)
+          : undefined,
+        reason: refundDto.reason,
+      });
+    } else {
+      throw new Error(
+        "Either paymentIntentId or transactionId must be provided",
+      );
+    }
+  }
+
+  /**
+   * Webhook端点
+   */
+  @Post("webhook")
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Stripe Webhook端点",
+    description: "接收和处理Stripe的Webhook事件",
+  })
+  @ApiHeader({
+    name: "stripe-signature",
+    description: "Stripe webhook签名",
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: "Webhook事件处理成功",
+  })
+  @ApiResponse({
+    status: 400,
+    description: "Webhook签名验证失败",
+  })
+  async handleWebhook(
+    @RawBody() payload: Buffer,
+    @Headers("stripe-signature") signature: string,
+  ): Promise<{ received: boolean }> {
+    this.logger.log("Received Stripe webhook event");
+
+    // 检查payload是否存在
+    if (!payload) {
+      this.logger.error("Webhook payload is empty");
+      throw new Error("Webhook payload is required");
+    }
+
+    // 检查signature是否存在
+    if (!signature) {
+      this.logger.error("Webhook signature is missing");
+      throw new Error("Webhook signature is required");
+    }
+
+    const payloadString = payload.toString();
+
+    // 验证签名
+    if (!this.paymentService.verifyWebhookSignature(payloadString, signature)) {
+      this.logger.error("Webhook signature verification failed");
+      throw new Error("Invalid webhook signature");
+    }
+
+    // 解析事件数据
+    const event = JSON.parse(payloadString);
+    this.logger.log(`Processing webhook event: ${event.type}`);
+
+    await this.paymentService.handleWebhookEvent(event, signature);
+
+    return { received: true };
+  }
+}

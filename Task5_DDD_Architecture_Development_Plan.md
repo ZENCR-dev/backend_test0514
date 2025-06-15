@@ -77,13 +77,13 @@
                               ▼
 ┌─────────────────────┐                    ┌─────────────────────┐
 │   Task 5A:          │                    │   Task 5B:          │
-│ OrderManagement     │                    │ PaymentEngine       │
-│   (订单实体层)       │                    │   (支付引擎层)       │
-│                     │                    │                     │
-│ • 订单CRUD          │                    │ • Stripe集成        │
-│ • 基础状态管理       │                    │ • 账户管理          │
-│ • 数据验证          │                    │ • 并发控制          │
-│ • 查询过滤          │                    │ • 幂等性保护        │
+│ OrderManagement     │                    │   (支付引擎层)       │
+│   (订单实体层)       │                    │ • Stripe集成        │
+│                     │                    │ • 账户管理          │
+│ • 订单CRUD          │                    │ • 并发控制          │
+│ • 基础状态管理       │                    │ • 幂等性保护        │
+│ • 数据验证          │                    │                     │
+│ • 查询过滤          │                    │                     │
 └─────────────────────┘                    └─────────────────────┘
 ```
 
@@ -99,6 +99,39 @@
 ### 📅 开发时间线：1.5周 (10个工作日)
 
 #### Phase 1: 接口设计与架构搭建 (Day 1-2) ✅ **已完成 - 2025年6月13日**
+
+#### Phase B1: 环境配置与基础设施 (Day 3-4) ✅ **已完成 - 2025年6月15日**
+
+**Phase B1 成果总结**:
+- ✅ **ENV-01: 环境配置验证** - Stripe、Supabase、JWT、MCP配置全部验证通过
+- ✅ **ENV-02: 依赖库安装** - NestJS、Prisma、Stripe、MCP服务器全部安装配置
+- ✅ **ENV-03: 模块结构创建** - PaymentModule成功集成，API端点正常工作
+- ✅ **Stripe CLI配置** - 本地webhook监听器正常运行
+- ✅ **MCP服务器验证** - 7个MCP服务器全部正常工作
+- ✅ **Webhook处理修复** - 修复payload验证错误，增强错误处理
+
+**关键问题解决记录**:
+1. **Stripe CLI安装问题** - 解决Windows环境下CLI安装和PATH配置
+2. **Webhook配置策略** - 采用本地CLI方案替代Dashboard配置
+3. **PaymentModule路由冲突** - 修复API版本控制导致的路由重复
+4. **Raw Body解析配置** - 为webhook端点配置正确的body解析器
+5. **MCP服务器依赖** - 解决部分MCP服务器的模块依赖问题
+
+**开发环境状态**: **100%就绪** - 可立即开始Phase B2的Stripe集成开发
+
+#### Phase B2: Stripe集成核心功能开发 (Day 5-7) 🚀 **准备开始**
+
+**Phase B2 开发计划**:
+- **Day 5**: Stripe支付意图创建和确认功能实现
+- **Day 6**: Webhook事件处理和诊所账户扣款功能
+- **Day 7**: 退款处理功能和集成测试
+
+**技术准备状态**:
+- ✅ **Stripe CLI**: 本地webhook监听器正常运行
+- ✅ **PaymentModule**: 已集成到应用，API端点正常
+- ✅ **Webhook处理**: 错误修复完成，事件处理就绪
+- ✅ **CI/CD**: 代码质量检查通过（0错误）
+- ✅ **MCP服务器**: 7个服务器验证正常
 
 **Day 1: 接口设计** ✅ **已完成**
 - ✅ **1.1 IOrderManagement接口定义** - **质量：A+**
@@ -311,259 +344,192 @@
 
 ---
 
-## 📋 Task 5B: 支付引擎服务
+## 📋 Task 5B: 支付引擎服务 ✅ **PLAN & REVIEW 完成 - 准备EXECUTE**
 
-### 🎯 目标与职责
-- **核心职责**：Stripe集成 + 诊所账户管理，无订单状态操作
-- **设计原则**：支付逻辑封装，并发安全，幂等性保护
-- **验收标准**：支付功能完全独立可用，可Mock订单进行测试
+**优先级：** P0  
+**预估时间：** 2.5周 (17个工作日, 136工时)  
+**职责范围：** Stripe集成 + 诊所账户管理，无订单状态操作  
+**计划开始日期：** 2025年6月15日  
+**预计完成日期：** 2025年7月6日  
+**当前阶段：** REVIEW模式完成 ✅，等待EXECUTE模式批准
 
-### 📅 开发时间线：2周 (14个工作日)
+**🎯 Task 5B开发策略（基于用户明确技术决策）**：
+- **DDD架构原则**：严格职责分离，支付引擎独立于订单管理
+- **6阶段RIPER流程**：Research ✅ → Innovate ✅ → Plan ✅ → **Review ✅** → Execute 📋 → Final Review 📋
+- **TDD开发流程**：测试驱动开发，确保支付安全性
+- **并发安全重点**：乐观锁 + 事务 + 幂等性保护
+- **分阶段交付**：每2-3天一个里程碑，持续用户验证
 
-#### Phase 1: Stripe集成基础 (Day 1-3)
+##### ✅ **REVIEW阶段审查总结**（2025年6月15日完成）：
 
-**Day 1: Stripe环境配置**
-- [ ] **1.1 Stripe依赖安装**
-  ```bash
-  npm install stripe@^14.0.0
-  npm install @types/stripe@^8.0.0
-  ```
+**🔍 审查结论**：
+- ✅ **总体计划可行，建议批准执行**
+- ⚠️ **条件**：需要补充数据库验证、错误处理策略、测试覆盖增强3个修正项目
+- 🎯 **风险评估**：识别5个关键风险点，已制定相应缓解策略
+- 📊 **时间合理性**：11-15天实际工期符合2.5周预期
 
-- [ ] **1.2 环境变量配置**
-  ```env
-  STRIPE_SECRET_KEY=sk_test_...
-  STRIPE_PUBLISHABLE_KEY=pk_test_...
-  STRIPE_WEBHOOK_SECRET=whsec_...
-  STRIPE_API_VERSION=2023-10-16
-  ```
+**📋 关键审查发现**：
+1. **高风险项**：ClinicAccountService修复的向后兼容性
+2. **中风险项**：EventEmitter异常处理、Stripe Mock真实性  
+3. **遗漏补充**：数据库迁移计划、监控策略、配置管理细节
 
-- [ ] **1.3 Stripe客户端配置**
-  ```typescript
-  @Injectable()
-  export class StripeService {
-    private stripe: Stripe;
-    
-    constructor() {
-      this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-        apiVersion: '2023-10-16',
-        maxNetworkRetries: 3,
-      });
-    }
-  }
-  ```
+**🔧 批准执行的前置条件**：
+- 💡 **A1级前置修复**：ClinicAccountService乐观锁机制完善（P0级）
+- 💡 **A2级前置修复**：OrderService事件发布点集成（P0级）
+- 💡 **技术决策确认**：EventEmitter替代CQRS、Mock+CLI混合Stripe策略
 
-**Day 2: IPaymentEngine接口设计**
-- [ ] **2.1 支付引擎接口定义**
-  ```typescript
-  interface IPaymentEngine {
-    // Stripe支付相关
-    createPaymentIntent(amount: number, metadata: any): Promise<PaymentIntentResult>;
-    confirmPayment(paymentIntentId: string): Promise<PaymentResult>;
-    handleWebhook(webhookData: StripeWebhookEvent): Promise<void>;
-    
-    // 诊所账户相关
-    deductFromClinicAccount(clinicId: string, amount: number, reference: string): Promise<DeductionResult>;
-    refundToClinicAccount(clinicId: string, amount: number, reference: string): Promise<RefundResult>;
-    
-    // 查询相关
-    getPaymentStatus(paymentId: string): Promise<PaymentStatus>;
-    getAccountBalance(clinicId: string): Promise<AccountBalance>;
-  }
-  ```
+##### 🔄 **调整后RIPER模式序列**（17个工作日）
+- **RESEARCH模式**（2天）：Stripe API深度研究、支付安全最佳实践、并发控制方案调研
+- **INNOVATE模式**（1天）：支付架构方案设计、技术选型评估、安全策略制定
+- **PLAN模式**（2天）：详细开发计划制定、任务分解、风险缓解策略
+- **🆕 REVIEW模式**（1天）：**方案审核 + 前置检查清单验证 + 用户批准**
+- **EXECUTE模式**（10天）：TDD开发实施、分阶段交付、持续验证
+- **FINAL REVIEW模式**（1天）：代码审查、性能测试、安全审计、最终验收
 
-**Day 3: 模块架构搭建**
-- [ ] **3.1 创建payment模块目录结构**
-  ```
-  src/payment/
-  ├── dto/
-  │   ├── payment-intent.dto.ts
-  │   ├── webhook-event.dto.ts
-  │   └── account-operation.dto.ts
-  ├── interfaces/
-  │   └── payment-engine.interface.ts
-  ├── services/
-  │   ├── stripe.service.ts
-  │   ├── payment-engine.service.ts
-  │   └── account-transaction.service.ts
-  ├── controllers/
-  │   ├── payment.controller.ts
-  │   └── webhook.controller.ts
-  └── payment.module.ts
-  ```
+##### 📊 **5阶段详细工时预估**（总计136工时）
 
-#### Phase 2: Stripe Payment Intent实现 (Day 4-6)
+**阶段1：基础架构搭建**（24工时，3天）
+- **ENV-01** 环境配置验证：4工时
+  - Stripe API密钥配置验证
+  - Webhook端点配置测试
+  - 开发/生产环境分离确认
+- **ENV-02** 依赖库安装与配置：4工时
+  - stripe@^14.0.0安装与类型定义
+  - 版本兼容性验证
+  - 配置文件结构建立
+- **ENV-03** 模块结构创建：8工时
+  - payment模块目录结构
+  - dto/、interfaces/、services/目录创建
+  - 模块依赖注入配置
+- **ENV-04** 基础服务接口设计：8工时
+  - IPaymentEngine接口定义
+  - 核心DTO类型设计
+  - 异常类层次结构
 
-**Day 4: Payment Intent创建**
-- [ ] **4.1 支付意图创建逻辑**
-  ```typescript
-  async createPaymentIntent(amount: number, metadata: any): Promise<PaymentIntentResult> {
-    try {
-      const paymentIntent = await this.stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // 转换为分
-        currency: 'nzd',
-        metadata,
-        automatic_payment_methods: {
-          enabled: true,
-        },
-      });
-      
-      return {
-        id: paymentIntent.id,
-        clientSecret: paymentIntent.client_secret,
-        status: paymentIntent.status,
-      };
-    } catch (error) {
-      throw new PaymentEngineException('Failed to create payment intent', error);
-    }
-  }
-  ```
+**阶段2：Stripe核心集成**（32工时，4天）
+- **STRIPE-01** Payment Intent基础实现：8工时
+  - createPaymentIntent方法实现
+  - 金额转换和验证逻辑
+  - 基础错误处理机制
+- **STRIPE-02** 支付确认与状态管理：8工时
+  - confirmPayment方法实现
+  - 支付状态跟踪逻辑
+  - 状态同步机制
+- **STRIPE-03** Webhook事件处理：8工时
+  - 签名验证实现
+  - 事件类型分发逻辑
+  - 异步事件处理
+- **STRIPE-04** 错误处理与重试机制：8工时
+  - 指数退避重试逻辑
+  - API限流处理
+  - 错误分类和恢复策略
 
-**Day 5: 支付确认和状态跟踪**
-- [ ] **5.1 支付确认逻辑**
-- [ ] **5.2 支付状态查询**
-- [ ] **5.3 支付失败处理**
+**阶段3：账户管理核心**（32工时，4天）
+- **ACCOUNT-01** 乐观锁并发控制：10工时
+  - 乐观锁机制实现
+  - 版本冲突处理
+  - 并发重试策略
+- **ACCOUNT-02** 余额扣款原子操作：10工时
+  - 原子性扣款事务
+  - 余额不足检查
+  - 事务回滚机制
+- **ACCOUNT-03** 退款处理逻辑：8工时
+  - Stripe退款API集成
+  - 账户退款逻辑
+  - 退款状态跟踪
+- **ACCOUNT-04** 账户事务记录：4工时
+  - 交易记录创建
+  - 审计日志格式
+  - 查询优化
 
-**Day 6: Webhook事件处理**
-- [ ] **6.1 Webhook签名验证**
-  ```typescript
-  async handleWebhook(rawBody: Buffer, signature: string): Promise<void> {
-    let event: Stripe.Event;
-    
-    try {
-      event = this.stripe.webhooks.constructEvent(
-        rawBody,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (err) {
-      throw new WebhookValidationException('Invalid webhook signature');
-    }
-    
-    switch (event.type) {
-      case 'payment_intent.succeeded':
-        await this.handlePaymentSuccess(event.data.object);
-        break;
-      case 'payment_intent.payment_failed':
-        await this.handlePaymentFailure(event.data.object);
-        break;
-      default:
-        console.log(`Unhandled event type ${event.type}`);
-    }
-  }
-  ```
+**阶段4：安全机制实现**（24工时，3天）
+- **SECURITY-01** 幂等性保护机制：8工时
+  - 幂等性键生成和验证
+  - 重复操作检测
+  - 幂等结果缓存
+- **SECURITY-02** 重复支付检测：6工时
+  - 重复检测算法
+  - 支付去重逻辑
+  - 异常情况处理
+- **SECURITY-03** 权限验证与审计：6工时
+  - RBAC权限集成
+  - 操作审计日志
+  - 敏感数据保护
+- **SECURITY-04** PCI合规性检查：4工时
+  - 数据处理合规验证
+  - 传输加密确认
+  - 安全配置检查
 
-#### Phase 3: 诊所账户管理 (Day 7-9)
-
-**Day 7: 账户扣款逻辑**
-- [ ] **7.1 原子性扣款实现**
-  ```typescript
-  async deductFromClinicAccount(
-    clinicId: string, 
-    amount: number, 
-    reference: string
-  ): Promise<DeductionResult> {
-    return await this.prisma.$transaction(async (tx) => {
-      // 1. 乐观锁查询账户
-      const account = await tx.clinicAccount.findUnique({
-        where: { clinicId },
-      });
-      
-      if (!account) {
-        throw new AccountNotFoundException();
-      }
-      
-      // 2. 余额检查
-      const availableBalance = account.balance.plus(account.creditLimit).minus(account.usedCredit);
-      if (availableBalance.lt(amount)) {
-        throw new InsufficientBalanceException();
-      }
-      
-      // 3. 原子性更新
-      const updatedAccount = await tx.clinicAccount.update({
-        where: { 
-          clinicId,
-          version: account.version, // 乐观锁
-        },
-        data: {
-          balance: account.balance.minus(amount),
-          version: { increment: 1 },
-        },
-      });
-      
-      // 4. 记录交易
-      await tx.accountTransaction.create({
-        data: {
-          accountId: account.id,
-          transactionType: 'DEBIT',
-          amount,
-          balanceBefore: account.balance,
-          balanceAfter: updatedAccount.balance,
-          referenceType: 'ORDER',
-          referenceId: reference,
-        },
-      });
-      
-      return { success: true, newBalance: updatedAccount.balance };
-    });
-  }
-  ```
-
-**Day 8: 退款处理**
-- [ ] **8.1 Stripe退款逻辑**
-- [ ] **8.2 账户退款逻辑**
-- [ ] **8.3 退款状态跟踪**
-
-**Day 9: 并发控制和幂等性**
-- [ ] **9.1 幂等性键实现**
-  ```typescript
-  async processPaymentWithIdempotency(
-    idempotencyKey: string,
-    paymentData: PaymentData
-  ): Promise<PaymentResult> {
-    // 1. 检查幂等性键
-    const existingResult = await this.getIdempotentResult(idempotencyKey);
-    if (existingResult) {
-      return existingResult;
-    }
-    
-    // 2. 处理支付
-    const result = await this.processPayment(paymentData);
-    
-    // 3. 存储幂等性结果
-    await this.storeIdempotentResult(idempotencyKey, result);
-    
-    return result;
-  }
-  ```
-
-- [ ] **9.2 并发冲突处理**
-- [ ] **9.3 重试机制实现**
-
-#### Phase 4: API控制器和测试 (Day 10-14)
-
-**Day 10-11: API控制器实现**
-- [ ] **10.1 PaymentController**
-- [ ] **10.2 WebhookController**
-- [ ] **11.1 API文档和验证**
-
-**Day 12-13: 测试实现**
-- [ ] **12.1 单元测试**
-  - Stripe API Mock测试
-  - 账户扣款逻辑测试
-  - 并发场景测试
-- [ ] **13.1 集成测试**
+**阶段5：测试与验证**（24工时，3天）
+- **TEST-01** 单元测试实现：8工时
+  - 核心逻辑单元测试
+  - Mock外部依赖
+  - 测试覆盖率验证
+- **TEST-02** 集成测试与Stripe模拟：8工时
+  - Stripe API集成测试
   - Webhook处理测试
-  - 端到端支付流程测试
+  - 端到端支付流程
+- **TEST-03** 并发压力测试：4工时
+  - 1000+并发账户操作
+  - 数据一致性验证
+  - 性能基准测试
+- **TEST-04** 安全测试与验收：4工时
+  - 安全机制验证
+  - 渗透测试基础
+  - 最终验收确认
 
-**Day 14: 验收测试**
-- [ ] **14.1 并发压力测试**
-  ```typescript
-  describe('Concurrent Payment Tests', () => {
-    it('should handle 1000 concurrent deductions without data inconsistency', async () => {
-      // 并发测试逻辑
-    });
-  });
-  ```
+##### 🔍 **REVIEW模式前置检查清单**
+
+**技术环境检查**
+- [ ] **Stripe API密钥**：测试环境Secret Key、Publishable Key获取确认
+- [ ] **Webhook配置**：Webhook Secret配置，端点URL设置
+- [ ] **依赖版本**：stripe@^14.0.0兼容性验证
+- [ ] **TypeScript配置**：严格模式、类型定义完整性
+- [ ] **数据库表**：clinic_accounts、account_transactions结构验证
+
+**架构完整性检查**
+- [ ] **DDD边界**：与Task 5A、5C的接口边界明确定义
+- [ ] **事件总线**：NestJS EventBus配置验证
+- [ ] **配置服务**：ConfigService环境变量加载测试
+- [ ] **Prisma服务**：数据库连接池配置验证
+- [ ] **日志系统**：审计日志输出格式验证
+
+**安全合规检查**
+- [ ] **PCI DSS**：敏感数据处理流程合规性
+- [ ] **加密传输**：HTTPS/TLS配置验证
+- [ ] **密钥管理**：环境变量安全存储确认
+- [ ] **审计需求**：所有资金操作可追溯性验证
+- [ ] **权限控制**：RBAC集成确认
+
+##### 🛡️ **严格职责边界**（DDD架构要求）
+**允许实现：**
+- ✅ Stripe支付集成和状态管理
+- ✅ 诊所账户余额操作和事务记录
+- ✅ 支付安全机制和并发控制
+- ✅ Webhook事件处理和验证
+
+**严格禁止：**
+- ❌ 直接操作订单状态（Task 5C职责）
+- ❌ 包含业务流程逻辑（Task 5C职责）
+- ❌ 直接调用订单管理接口（通过事件通信）
+
+##### 🧪 **TDD测试策略**
+- **单元测试**：每个方法独立测试，Mock外部依赖，目标覆盖率≥95%
+- **集成测试**：Stripe API真实交互（测试环境），Webhook处理验证
+- **并发测试**：1000+并发账户操作，数据一致性验证
+- **安全测试**：幂等性、重复支付检测、权限验证全覆盖
+- **人在循环验证**：每阶段完成后用户功能确认
+
+##### 📝 **文档更新循环机制**
+**每阶段文档更新要求：**
+1. **阶段开始前**：更新开发计划文档，明确当前阶段目标
+2. **阶段执行中**：实时更新进度和遇到的问题
+3. **阶段完成后**：更新完成状态、经验教训、下阶段调整
+
+**文档同步点：**
+- `Task5_DDD_Architecture_Development_Plan.md`：技术实现细节
+- `DEVELOPMENT_PROGRESS_TRACKER.md`：整体进度追踪
+- `SOPv2.0_DDD_Architecture_MVP1.0.md`：规范性标准更新
 
 ### ✅ Task 5B验收标准
 - [ ] Stripe集成功能完整可用

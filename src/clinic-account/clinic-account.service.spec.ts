@@ -196,10 +196,14 @@ describe("ClinicAccountService", () => {
       const result = await service.update(mockAccount.id, updateDto);
 
       expect(mockPrismaService.clinicAccount.update).toHaveBeenCalledWith({
-        where: { id: mockAccount.id },
+        where: {
+          id: mockAccount.id,
+          version: 1,
+        },
         data: {
           ...updateDto,
           updatedAt: expect.any(Date),
+          version: { increment: 1 },
         },
         include: {
           clinic: true,
@@ -221,10 +225,14 @@ describe("ClinicAccountService", () => {
       const result = await service.remove(mockAccount.id);
 
       expect(mockPrismaService.clinicAccount.update).toHaveBeenCalledWith({
-        where: { id: mockAccount.id },
+        where: {
+          id: mockAccount.id,
+          version: 1,
+        },
         data: {
           status: AccountStatus.frozen,
           updatedAt: expect.any(Date),
+          version: { increment: 1 },
         },
       });
 

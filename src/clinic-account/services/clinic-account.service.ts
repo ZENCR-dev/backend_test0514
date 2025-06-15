@@ -162,9 +162,13 @@ export class ClinicAccountService {
 
     try {
       const updatedAccount = await this.prisma.clinicAccount.update({
-        where: { id },
+        where: {
+          id,
+          version: existingAccount.version, // 乐观锁：检查版本号
+        },
         data: {
           ...updateDto,
+          version: { increment: 1 }, // 版本号自增
           updatedAt: new Date(),
         },
         include: {
@@ -174,6 +178,10 @@ export class ClinicAccountService {
 
       return this.mapToResponseDto(updatedAccount);
     } catch (error) {
+      // 处理乐观锁冲突 (Prisma P2034 错误)
+      if (error.code === "P2034" || error.code === "P2025") {
+        throw new BadRequestException("账户信息已被其他操作更新，请刷新后重试");
+      }
       throw new BadRequestException("更新诊所账户失败");
     }
   }
@@ -181,15 +189,27 @@ export class ClinicAccountService {
   async remove(id: string): Promise<{ message: string }> {
     const existingAccount = await this.findOne(id);
 
-    await this.prisma.clinicAccount.update({
-      where: { id },
-      data: {
-        status: AccountStatus.frozen, // 使用frozen状态标记为已删除
-        updatedAt: new Date(),
-      },
-    });
+    try {
+      await this.prisma.clinicAccount.update({
+        where: {
+          id,
+          version: existingAccount.version, // 乐观锁：检查版本号
+        },
+        data: {
+          status: AccountStatus.frozen, // 使用frozen状态标记为已删除
+          version: { increment: 1 }, // 版本号自增
+          updatedAt: new Date(),
+        },
+      });
 
-    return { message: "诊所账户删除成功" };
+      return { message: "诊所账户删除成功" };
+    } catch (error) {
+      // 处理乐观锁冲突
+      if (error.code === "P2034" || error.code === "P2025") {
+        throw new BadRequestException("账户信息已被其他操作更新，请刷新后重试");
+      }
+      throw new BadRequestException("删除诊所账户失败");
+    }
   }
 
   async getBalance(

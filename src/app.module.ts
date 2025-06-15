@@ -2,6 +2,7 @@ import { Module, MiddlewareConsumer, NestModule } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { ConfigModule } from "@nestjs/config";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { validate } from "./config/env.validation";
 import { AuthModule } from "./auth/auth.module";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -9,6 +10,7 @@ import { UserModule } from "./user/user.module";
 import { ClinicAccountModule } from "./clinic-account/clinic-account.module";
 import { IdempotencyMiddleware } from "./common/middleware/idempotency.middleware";
 import { MedicinesModule } from "./medicines/medicines.module";
+import { PaymentModule } from "./payment/payment.module";
 
 @Module({
   imports: [
@@ -17,11 +19,22 @@ import { MedicinesModule } from "./medicines/medicines.module";
       isGlobal: true,
       validate,
     }),
+    EventEmitterModule.forRoot({
+      // 设置事件发射器全局可用
+      global: true,
+      // 配置最大监听器数量
+      maxListeners: 10,
+      // 开启通配符监听
+      wildcard: false,
+      // 设置分隔符
+      delimiter: ".",
+    }),
     PrismaModule,
     AuthModule,
     UserModule,
     ClinicAccountModule,
     MedicinesModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

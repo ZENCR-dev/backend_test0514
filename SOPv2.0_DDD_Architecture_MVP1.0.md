@@ -314,6 +314,165 @@ interface IOrderPaymentOrchestrator {
 
 ---
 
+## 🛡️ 6.3 Task 5B支付引擎专项规范
+
+### 6.3.1 代码质量标准（支付服务专项）
+
+#### 函数设计规范
+```typescript
+/**
+ * 支付服务函数设计示例
+ * @description 详细说明业务逻辑和安全考虑
+ * @param {string} clinicId - 诊所ID，用于权限验证
+ * @param {Decimal} amount - 扣款金额，使用Decimal避免精度问题
+ * @param {string} idempotencyKey - 幂等性键，防止重复操作
+ * @returns {Promise<DeductionResult>} 扣款结果，包含余额和事务ID
+ * @throws {InsufficientBalanceException} 余额不足异常
+ * @throws {ConcurrencyConflictException} 并发冲突异常
+ * 
+ * @security 
+ * - 使用乐观锁防止并发问题
+ * - 原子性事务确保数据一致性
+ * - 完整审计日志记录所有操作
+ * 
+ * @performance
+ * - 查询优化避免N+1问题
+ * - 事务范围最小化
+ * - 索引优化提升查询速度
+ */
+async deductFromClinicAccount(
+  clinicId: string,
+  amount: Decimal,
+  idempotencyKey: string
+): Promise<DeductionResult>
+```
+
+#### 常量定义规范
+```typescript
+// 支付相关常量配置
+export const PAYMENT_CONFIG = {
+  // Stripe配置
+  STRIPE_API_VERSION: '2023-10-16' as const,
+  STRIPE_TIMEOUT_MS: 30000,
+  STRIPE_MAX_RETRIES: 3,
+  
+  // 账户管理配置
+  MAX_CONCURRENT_OPERATIONS: 1000,
+  BALANCE_PRECISION_DECIMAL_PLACES: 2,
+  ACCOUNT_LOCK_TIMEOUT_MS: 5000,
+  
+  // 安全配置
+  IDEMPOTENCY_KEY_TTL_HOURS: 24,
+  AUDIT_LOG_RETENTION_DAYS: 365,
+  WEBHOOK_SIGNATURE_TOLERANCE_SECONDS: 300,
+} as const;
+```
+
+#### 错误处理规范
+```typescript
+// 支付服务专用异常类
+export class PaymentEngineException extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,
+    public readonly context?: Record<string, any>
+  ) {
+    super(message);
+    this.name = 'PaymentEngineException';
+  }
+}
+
+// 具体异常类型
+export class InsufficientBalanceException extends PaymentEngineException {
+  constructor(requiredAmount: Decimal, availableAmount: Decimal) {
+    super(
+      `Insufficient balance: required ${requiredAmount}, available ${availableAmount}`,
+      'INSUFFICIENT_BALANCE',
+      { requiredAmount, availableAmount }
+    );
+  }
+}
+```
+
+### 6.3.2 支付安全风险识别矩阵
+
+#### P0级支付安全风险
+| 风险项目 | 风险描述 | 影响等级 | 缓解策略 | 验收标准 |
+|---------|---------|---------|---------|---------|
+| **重复扣款** | 网络重试导致重复扣除账户余额 | 极高 | 幂等性键 + 操作记录查重 | 0重复扣款 |
+| **负余额** | 并发操作导致账户余额为负 | 极高 | 乐观锁 + CHECK约束 | 0负余额记录 |
+| **数据不一致** | 支付成功但数据库未更新 | 极高 | 分布式事务 + 补偿机制 | 100%数据一致性 |
+| **资金泄露** | 异常情况下资金流向不明 | 极高 | 完整审计链 + 对账机制 | 100%可追溯 |
+
+#### P1级支付安全风险
+| 风险项目 | 风险描述 | 影响等级 | 缓解策略 | 验收标准 |
+|---------|---------|---------|---------|---------|
+| **API限流** | Stripe API调用超限导致支付失败 | 高 | 限流控制 + 重试机制 | <1%限流错误 |
+| **Webhook丢失** | 网络问题导致支付状态更新丢失 | 高 | 主动查询 + 状态同步 | <0.1%状态不同步 |
+| **密钥泄露** | API密钥意外泄露风险 | 高 | 密钥轮换 + 访问控制 | 定期安全审计 |
+
+### 6.3.3 并发控制最佳实践
+
+#### 乐观锁实现模板
+```typescript
+/**
+ * 乐观锁账户操作模板
+ * 适用于所有账户余额修改操作
+ */
+async executeWithOptimisticLock<T>(
+  operation: (tx: PrismaTransaction) => Promise<T>,
+  maxRetries: number = 3
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await this.prisma.$transaction(operation);
+    } catch (error) {
+      if (error.code === 'P2034' && attempt < maxRetries) {
+        // 乐观锁冲突，指数退避重试
+        const delay = Math.pow(2, attempt) * 100;
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+```
+
+### 6.3.4 测试覆盖率要求
+
+#### 单元测试覆盖率标准
+- **支付核心逻辑**：100%覆盖率
+- **账户管理功能**：100%覆盖率  
+- **安全机制**：100%覆盖率
+- **错误处理**：95%覆盖率
+- **辅助工具函数**：90%覆盖率
+
+#### 关键测试场景
+```typescript
+describe('PaymentEngine Critical Scenarios', () => {
+  describe('Concurrent Operations', () => {
+    it('should handle 1000 concurrent deductions without data inconsistency');
+    it('should prevent negative balance under high concurrency');
+    it('should maintain audit trail integrity under concurrent access');
+  });
+  
+  describe('Stripe Integration', () => {
+    it('should handle Stripe API failures gracefully');
+    it('should verify webhook signatures correctly');
+    it('should retry failed operations with exponential backoff');
+  });
+  
+  describe('Security Mechanisms', () => {
+    it('should prevent duplicate operations with idempotency keys');
+    it('should audit all financial operations completely');
+    it('should enforce access control for all endpoints');
+  });
+});
+```
+
+---
+
 ## 📋 7. MVP 2.0功能规划预览
 
 ### 7.1 MVP 2.0开发优先级
