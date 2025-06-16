@@ -20,6 +20,43 @@ export interface IClinicAccountService {
   update(id: string, data: any): Promise<IClinicAccount>;
   remove(id: string): Promise<{ message: string }>;
   getBalance(id: string): Promise<any>;
+
+  // A1前置修复：支付相关方法
+  updateBalance(
+    clinicId: string,
+    amount: number,
+    transactionType: string,
+    referenceId?: string,
+    description?: string,
+  ): Promise<IClinicAccount>;
+
+  deductBalance(
+    clinicId: string,
+    amount: number,
+    referenceId?: string,
+    description?: string,
+  ): Promise<IClinicAccount>;
+
+  refundBalance(
+    clinicId: string,
+    amount: number,
+    referenceId?: string,
+    description?: string,
+  ): Promise<IClinicAccount>;
+
+  getTransactionHistory(
+    accountId: string,
+    page?: number,
+    limit?: number,
+  ): Promise<{
+    data: any[];
+    meta: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  }>;
 }
 
 export interface IUserPermission {

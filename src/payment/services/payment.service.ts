@@ -181,7 +181,8 @@ export class PaymentService implements IPaymentEngine {
       this.logger.log(`Retrieving payment intent: ${paymentIntentId}`);
 
       // 从Stripe获取支付意图
-      const paymentIntent = await this.stripe.paymentIntents.retrieve(paymentIntentId);
+      const paymentIntent =
+        await this.stripe.paymentIntents.retrieve(paymentIntentId);
 
       const response: PaymentIntentResponse = {
         id: paymentIntent.id,
@@ -189,20 +190,31 @@ export class PaymentService implements IPaymentEngine {
         amount: paymentIntent.amount,
         currency: paymentIntent.currency,
         status: this.mapStripeStatusToPaymentStatus(paymentIntent.status),
-        orderId: paymentIntent.metadata?.orderId || '',
+        orderId: paymentIntent.metadata?.orderId || "",
         createdAt: new Date(paymentIntent.created * 1000),
       };
 
-      this.logger.log(`Payment intent retrieved successfully: ${paymentIntentId}`);
+      this.logger.log(
+        `Payment intent retrieved successfully: ${paymentIntentId}`,
+      );
       return response;
     } catch (error) {
-      this.logger.error(`Failed to retrieve payment intent ${paymentIntentId}:`, error);
+      this.logger.error(
+        `Failed to retrieve payment intent ${paymentIntentId}:`,
+        error,
+      );
 
       if (error instanceof Stripe.errors.StripeError) {
-        if (error.code === 'resource_missing' || error instanceof Stripe.errors.StripeInvalidRequestError) {
+        if (
+          error.code === "resource_missing" ||
+          error instanceof Stripe.errors.StripeInvalidRequestError
+        ) {
           throw new PaymentIntentNotFoundException(paymentIntentId);
         }
-        throw new StripePaymentException("Failed to retrieve payment intent", error);
+        throw new StripePaymentException(
+          "Failed to retrieve payment intent",
+          error,
+        );
       }
 
       if (error instanceof PaymentIntentNotFoundException) {
@@ -210,8 +222,10 @@ export class PaymentService implements IPaymentEngine {
       }
 
       // 如果是验证错误，直接重新抛出
-      if (error.message.includes('Payment intent ID is required') || 
-          error.message.includes('Invalid payment intent ID format')) {
+      if (
+        error.message.includes("Payment intent ID is required") ||
+        error.message.includes("Invalid payment intent ID format")
+      ) {
         throw error;
       }
 
@@ -230,51 +244,78 @@ export class PaymentService implements IPaymentEngine {
       this.logger.log(`Cancelling payment intent: ${paymentIntentId}`);
 
       // 先获取当前状态以验证是否可以取消
-      const currentPaymentIntent = await this.stripe.paymentIntents.retrieve(paymentIntentId);
-      
+      const currentPaymentIntent =
+        await this.stripe.paymentIntents.retrieve(paymentIntentId);
+
       // 检查是否可以取消
-      if (currentPaymentIntent.status === 'succeeded') {
-        throw new Error('Payment intent is already succeeded and cannot be canceled');
+      if (currentPaymentIntent.status === "succeeded") {
+        throw new Error(
+          "Payment intent is already succeeded and cannot be canceled",
+        );
       }
-      
-      if (currentPaymentIntent.status === 'canceled') {
-        throw new Error('Payment intent is already canceled or cannot be canceled');
+
+      if (currentPaymentIntent.status === "canceled") {
+        throw new Error(
+          "Payment intent is already canceled or cannot be canceled",
+        );
       }
 
       // 检查状态是否允许取消
-      const cancelableStatuses = ['requires_payment_method', 'requires_confirmation', 'requires_action'];
+      const cancelableStatuses = [
+        "requires_payment_method",
+        "requires_confirmation",
+        "requires_action",
+      ];
       if (!cancelableStatuses.includes(currentPaymentIntent.status)) {
-        throw new Error('Payment intent cannot be canceled in current status');
+        throw new Error("Payment intent cannot be canceled in current status");
       }
 
       // 取消支付意图
       await this.stripe.paymentIntents.cancel(paymentIntentId);
 
-      this.logger.log(`Payment intent cancelled successfully: ${paymentIntentId}`);
+      this.logger.log(
+        `Payment intent cancelled successfully: ${paymentIntentId}`,
+      );
     } catch (error) {
-      this.logger.error(`Failed to cancel payment intent ${paymentIntentId}:`, error);
+      this.logger.error(
+        `Failed to cancel payment intent ${paymentIntentId}:`,
+        error,
+      );
 
       if (error instanceof Stripe.errors.StripeError) {
-        if (error.code === 'resource_missing' || error instanceof Stripe.errors.StripeInvalidRequestError) {
+        if (
+          error.code === "resource_missing" ||
+          error instanceof Stripe.errors.StripeInvalidRequestError
+        ) {
           throw new PaymentIntentNotFoundException(paymentIntentId);
         }
-        throw new StripePaymentException("Failed to cancel payment intent", error);
+        throw new StripePaymentException(
+          "Failed to cancel payment intent",
+          error,
+        );
       }
 
       // 如果是验证错误，直接重新抛出
-      if (error.message.includes('Payment intent ID is required') || 
-          error.message.includes('Invalid payment intent ID format')) {
+      if (
+        error.message.includes("Payment intent ID is required") ||
+        error.message.includes("Invalid payment intent ID format")
+      ) {
         throw error;
       }
 
       // 重新抛出我们自定义的错误消息
-      if (error.message.includes('already succeeded') || 
-          error.message.includes('already canceled') ||
-          error.message.includes('cannot be canceled')) {
+      if (
+        error.message.includes("already succeeded") ||
+        error.message.includes("already canceled") ||
+        error.message.includes("cannot be canceled")
+      ) {
         throw error;
       }
 
-      throw new StripePaymentException("Failed to cancel payment intent", error);
+      throw new StripePaymentException(
+        "Failed to cancel payment intent",
+        error,
+      );
     }
   }
 
@@ -381,13 +422,13 @@ export class PaymentService implements IPaymentEngine {
    * 验证支付意图ID格式
    */
   private validatePaymentIntentId(paymentIntentId: string): void {
-    if (!paymentIntentId || paymentIntentId.trim() === '') {
-      throw new Error('Payment intent ID is required');
+    if (!paymentIntentId || paymentIntentId.trim() === "") {
+      throw new Error("Payment intent ID is required");
     }
 
     // Stripe支付意图ID格式：pi_开头，后跟字母数字字符
-    if (!paymentIntentId.startsWith('pi_') || paymentIntentId.length < 10) {
-      throw new Error('Invalid payment intent ID format');
+    if (!paymentIntentId.startsWith("pi_") || paymentIntentId.length < 10) {
+      throw new Error("Invalid payment intent ID format");
     }
   }
 

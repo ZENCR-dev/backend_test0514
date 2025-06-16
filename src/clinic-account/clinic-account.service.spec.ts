@@ -15,12 +15,14 @@ describe("ClinicAccountService", () => {
     id: "test-account-id",
     clinicId: "test-clinic-id",
     balance: 1000,
-    creditLimit: 5000,
+    creditLimit: 500,
+    usedCredit: 0,
+    availableCredit: 500,
     status: AccountStatus.active,
     version: 1,
     createdAt: new Date(),
     updatedAt: new Date(),
-    clinic: { name: "测试诊所" }, // 模拟关联的clinic数据
+    clinic: { name: "测试诊所", ownerId: "user-1" }, // 模拟关联的clinic数据
   };
 
   const mockPrismaService = {
@@ -35,6 +37,12 @@ describe("ClinicAccountService", () => {
     userProfile: {
       findFirst: jest.fn(),
     },
+    accountTransaction: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      count: jest.fn(),
+    },
+    $transaction: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -60,7 +68,7 @@ describe("ClinicAccountService", () => {
     const createDto: CreateClinicAccountDto = {
       clinicId: "test-clinic-id",
       initialPrepaidAmount: 1000,
-      creditLimit: 5000,
+      creditLimit: 500,
       status: AccountStatus.active,
     };
 
@@ -184,7 +192,7 @@ describe("ClinicAccountService", () => {
 
   describe("update", () => {
     const updateDto: UpdateClinicAccountDto = {
-      creditLimit: 10000,
+      creditLimit: 1000,
     };
 
     it("应该成功更新诊所账户", async () => {
@@ -248,8 +256,8 @@ describe("ClinicAccountService", () => {
 
       expect(result.accountId).toBe(mockAccount.id);
       expect(result.prepaidBalance).toBe(1000);
-      expect(result.creditLimit).toBe(5000);
-      expect(result.availableBalance).toBe(6000);
+      expect(result.creditLimit).toBe(500);
+      expect(result.availableBalance).toBe(1500);
     });
   });
 
@@ -297,6 +305,301 @@ describe("ClinicAccountService", () => {
         "practitioner",
       );
       expect(result).toBe(false);
+    });
+  });
+
+  // A1前置修复：支付相关方法的测试用例
+  describe("Payment-related methods (A1 prerequisite fix)", () => {
+    describe("updateBalance", () => {
+      it("should update balance successfully with positive amount", async () => {
+        const mockUpdatedAccount = {
+          ...mockAccount,
+          balance: 1500, // 1000 + 500
+          version: 2,
+        };
+
+        mockPrismaService.$transaction.mockImplementation(async (callback) => {
+          return await callback({
+            clinicAccount: {
+              findFirst: jest.fn().mockResolvedValue(mockAccount),
+              update: jest.fn().mockResolvedValue(mockUpdatedAccount),
+            },
+            accountTransaction: {
+              create: jest.fn().mockResolvedValue({}),
+            },
+          });
+        });
+
+        const result = await service.updateBalance(
+          "clinic-1",
+          500,
+          "deposit",
+          "ref-123",
+          "Test deposit",
+        );
+
+        expect(result).toBeDefined();
+        expect(mockPrismaService.$transaction).toHaveBeenCalled();
+      });
+
+      it("should update balance successfully with negative amount (deduction)", async () => {
+        const mockUpdatedAccount = {
+          ...mockAccount,
+          balance: 800, // 1000 - 200
+          version: 2,
+        };
+
+        mockPrismaService.$transaction.mockImplementation(async (callback) => {
+          return await callback({
+            clinicAccount: {
+              findFirst: jest.fn().mockResolvedValue(mockAccount),
+              update: jest.fn().mockResolvedValue(mockUpdatedAccount),
+            },
+            accountTransaction: {
+              create: jest.fn().mockResolvedValue({}),
+            },
+          });
+        });
+
+        const result = await service.updateBalance(
+          "clinic-1",
+          -200,
+          "deduct",
+          "order-456",
+          "Order payment",
+        );
+
+        expect(result).toBeDefined();
+        expect(mockPrismaService.$transaction).toHaveBeenCalled();
+      });
+
+      it("should throw BadRequestException for invalid parameters", async () => {
+        await expect(service.updateBalance("", 0, "test")).rejects.toThrow(
+          BadRequestException,
+        );
+      });
+
+      it("should throw BadRequestException for insufficient balance", async () => {
+        mockPrismaService.$transaction.mockImplementation(async (callback) => {
+          return await callback({
+            clinicAccount: {
+              findFirst: jest.fn().mockResolvedValue(mockAccount),
+              update: jest.fn(),
+            },
+            accountTransaction: {
+              create: jest.fn(),
+            },
+          });
+        });
+
+        await expect(
+          service.updateBalance("clinic-1", -2000, "deduct"),
+        ).rejects.toThrow(BadRequestException);
+      });
+
+      it("should handle optimistic lock conflict", async () => {
+        const prismaError = new Error("Optimistic lock conflict");
+        (prismaError as any).code = "P2034";
+
+        mockPrismaService.$transaction.mockImplementation(async (callback) => {
+          return await callback({
+            clinicAccount: {
+              findFirst: jest.fn().mockResolvedValue(mockAccount),
+              update: jest.fn().mockRejectedValue(prismaError),
+            },
+            accountTransaction: {
+              create: jest.fn(),
+            },
+          });
+        });
+
+        await expect(
+          service.updateBalance("clinic-1", 100, "deposit"),
+        ).rejects.toThrow();
+      });
+    });
+
+    describe("deductBalance", () => {
+      it("should deduct balance successfully", async () => {
+        const mockUpdatedAccount = {
+          ...mockAccount,
+          balance: 700, // 1000 - 300
+          version: 2,
+        };
+
+        jest.spyOn(service, "updateBalance").mockResolvedValue({
+          id: mockUpdatedAccount.id,
+          clinicName: mockAccount.clinic.name,
+          clinicId: mockUpdatedAccount.clinicId,
+          prepaidBalance: parseFloat(mockUpdatedAccount.balance.toString()),
+          creditLimit: parseFloat(mockUpdatedAccount.creditLimit.toString()),
+          availableBalance:
+            parseFloat(mockUpdatedAccount.balance.toString()) +
+            parseFloat(mockUpdatedAccount.creditLimit.toString()),
+          status: mockUpdatedAccount.status,
+          version: mockUpdatedAccount.version,
+          notes: "",
+          createdAt: mockUpdatedAccount.createdAt,
+          updatedAt: mockUpdatedAccount.updatedAt,
+        });
+
+        const result = await service.deductBalance(
+          "clinic-1",
+          300,
+          "order-789",
+          "Order payment deduction",
+        );
+
+        expect(result).toBeDefined();
+        expect(service.updateBalance).toHaveBeenCalledWith(
+          "clinic-1",
+          -300,
+          "deduct",
+          "order-789",
+          "Order payment deduction",
+        );
+      });
+
+      it("should throw BadRequestException for negative or zero amount", async () => {
+        await expect(service.deductBalance("clinic-1", -100)).rejects.toThrow(
+          "扣款金额必须大于0",
+        );
+
+        await expect(service.deductBalance("clinic-1", 0)).rejects.toThrow(
+          "扣款金额必须大于0",
+        );
+      });
+    });
+
+    describe("refundBalance", () => {
+      it("should refund balance successfully", async () => {
+        const mockUpdatedAccount = {
+          ...mockAccount,
+          balance: 1200, // 1000 + 200
+          version: 2,
+        };
+
+        jest.spyOn(service, "updateBalance").mockResolvedValue({
+          id: mockUpdatedAccount.id,
+          clinicName: mockAccount.clinic.name,
+          clinicId: mockUpdatedAccount.clinicId,
+          prepaidBalance: parseFloat(mockUpdatedAccount.balance.toString()),
+          creditLimit: parseFloat(mockUpdatedAccount.creditLimit.toString()),
+          availableBalance:
+            parseFloat(mockUpdatedAccount.balance.toString()) +
+            parseFloat(mockUpdatedAccount.creditLimit.toString()),
+          status: mockUpdatedAccount.status,
+          version: mockUpdatedAccount.version,
+          notes: "",
+          createdAt: mockUpdatedAccount.createdAt,
+          updatedAt: mockUpdatedAccount.updatedAt,
+        });
+
+        const result = await service.refundBalance(
+          "clinic-1",
+          200,
+          "refund-456",
+          "Order refund",
+        );
+
+        expect(result).toBeDefined();
+        expect(service.updateBalance).toHaveBeenCalledWith(
+          "clinic-1",
+          200,
+          "refund",
+          "refund-456",
+          "Order refund",
+        );
+      });
+
+      it("should throw BadRequestException for negative or zero amount", async () => {
+        await expect(service.refundBalance("clinic-1", -50)).rejects.toThrow(
+          "退款金额必须大于0",
+        );
+
+        await expect(service.refundBalance("clinic-1", 0)).rejects.toThrow(
+          "退款金额必须大于0",
+        );
+      });
+    });
+
+    describe("getTransactionHistory", () => {
+      it("should return transaction history with pagination", async () => {
+        const mockTransactions = [
+          {
+            id: "tx-1",
+            amount: -300,
+            transactionType: "DEBIT",
+            referenceId: "order-123",
+            referenceType: "ORDER",
+            description: "订单支付扣款",
+            balanceBefore: 1000,
+            balanceAfter: 700,
+            creditBefore: 0,
+            creditAfter: 0,
+            createdAt: new Date("2025-01-01T10:00:00Z"),
+          },
+          {
+            id: "tx-2",
+            amount: 500,
+            transactionType: "CREDIT",
+            referenceId: "deposit-456",
+            referenceType: "RECHARGE",
+            description: "账户充值",
+            balanceBefore: 500,
+            balanceAfter: 1000,
+            creditBefore: 0,
+            creditAfter: 0,
+            createdAt: new Date("2025-01-01T09:00:00Z"),
+          },
+        ];
+
+        mockPrismaService.accountTransaction.findMany.mockResolvedValue(
+          mockTransactions,
+        );
+        mockPrismaService.accountTransaction.count.mockResolvedValue(2);
+
+        const result = await service.getTransactionHistory("account-1", 1, 10);
+
+        expect(result).toBeDefined();
+        expect(result.data).toHaveLength(2);
+        expect(result.meta.total).toBe(2);
+        expect(
+          mockPrismaService.accountTransaction.findMany,
+        ).toHaveBeenCalledWith({
+          where: {
+            accountId: "account-1",
+          },
+          skip: 0,
+          take: 10,
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+      });
+
+      it("should use default pagination parameters", async () => {
+        mockPrismaService.accountTransaction.findMany.mockResolvedValue([]);
+        mockPrismaService.accountTransaction.count.mockResolvedValue(0);
+
+        const result = await service.getTransactionHistory("account-1");
+
+        expect(result).toBeDefined();
+        expect(result.data).toHaveLength(0);
+        expect(result.meta.total).toBe(0);
+        expect(
+          mockPrismaService.accountTransaction.findMany,
+        ).toHaveBeenCalledWith({
+          where: {
+            accountId: "account-1",
+          },
+          skip: 0,
+          take: 10,
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+      });
     });
   });
 });
