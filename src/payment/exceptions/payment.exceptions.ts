@@ -281,3 +281,17 @@ export class PaymentNetworkException extends PaymentException {
     );
   }
 }
+
+/**
+ * 支付意图未找到异常
+ */
+export class PaymentIntentNotFoundException extends PaymentException {
+  constructor(paymentIntentId: string) {
+    super(
+      `Payment intent not found: ${paymentIntentId}`,
+      HttpStatus.NOT_FOUND,
+      "PAYMENT_INTENT_NOT_FOUND",
+      { paymentIntentId },
+    );
+  }
+}

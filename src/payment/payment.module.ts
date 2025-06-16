@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { EventEmitterModule } from "@nestjs/event-emitter";
+import { ConfigService } from "@nestjs/config";
 import { PaymentService } from "./services/payment.service";
 import { PaymentController } from "./controllers/payment.controller";
 import { PrismaModule } from "../prisma/prisma.module";
@@ -18,35 +17,11 @@ import { ClinicAccountModule } from "../clinic-account/clinic-account.module";
  * 依赖模块：
  * - PrismaModule: 数据库访问
  * - ClinicAccountModule: 诊所账户服务
- * - ConfigModule: 环境配置管理
- * - EventEmitterModule: 事件驱动通信
+ * - ConfigModule: 环境配置管理（全局配置）
+ * - EventEmitterModule: 事件驱动通信（全局配置）
  */
 @Module({
   imports: [
-    // 配置模块 - 环境变量管理
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: ".env",
-    }),
-
-    // 事件模块 - 事件驱动架构
-    EventEmitterModule.forRoot({
-      // 设置最大监听器数量
-      maxListeners: 10,
-      // 启用通配符
-      wildcard: false,
-      // 分隔符
-      delimiter: ".",
-      // 启用新监听器警告
-      newListener: false,
-      // 启用移除监听器警告
-      removeListener: false,
-      // 最大监听器数量警告
-      verboseMemoryLeak: false,
-      // 忽略未定义事件
-      ignoreErrors: false,
-    }),
-
     // 数据库模块
     PrismaModule,
 
@@ -66,7 +41,7 @@ import { ClinicAccountModule } from "../clinic-account/clinic-account.module";
         secretKey: configService.get<string>("STRIPE_SECRET_KEY"),
         publishableKey: configService.get<string>("STRIPE_PUBLISHABLE_KEY"),
         webhookSecret: configService.get<string>("STRIPE_WEBHOOK_SECRET"),
-        apiVersion: "2023-10-16" as const,
+        apiVersion: "2024-12-18.acacia" as const, // 更新到最新API版本
       }),
       inject: [ConfigService],
     },
@@ -149,5 +124,6 @@ export class PaymentModule {
     console.log(`✅ Payment module configuration validated successfully`);
     console.log(`   Environment: ${nodeEnv}`);
     console.log(`   Stripe Mode: ${isTestKey ? "Test" : "Live"}`);
+    console.log(`   API Version: 2024-12-18.acacia`);
   }
 }
