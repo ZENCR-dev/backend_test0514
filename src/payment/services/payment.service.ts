@@ -289,7 +289,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         paymentIntent = await this.stripe.paymentIntents.retrieve(
           request.paymentIntentId,
         );
-        
+
         // 如果已经成功，直接返回结果
         if (paymentIntent.status === "succeeded") {
           const response: PaymentConfirmationResponse = {
@@ -297,9 +297,10 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
             status: this.mapStripeStatusToPaymentStatus(paymentIntent.status),
             orderId: paymentIntent.metadata?.orderId || "",
             amount: paymentIntent.amount,
-            chargeId: (paymentIntent.latest_charge as string) || 
-                      (paymentIntent.charges?.data?.[0]?.id as string) || 
-                      undefined,
+            chargeId:
+              (paymentIntent.latest_charge as string) ||
+              (paymentIntent.charges?.data?.[0]?.id as string) ||
+              undefined,
           };
           return response;
         }
@@ -322,23 +323,25 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         status: this.mapStripeStatusToPaymentStatus(paymentIntent.status),
         orderId: paymentIntent.metadata?.orderId || "",
         amount: paymentIntent.amount,
-        chargeId: (paymentIntent.latest_charge as string) || 
-                  (paymentIntent.charges?.data?.[0]?.id as string) || 
-                  undefined,
+        chargeId:
+          (paymentIntent.latest_charge as string) ||
+          (paymentIntent.charges?.data?.[0]?.id as string) ||
+          undefined,
       };
 
       // 根据状态发射事件
       if (paymentIntent.status === "succeeded") {
         this.logger.log(`Payment confirmed successfully: ${paymentIntent.id}`);
-        
+
         // 发射支付成功事件
         this.eventEmitter.emit("payment.confirmed", {
           paymentIntentId: paymentIntent.id,
           orderId: paymentIntent.metadata?.orderId,
           amount: paymentIntent.amount,
-          chargeId: (paymentIntent.latest_charge as string) || 
-                    (paymentIntent.charges?.data?.[0]?.id as string) || 
-                    undefined,
+          chargeId:
+            (paymentIntent.latest_charge as string) ||
+            (paymentIntent.charges?.data?.[0]?.id as string) ||
+            undefined,
         });
       } else if (paymentIntent.status === "requires_action") {
         this.logger.log(`Payment requires action: ${paymentIntent.id}`);
@@ -346,7 +349,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         response.failureReason = "Payment requires additional authentication";
       } else if (paymentIntent.status === "canceled") {
         this.logger.warn(`Payment failed: ${paymentIntent.id}`);
-        
+
         // 发射支付失败事件
         this.eventEmitter.emit("payment.failed", {
           paymentIntentId: paymentIntent.id,
@@ -354,7 +357,8 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
           amount: paymentIntent.amount,
           currency: paymentIntent.currency,
           status: paymentIntent.status,
-          failureReason: paymentIntent.last_payment_error?.message || "Payment failed",
+          failureReason:
+            paymentIntent.last_payment_error?.message || "Payment failed",
         });
 
         throw new PaymentConfirmationException(
@@ -587,9 +591,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
 
       // 检查是否已在处理中
       if (this.processingEvents.has(request.idempotencyKey)) {
-        throw new BadRequestException(
-          "Transaction is already being processed",
-        );
+        throw new BadRequestException("Transaction is already being processed");
       }
 
       // 标记为处理中
@@ -658,22 +660,30 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         }
 
         // 处理乐观锁冲突 - 重试逻辑
-        if (error.code === "P2034" || error.code === "P2025" || error instanceof ConflictException) {
+        if (
+          error.code === "P2034" ||
+          error.code === "P2025" ||
+          error instanceof ConflictException
+        ) {
           // 简单重试逻辑，最多重试2次
           let retryCount = 0;
           const maxRetries = 2;
-          
+
           while (retryCount < maxRetries) {
             try {
               retryCount++;
-              await new Promise(resolve => setTimeout(resolve, 100 * retryCount)); // 延迟重试
-              
-              const accountResult = await this.clinicAccountService.deductBalance(
-                request.clinicId,
-                request.amount.toNumber(),
-                request.orderId,
-                request.description || `Order payment deduction: ${request.orderId}`,
-              );
+              await new Promise((resolve) =>
+                setTimeout(resolve, 100 * retryCount),
+              ); // 延迟重试
+
+              const accountResult =
+                await this.clinicAccountService.deductBalance(
+                  request.clinicId,
+                  request.amount.toNumber(),
+                  request.orderId,
+                  request.description ||
+                    `Order payment deduction: ${request.orderId}`,
+                );
 
               const response: ClinicAccountDeductionResponse = {
                 transactionId: `deduct_${Date.now()}_${request.clinicId}`,
@@ -771,9 +781,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         amount,
       );
       if (existingRefund) {
-        this.logger.log(
-          `Returning existing refund for order: ${orderId}`,
-        );
+        this.logger.log(`Returning existing refund for order: ${orderId}`);
         return existingRefund;
       }
 
