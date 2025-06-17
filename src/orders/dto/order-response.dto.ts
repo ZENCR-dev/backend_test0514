@@ -151,13 +151,19 @@ export class ApiResponseWrapper<T = any> {
   @ApiProperty({ description: "响应数据" })
   data: T;
 
-  @ApiPropertyOptional({ description: "响应消息", example: "Operation completed successfully" })
+  @ApiPropertyOptional({
+    description: "响应消息",
+    example: "Operation completed successfully",
+  })
   message?: string;
 
   @ApiPropertyOptional({ description: "错误信息（仅在失败时返回）" })
   error?: string;
 
-  @ApiPropertyOptional({ description: "时间戳", example: "2025-06-17T10:30:00.000Z" })
+  @ApiPropertyOptional({
+    description: "时间戳",
+    example: "2025-06-17T10:30:00.000Z",
+  })
   timestamp?: string;
 }
 

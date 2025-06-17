@@ -595,12 +595,12 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
 
 /**
  * Task 5B - PaymentService核心方法补全测试套件
- * 
+ *
  * 测试范围：
  * 1. confirmPayment方法实现
- * 2. deductFromClinicAccount方法实现  
+ * 2. deductFromClinicAccount方法实现
  * 3. refundToClinicAccount方法实现
- * 
+ *
  * TDD开发流程：先写失败的测试，再实现功能，最后重构
  * 安全重点：并发控制、事务原子性、幂等性
  */
@@ -639,11 +639,13 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       clinicId: "clinic-456",
     },
     charges: {
-      data: [{
-        id: "ch_test_charge_123",
-        status: "succeeded",
-      }]
-    }
+      data: [
+        {
+          id: "ch_test_charge_123",
+          status: "succeeded",
+        },
+      ],
+    },
   };
 
   // deductFromClinicAccount测试数据
@@ -659,9 +661,9 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
     id: "account-123",
     clinicName: "Test Clinic",
     clinicId: "clinic-456",
-    prepaidBalance: 474.50, // 500 - 25.50
+    prepaidBalance: 474.5, // 500 - 25.50
     creditLimit: 1000,
-    availableBalance: 1474.50, // prepaidBalance + creditLimit
+    availableBalance: 1474.5, // prepaidBalance + creditLimit
     status: "active" as any,
     version: 2,
     notes: "Test account",
@@ -755,7 +757,9 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
     describe("成功场景", () => {
       it("应该成功确认支付并返回正确的响应格式", async () => {
         // Arrange
-        mockStripe.paymentIntents.confirm.mockResolvedValue(mockStripeConfirmedPaymentIntent);
+        mockStripe.paymentIntents.confirm.mockResolvedValue(
+          mockStripeConfirmedPaymentIntent,
+        );
 
         // Act
         const result = await service.confirmPayment(mockConfirmPaymentRequest);
@@ -774,7 +778,7 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
           {
             payment_method: "pm_test_card_123",
             return_url: "https://example.com/return",
-          }
+          },
         );
 
         expect(eventEmitter.emit).toHaveBeenCalledWith("payment.confirmed", {
@@ -794,10 +798,12 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
             type: "use_stripe_sdk",
             use_stripe_sdk: {
               type: "three_d_secure_redirect",
-            }
-          }
+            },
+          },
         };
-        mockStripe.paymentIntents.confirm.mockResolvedValue(requiresActionPaymentIntent);
+        mockStripe.paymentIntents.confirm.mockResolvedValue(
+          requiresActionPaymentIntent,
+        );
 
         // Act
         const result = await service.confirmPayment(mockConfirmPaymentRequest);
@@ -819,9 +825,9 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
         mockStripe.paymentIntents.confirm.mockRejectedValue(stripeError);
 
         // Act & Assert
-        await expect(service.confirmPayment(mockConfirmPaymentRequest))
-          .rejects
-          .toThrow(PaymentIntentNotFoundException);
+        await expect(
+          service.confirmPayment(mockConfirmPaymentRequest),
+        ).rejects.toThrow(PaymentIntentNotFoundException);
       });
 
       it("应该抛出PaymentConfirmationException当确认失败", async () => {
@@ -834,18 +840,18 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
         mockStripe.paymentIntents.confirm.mockRejectedValue(stripeError);
 
         // Act & Assert
-        await expect(service.confirmPayment(mockConfirmPaymentRequest))
-          .rejects
-          .toThrow(PaymentConfirmationException);
+        await expect(
+          service.confirmPayment(mockConfirmPaymentRequest),
+        ).rejects.toThrow(PaymentConfirmationException);
       });
 
       it("应该验证必填参数", async () => {
         // Act & Assert
-        await expect(service.confirmPayment({
-          paymentIntentId: "",
-        }))
-          .rejects
-          .toThrow(BadRequestException);
+        await expect(
+          service.confirmPayment({
+            paymentIntentId: "",
+          }),
+        ).rejects.toThrow(BadRequestException);
       });
     });
 
@@ -856,7 +862,9 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
           ...mockStripeConfirmedPaymentIntent,
           status: "succeeded",
         };
-        mockStripe.paymentIntents.retrieve.mockResolvedValue(alreadySucceededPaymentIntent);
+        mockStripe.paymentIntents.retrieve.mockResolvedValue(
+          alreadySucceededPaymentIntent,
+        );
 
         // Act
         const result = await service.confirmPayment(mockConfirmPaymentRequest);
@@ -875,31 +883,34 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
     describe("成功场景", () => {
       it("应该成功从诊所账户扣款", async () => {
         // Arrange
-        clinicAccountService.deductBalance.mockResolvedValue(mockClinicAccountResponse);
+        clinicAccountService.deductBalance.mockResolvedValue(
+          mockClinicAccountResponse,
+        );
 
         // Act
-        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+        const result =
+          await service.deductFromClinicAccount(mockDeductionRequest);
 
         // Assert
         expect(result).toEqual({
           transactionId: expect.any(String),
           clinicId: "clinic-456",
-          amount: 25.50,
-          remainingBalance: 474.50,
+          amount: 25.5,
+          remainingBalance: 474.5,
           orderId: "order-123",
           status: "success",
         });
 
         expect(clinicAccountService.deductBalance).toHaveBeenCalledWith(
           "clinic-456",
-          25.50,
+          25.5,
           "order-123",
-          "Order payment deduction"
+          "Order payment deduction",
         );
 
         expect(eventEmitter.emit).toHaveBeenCalledWith("account.deducted", {
           clinicId: "clinic-456",
-          amount: 25.50,
+          amount: 25.5,
           orderId: "order-123",
           transactionId: expect.any(String),
         });
@@ -910,42 +921,48 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       it("应该处理余额不足的情况", async () => {
         // Arrange
         const insufficientFundsError = new BadRequestException("余额不足");
-        clinicAccountService.deductBalance.mockRejectedValue(insufficientFundsError);
+        clinicAccountService.deductBalance.mockRejectedValue(
+          insufficientFundsError,
+        );
 
         // Act
-        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+        const result =
+          await service.deductFromClinicAccount(mockDeductionRequest);
 
         // Assert
         expect(result.status).toBe("insufficient_funds");
-        expect(eventEmitter.emit).toHaveBeenCalledWith("account.deduction.failed", {
-          clinicId: "clinic-456",
-          amount: 25.50,
-          orderId: "order-123",
-          reason: "insufficient_funds",
-        });
+        expect(eventEmitter.emit).toHaveBeenCalledWith(
+          "account.deduction.failed",
+          {
+            clinicId: "clinic-456",
+            amount: 25.5,
+            orderId: "order-123",
+            reason: "insufficient_funds",
+          },
+        );
       });
 
       it("应该验证必填参数", async () => {
         // Act & Assert
-        await expect(service.deductFromClinicAccount({
-          clinicId: "",
-          amount: new Decimal("0"),
-          orderId: "order-123",
-          description: "test",
-          idempotencyKey: "key-123",
-        }))
-          .rejects
-          .toThrow(BadRequestException);
+        await expect(
+          service.deductFromClinicAccount({
+            clinicId: "",
+            amount: new Decimal("0"),
+            orderId: "order-123",
+            description: "test",
+            idempotencyKey: "key-123",
+          }),
+        ).rejects.toThrow(BadRequestException);
       });
 
       it("应该验证金额必须大于0", async () => {
         // Act & Assert
-        await expect(service.deductFromClinicAccount({
-          ...mockDeductionRequest,
-          amount: new Decimal("-10"),
-        }))
-          .rejects
-          .toThrow(BadRequestException);
+        await expect(
+          service.deductFromClinicAccount({
+            ...mockDeductionRequest,
+            amount: new Decimal("-10"),
+          }),
+        ).rejects.toThrow(BadRequestException);
       });
     });
 
@@ -954,17 +971,19 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
         // Arrange
         const existingTransaction = {
           id: "trans-123",
-          amount: 25.50,
+          amount: 25.5,
           orderId: "order-123",
           status: "success",
         };
-        
+
         // Mock幂等性检查返回已存在的交易
-        jest.spyOn(service as any, "checkDuplicateDeduction")
+        jest
+          .spyOn(service as any, "checkDuplicateDeduction")
           .mockResolvedValue(existingTransaction);
 
         // Act
-        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+        const result =
+          await service.deductFromClinicAccount(mockDeductionRequest);
 
         // Assert
         expect(result.transactionId).toBe("trans-123");
@@ -975,13 +994,16 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
     describe("并发安全测试", () => {
       it("应该处理乐观锁冲突", async () => {
         // Arrange
-        const optimisticLockError = new ConflictException("账户信息已被其他操作更新，请刷新后重试");
+        const optimisticLockError = new ConflictException(
+          "账户信息已被其他操作更新，请刷新后重试",
+        );
         clinicAccountService.deductBalance
           .mockRejectedValueOnce(optimisticLockError)
           .mockResolvedValueOnce(mockClinicAccountResponse);
 
         // Act
-        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+        const result =
+          await service.deductFromClinicAccount(mockDeductionRequest);
 
         // Assert
         expect(result.status).toBe("success");
@@ -990,11 +1012,16 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
 
       it("应该在多次重试后失败", async () => {
         // Arrange
-        const optimisticLockError = new ConflictException("账户信息已被其他操作更新，请刷新后重试");
-        clinicAccountService.deductBalance.mockRejectedValue(optimisticLockError);
+        const optimisticLockError = new ConflictException(
+          "账户信息已被其他操作更新，请刷新后重试",
+        );
+        clinicAccountService.deductBalance.mockRejectedValue(
+          optimisticLockError,
+        );
 
         // Act
-        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+        const result =
+          await service.deductFromClinicAccount(mockDeductionRequest);
 
         // Assert
         expect(result.status).toBe("failed");
@@ -1012,23 +1039,25 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
         // Arrange
         const refundedAccountResponse = {
           ...mockClinicAccountResponse,
-          prepaidBalance: 525.50, // 500 + 25.50
-          availableBalance: 1525.50, // prepaidBalance + creditLimit
+          prepaidBalance: 525.5, // 500 + 25.50
+          availableBalance: 1525.5, // prepaidBalance + creditLimit
         };
-        clinicAccountService.refundBalance.mockResolvedValue(refundedAccountResponse);
+        clinicAccountService.refundBalance.mockResolvedValue(
+          refundedAccountResponse,
+        );
 
         // Act
         const result = await service.refundToClinicAccount(
           "clinic-456",
           new Decimal("25.50"),
           "order-123",
-          "Order cancelled"
+          "Order cancelled",
         );
 
         // Assert
         expect(result).toEqual({
           id: expect.any(String),
-          amount: 25.50,
+          amount: 25.5,
           status: "succeeded",
           orderId: "order-123",
           refundedAt: expect.any(Date),
@@ -1036,14 +1065,14 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
 
         expect(clinicAccountService.refundBalance).toHaveBeenCalledWith(
           "clinic-456",
-          25.50,
+          25.5,
           "order-123",
-          "Order cancelled"
+          "Order cancelled",
         );
 
         expect(eventEmitter.emit).toHaveBeenCalledWith("account.refunded", {
           clinicId: "clinic-456",
-          amount: 25.50,
+          amount: 25.5,
           orderId: "order-123",
           refundId: expect.any(String),
         });
@@ -1053,24 +1082,20 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
     describe("错误场景", () => {
       it("应该验证金额必须大于0", async () => {
         // Act & Assert
-        await expect(service.refundToClinicAccount(
-          "clinic-456",
-          new Decimal("0"),
-          "order-123"
-        ))
-          .rejects
-          .toThrow(BadRequestException);
+        await expect(
+          service.refundToClinicAccount(
+            "clinic-456",
+            new Decimal("0"),
+            "order-123",
+          ),
+        ).rejects.toThrow(BadRequestException);
       });
 
       it("应该验证必填参数", async () => {
         // Act & Assert
-        await expect(service.refundToClinicAccount(
-          "",
-          new Decimal("25.50"),
-          ""
-        ))
-          .rejects
-          .toThrow(BadRequestException);
+        await expect(
+          service.refundToClinicAccount("", new Decimal("25.50"), ""),
+        ).rejects.toThrow(BadRequestException);
       });
     });
 
@@ -1079,20 +1104,21 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
         // Arrange
         const existingRefund = {
           id: "refund-123",
-          amount: 25.50,
+          amount: 25.5,
           status: "succeeded",
           orderId: "order-123",
           refundedAt: new Date(),
         };
-        
-        jest.spyOn(service as any, "checkDuplicateRefund")
+
+        jest
+          .spyOn(service as any, "checkDuplicateRefund")
           .mockResolvedValue(existingRefund);
 
         // Act
         const result = await service.refundToClinicAccount(
           "clinic-456",
           new Decimal("25.50"),
-          "order-123"
+          "order-123",
         );
 
         // Assert
@@ -1110,9 +1136,11 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       // Arrange
       const concurrentRequests = 100;
       const promises: Promise<any>[] = [];
-      
+
       // Mock成功响应
-      clinicAccountService.deductBalance.mockResolvedValue(mockClinicAccountResponse);
+      clinicAccountService.deductBalance.mockResolvedValue(
+        mockClinicAccountResponse,
+      );
 
       // Act
       for (let i = 0; i < concurrentRequests; i++) {
@@ -1128,12 +1156,14 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
 
       // Assert
       expect(results).toHaveLength(concurrentRequests);
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result.status).toBe("success");
       });
-      
+
       // 验证所有请求都被处理
-      expect(clinicAccountService.deductBalance).toHaveBeenCalledTimes(concurrentRequests);
+      expect(clinicAccountService.deductBalance).toHaveBeenCalledTimes(
+        concurrentRequests,
+      );
     });
 
     // TODO: 实现1000并发测试（需要在集成测试环境中运行）

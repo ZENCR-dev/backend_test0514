@@ -157,7 +157,10 @@ export class OrderService implements IOrderManagement {
    * @param updateDto 更新数据
    * @returns 更新后的订单
    */
-  async updateOrder(orderId: string, updateDto: UpdateOrderDto): Promise<IOrder> {
+  async updateOrder(
+    orderId: string,
+    updateDto: UpdateOrderDto,
+  ): Promise<IOrder> {
     this.logger.log(`Updating order details for: ${orderId}`);
     const existingOrder = await this.prisma.order.findUnique({
       where: { id: orderId },
@@ -168,7 +171,9 @@ export class OrderService implements IOrderManagement {
     }
 
     if (existingOrder.version !== updateDto.version) {
-      throw new ConflictException("Version conflict. Please refresh and try again.");
+      throw new ConflictException(
+        "Version conflict. Please refresh and try again.",
+      );
     }
 
     const updatedOrder = await this.prisma.order.update({

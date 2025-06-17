@@ -339,7 +339,7 @@ export class PaymentController {
 
       // 获取raw body (从express.raw中间件设置的)
       const payload = request.body;
-      
+
       // 验证payload
       if (!payload) {
         this.logger.error("Webhook payload is empty");
@@ -356,14 +356,19 @@ export class PaymentController {
       this.logger.debug(`Payload length: ${payloadString.length} bytes`);
 
       // 验证签名并构造事件
-      const event = await this.paymentService.verifyWebhookSignature(payloadString, signature);
-      
+      const event = await this.paymentService.verifyWebhookSignature(
+        payloadString,
+        signature,
+      );
+
       if (!event) {
         this.logger.error("Webhook signature verification failed");
         throw new BadRequestException("Invalid webhook signature");
       }
 
-      this.logger.log(`Processing webhook event: ${event.type} (ID: ${event.id})`);
+      this.logger.log(
+        `Processing webhook event: ${event.type} (ID: ${event.id})`,
+      );
 
       // 构造正确的WebhookEventData格式
       const eventData = {
@@ -379,12 +384,11 @@ export class PaymentController {
 
       this.logger.log(`Webhook event processed successfully: ${event.id}`);
       return { received: true };
-
     } catch (error) {
       this.logger.error(`Webhook processing failed:`, {
         error: error.message,
         stack: error.stack,
-        signature: signature ? signature.substring(0, 20) + '...' : 'missing',
+        signature: signature ? signature.substring(0, 20) + "..." : "missing",
         hasPayload: !!request.body,
       });
 
@@ -392,9 +396,9 @@ export class PaymentController {
       if (error instanceof BadRequestException) {
         throw error; // 保持400状态
       }
-      
+
       // 其他错误返回500
-      throw new InternalServerErrorException('Failed to process webhook event');
+      throw new InternalServerErrorException("Failed to process webhook event");
     }
   }
 }
