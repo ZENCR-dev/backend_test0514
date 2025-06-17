@@ -275,8 +275,127 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   async confirmPayment(
     request: ConfirmPaymentRequest,
   ): Promise<PaymentConfirmationResponse> {
-    // TODO: 实现支付确认逻辑
-    throw new Error("Method not implemented.");
+    try {
+      // 输入验证
+      if (!request.paymentIntentId) {
+        throw new BadRequestException("Payment intent ID is required");
+      }
+
+      this.logger.log(`Confirming payment: ${request.paymentIntentId}`);
+
+      // 首先检查支付意图当前状态（幂等性检查）
+      let paymentIntent;
+      try {
+        paymentIntent = await this.stripe.paymentIntents.retrieve(
+          request.paymentIntentId,
+        );
+        
+        // 如果已经成功，直接返回结果
+        if (paymentIntent.status === "succeeded") {
+          const response: PaymentConfirmationResponse = {
+            id: paymentIntent.id,
+            status: this.mapStripeStatusToPaymentStatus(paymentIntent.status),
+            orderId: paymentIntent.metadata?.orderId || "",
+            amount: paymentIntent.amount,
+            chargeId: (paymentIntent.latest_charge as string) || 
+                      (paymentIntent.charges?.data?.[0]?.id as string) || 
+                      undefined,
+          };
+          return response;
+        }
+      } catch (error) {
+        // 如果获取失败，继续执行确认流程
+      }
+
+      // 调用Stripe API确认支付
+      paymentIntent = await this.stripe.paymentIntents.confirm(
+        request.paymentIntentId,
+        {
+          payment_method: request.paymentMethodId,
+          return_url: request.returnUrl,
+        },
+      );
+
+      // 构建响应
+      const response: PaymentConfirmationResponse = {
+        id: paymentIntent.id,
+        status: this.mapStripeStatusToPaymentStatus(paymentIntent.status),
+        orderId: paymentIntent.metadata?.orderId || "",
+        amount: paymentIntent.amount,
+        chargeId: (paymentIntent.latest_charge as string) || 
+                  (paymentIntent.charges?.data?.[0]?.id as string) || 
+                  undefined,
+      };
+
+      // 根据状态发射事件
+      if (paymentIntent.status === "succeeded") {
+        this.logger.log(`Payment confirmed successfully: ${paymentIntent.id}`);
+        
+        // 发射支付成功事件
+        this.eventEmitter.emit("payment.confirmed", {
+          paymentIntentId: paymentIntent.id,
+          orderId: paymentIntent.metadata?.orderId,
+          amount: paymentIntent.amount,
+          chargeId: (paymentIntent.latest_charge as string) || 
+                    (paymentIntent.charges?.data?.[0]?.id as string) || 
+                    undefined,
+        });
+      } else if (paymentIntent.status === "requires_action") {
+        this.logger.log(`Payment requires action: ${paymentIntent.id}`);
+        // 对于需要额外操作的支付，返回next_action信息
+        response.failureReason = "Payment requires additional authentication";
+      } else if (paymentIntent.status === "canceled") {
+        this.logger.warn(`Payment failed: ${paymentIntent.id}`);
+        
+        // 发射支付失败事件
+        this.eventEmitter.emit("payment.failed", {
+          paymentIntentId: paymentIntent.id,
+          orderId: paymentIntent.metadata?.orderId,
+          amount: paymentIntent.amount,
+          currency: paymentIntent.currency,
+          status: paymentIntent.status,
+          failureReason: paymentIntent.last_payment_error?.message || "Payment failed",
+        });
+
+        throw new PaymentConfirmationException(
+          `Payment confirmation failed: ${paymentIntent.last_payment_error?.message || "Unknown error"}`,
+          paymentIntent.id,
+        );
+      }
+
+      return response;
+    } catch (error) {
+      this.logger.error(
+        `Failed to confirm payment ${request.paymentIntentId}:`,
+        error,
+      );
+
+      if (error instanceof PaymentConfirmationException) {
+        throw error;
+      }
+
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      if (error instanceof Stripe.errors.StripeError) {
+        if (
+          error.code === "resource_missing" ||
+          error instanceof Stripe.errors.StripeInvalidRequestError
+        ) {
+          throw new PaymentIntentNotFoundException(request.paymentIntentId);
+        }
+        throw new PaymentConfirmationException(
+          `Stripe error: ${error.message}`,
+          request.paymentIntentId,
+        );
+      }
+
+      throw new PaymentConfirmationException(
+        "Failed to confirm payment",
+        request.paymentIntentId,
+      );
+    }
   }
 
   /**
@@ -436,8 +555,185 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   async deductFromClinicAccount(
     request: ClinicAccountDeductionRequest,
   ): Promise<ClinicAccountDeductionResponse> {
-    // TODO: 实现诊所账户扣款逻辑
-    throw new Error("Method not implemented.");
+    try {
+      // 输入验证
+      if (!request.clinicId) {
+        throw new BadRequestException("Clinic ID is required");
+      }
+      if (!request.amount || request.amount.lte(0)) {
+        throw new BadRequestException("Amount must be greater than 0");
+      }
+      if (!request.orderId) {
+        throw new BadRequestException("Order ID is required");
+      }
+      if (!request.idempotencyKey) {
+        throw new BadRequestException("Idempotency key is required");
+      }
+
+      this.logger.log(
+        `Deducting ${request.amount} from clinic account: ${request.clinicId}`,
+      );
+
+      // 幂等性检查
+      const existingTransaction = this.getProcessedEventData(
+        request.idempotencyKey,
+      );
+      if (existingTransaction) {
+        this.logger.log(
+          `Returning existing transaction for idempotency key: ${request.idempotencyKey}`,
+        );
+        return existingTransaction;
+      }
+
+      // 检查是否已在处理中
+      if (this.processingEvents.has(request.idempotencyKey)) {
+        throw new BadRequestException(
+          "Transaction is already being processed",
+        );
+      }
+
+      // 标记为处理中
+      this.processingEvents.add(request.idempotencyKey);
+
+      try {
+        // 调用ClinicAccountService进行扣款
+        const accountResult = await this.clinicAccountService.deductBalance(
+          request.clinicId,
+          parseFloat(request.amount.toString()),
+          request.orderId,
+          request.description || `Order payment: ${request.orderId}`,
+        );
+
+        // 构建响应
+        const response: ClinicAccountDeductionResponse = {
+          transactionId: `deduct_${Date.now()}_${request.clinicId}`,
+          clinicId: request.clinicId,
+          amount: request.amount.toNumber(),
+          remainingBalance: accountResult.prepaidBalance, // 使用prepaidBalance而不是availableBalance
+          orderId: request.orderId,
+          status: "success",
+        };
+
+        // 标记事件为已处理
+        this.markEventAsProcessed(request.idempotencyKey, response);
+
+        // 发射扣款成功事件
+        this.eventEmitter.emit("account.deducted", {
+          clinicId: request.clinicId,
+          amount: request.amount.toNumber(),
+          orderId: request.orderId,
+          transactionId: response.transactionId,
+        });
+
+        this.logger.log(
+          `Successfully deducted ${request.amount} from clinic ${request.clinicId}`,
+        );
+
+        return response;
+      } catch (error) {
+        // 处理余额不足错误 - 返回失败状态而不是抛出异常
+        if (
+          error.message &&
+          (error.message.includes("余额不足") ||
+            error.message.includes("insufficient"))
+        ) {
+          const failureResponse: ClinicAccountDeductionResponse = {
+            transactionId: `deduct_${Date.now()}_${request.clinicId}`,
+            clinicId: request.clinicId,
+            amount: request.amount.toNumber(),
+            remainingBalance: 0, // 余额不足时设为0
+            orderId: request.orderId,
+            status: "insufficient_funds",
+          };
+
+          // 发射扣款失败事件
+          this.eventEmitter.emit("account.deduction.failed", {
+            clinicId: request.clinicId,
+            amount: request.amount.toNumber(),
+            orderId: request.orderId,
+            reason: "insufficient_funds",
+          });
+
+          return failureResponse;
+        }
+
+        // 处理乐观锁冲突 - 重试逻辑
+        if (error.code === "P2034" || error.code === "P2025" || error instanceof ConflictException) {
+          // 简单重试逻辑，最多重试2次
+          let retryCount = 0;
+          const maxRetries = 2;
+          
+          while (retryCount < maxRetries) {
+            try {
+              retryCount++;
+              await new Promise(resolve => setTimeout(resolve, 100 * retryCount)); // 延迟重试
+              
+              const accountResult = await this.clinicAccountService.deductBalance(
+                request.clinicId,
+                request.amount.toNumber(),
+                request.orderId,
+                request.description || `Order payment deduction: ${request.orderId}`,
+              );
+
+              const response: ClinicAccountDeductionResponse = {
+                transactionId: `deduct_${Date.now()}_${request.clinicId}`,
+                clinicId: request.clinicId,
+                amount: request.amount.toNumber(),
+                remainingBalance: accountResult.prepaidBalance,
+                orderId: request.orderId,
+                status: "success",
+              };
+
+              // 发射扣款成功事件
+              this.eventEmitter.emit("account.deducted", {
+                clinicId: request.clinicId,
+                amount: request.amount.toNumber(),
+                orderId: request.orderId,
+                transactionId: response.transactionId,
+              });
+
+              return response;
+            } catch (retryError) {
+              if (retryCount >= maxRetries) {
+                // 重试次数用尽，返回失败状态
+                const failureResponse: ClinicAccountDeductionResponse = {
+                  transactionId: `deduct_${Date.now()}_${request.clinicId}`,
+                  clinicId: request.clinicId,
+                  amount: request.amount.toNumber(),
+                  remainingBalance: 0,
+                  orderId: request.orderId,
+                  status: "failed",
+                };
+                return failureResponse;
+              }
+            }
+          }
+        }
+
+        // 重新抛出其他错误
+        throw error;
+      } finally {
+        // 移除处理中标记
+        this.processingEvents.delete(request.idempotencyKey);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to deduct from clinic account ${request.clinicId}:`,
+        error,
+      );
+
+      if (
+        error instanceof BadRequestException ||
+        error instanceof InsufficientFundsException ||
+        error instanceof ConflictException
+      ) {
+        throw error;
+      }
+
+      throw new BadRequestException(
+        `Failed to deduct from clinic account: ${error.message}`,
+      );
+    }
   }
 
   /**
@@ -449,8 +745,82 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
     orderId: string,
     reason?: string,
   ): Promise<RefundResponse> {
-    // TODO: 实现诊所账户退款逻辑
-    throw new Error("Method not implemented.");
+    try {
+      // 输入验证
+      if (!clinicId) {
+        throw new BadRequestException("Clinic ID is required");
+      }
+      if (!amount || amount.lte(0)) {
+        throw new BadRequestException("Amount must be greater than 0");
+      }
+      if (!orderId) {
+        throw new BadRequestException("Order ID is required");
+      }
+
+      this.logger.log(
+        `Processing refund to clinic account: ${clinicId}, amount: ${amount}`,
+      );
+
+      // 生成唯一的事务ID用于重复退款检测
+      const transactionId = `refund_${Date.now()}_${clinicId}_${orderId}`;
+
+      // 检查重复退款
+      const existingRefund = await this.checkDuplicateRefund(
+        orderId,
+        transactionId,
+        amount,
+      );
+      if (existingRefund) {
+        this.logger.log(
+          `Returning existing refund for order: ${orderId}`,
+        );
+        return existingRefund;
+      }
+
+      // 调用ClinicAccountService进行退款
+      const accountResult = await this.clinicAccountService.refundBalance(
+        clinicId,
+        parseFloat(amount.toString()),
+        orderId,
+        reason || `Refund for order: ${orderId}`,
+      );
+
+      // 构建退款响应
+      const refundResponse: RefundResponse = {
+        id: transactionId,
+        amount: amount.toNumber(),
+        status: "succeeded",
+        orderId: orderId,
+        refundedAt: new Date(),
+      };
+
+      // 发射退款成功事件
+      this.eventEmitter.emit("account.refunded", {
+        clinicId: clinicId,
+        amount: amount.toNumber(),
+        orderId: orderId,
+        refundId: transactionId,
+      });
+
+      this.logger.log(
+        `Successfully refunded ${amount} to clinic ${clinicId} for order ${orderId}`,
+      );
+
+      return refundResponse;
+    } catch (error) {
+      this.logger.error(
+        `Failed to refund to clinic account ${clinicId}:`,
+        error,
+      );
+
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new BadRequestException(
+        `Failed to process refund: ${error.message}`,
+      );
+    }
   }
 
   /**
