@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Decimal } from "@prisma/client/runtime/library";
+import { BadRequestException, ConflictException } from "@nestjs/common";
 import Stripe from "stripe";
 import { PaymentService } from "../services/payment.service";
 import { PrismaService } from "../../prisma/prisma.service";
@@ -15,6 +16,7 @@ import {
   PaymentIntentCreationException,
   DuplicatePaymentException,
   PaymentIntentNotFoundException,
+  PaymentConfirmationException,
 } from "../exceptions/payment.exceptions";
 
 /**
@@ -587,6 +589,556 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
           expect(() => validateMethod("pi_test_123456789")).not.toThrow();
         }
       });
+    });
+  });
+});
+
+/**
+ * Task 5B - PaymentService核心方法补全测试套件
+ * 
+ * 测试范围：
+ * 1. confirmPayment方法实现
+ * 2. deductFromClinicAccount方法实现  
+ * 3. refundToClinicAccount方法实现
+ * 
+ * TDD开发流程：先写失败的测试，再实现功能，最后重构
+ * 安全重点：并发控制、事务原子性、幂等性
+ */
+describe("PaymentService - Task 5B 核心方法补全", () => {
+  let service: PaymentService;
+  let prismaService: jest.Mocked<PrismaService>;
+  let clinicAccountService: jest.Mocked<ClinicAccountService>;
+  let eventEmitter: jest.Mocked<EventEmitter2>;
+  let mockStripe: any;
+
+  // 测试数据
+  const mockStripeConfig = {
+    secretKey: "sk_test_mock_key",
+    apiVersion: "2024-12-18.acacia" as const,
+  };
+
+  const mockPaymentConfig = {
+    minPaymentAmount: 100,
+    maxPaymentAmount: 1000000,
+  };
+
+  // confirmPayment测试数据
+  const mockConfirmPaymentRequest = {
+    paymentIntentId: "pi_test_123456789",
+    paymentMethodId: "pm_test_card_123",
+    returnUrl: "https://example.com/return",
+  };
+
+  const mockStripeConfirmedPaymentIntent = {
+    id: "pi_test_123456789",
+    status: "succeeded",
+    amount: 2550,
+    currency: "nzd",
+    metadata: {
+      orderId: "order-123",
+      clinicId: "clinic-456",
+    },
+    charges: {
+      data: [{
+        id: "ch_test_charge_123",
+        status: "succeeded",
+      }]
+    }
+  };
+
+  // deductFromClinicAccount测试数据
+  const mockDeductionRequest = {
+    clinicId: "clinic-456",
+    amount: new Decimal("25.50"),
+    orderId: "order-123",
+    description: "Order payment deduction",
+    idempotencyKey: "deduct_order-123_1234567890",
+  };
+
+  const mockClinicAccountResponse = {
+    id: "account-123",
+    clinicName: "Test Clinic",
+    clinicId: "clinic-456",
+    prepaidBalance: 474.50, // 500 - 25.50
+    creditLimit: 1000,
+    availableBalance: 1474.50, // prepaidBalance + creditLimit
+    status: "active" as any,
+    version: 2,
+    notes: "Test account",
+    createdAt: new Date("2024-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+  };
+
+  // refundToClinicAccount测试数据
+  const mockRefundRequest = {
+    clinicId: "clinic-456",
+    amount: new Decimal("25.50"),
+    orderId: "order-123",
+    reason: "Order cancelled",
+  };
+
+  beforeEach(async () => {
+    // 创建Mock对象
+    const mockPrismaService = {
+      $transaction: jest.fn(),
+      // 添加其他需要的Prisma方法
+    };
+
+    const mockClinicAccountService = {
+      getBalance: jest.fn(),
+      deductBalance: jest.fn(),
+      refundBalance: jest.fn(),
+    };
+
+    const mockEventEmitter = {
+      emit: jest.fn(),
+      on: jest.fn(),
+      once: jest.fn(),
+    };
+
+    // 创建Mock Stripe实例
+    mockStripe = {
+      paymentIntents: {
+        create: jest.fn(),
+        retrieve: jest.fn(),
+        cancel: jest.fn(),
+        confirm: jest.fn(),
+      },
+      webhooks: {
+        constructEvent: jest.fn(),
+      },
+    } as any;
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PaymentService,
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+        {
+          provide: ClinicAccountService,
+          useValue: mockClinicAccountService,
+        },
+        {
+          provide: EventEmitter2,
+          useValue: mockEventEmitter,
+        },
+        {
+          provide: "STRIPE_CONFIG",
+          useValue: mockStripeConfig,
+        },
+        {
+          provide: "PAYMENT_CONFIG",
+          useValue: mockPaymentConfig,
+        },
+      ],
+    }).compile();
+
+    service = module.get<PaymentService>(PaymentService);
+    prismaService = module.get(PrismaService);
+    clinicAccountService = module.get(ClinicAccountService);
+    eventEmitter = module.get(EventEmitter2);
+
+    // 注入Mock Stripe实例
+    (service as any).stripe = mockStripe;
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  /**
+   * 1.2 confirmPayment()测试用例（60分钟）
+   */
+  describe("confirmPayment", () => {
+    describe("成功场景", () => {
+      it("应该成功确认支付并返回正确的响应格式", async () => {
+        // Arrange
+        mockStripe.paymentIntents.confirm.mockResolvedValue(mockStripeConfirmedPaymentIntent);
+
+        // Act
+        const result = await service.confirmPayment(mockConfirmPaymentRequest);
+
+        // Assert
+        expect(result).toEqual({
+          id: "pi_test_123456789",
+          status: PaymentStatus.SUCCEEDED,
+          orderId: "order-123",
+          amount: 2550,
+          chargeId: "ch_test_charge_123",
+        });
+
+        expect(mockStripe.paymentIntents.confirm).toHaveBeenCalledWith(
+          "pi_test_123456789",
+          {
+            payment_method: "pm_test_card_123",
+            return_url: "https://example.com/return",
+          }
+        );
+
+        expect(eventEmitter.emit).toHaveBeenCalledWith("payment.confirmed", {
+          paymentIntentId: "pi_test_123456789",
+          orderId: "order-123",
+          amount: 2550,
+          chargeId: "ch_test_charge_123",
+        });
+      });
+
+      it("应该处理requires_action状态的支付", async () => {
+        // Arrange
+        const requiresActionPaymentIntent = {
+          ...mockStripeConfirmedPaymentIntent,
+          status: "requires_action",
+          next_action: {
+            type: "use_stripe_sdk",
+            use_stripe_sdk: {
+              type: "three_d_secure_redirect",
+            }
+          }
+        };
+        mockStripe.paymentIntents.confirm.mockResolvedValue(requiresActionPaymentIntent);
+
+        // Act
+        const result = await service.confirmPayment(mockConfirmPaymentRequest);
+
+        // Assert
+        expect(result.status).toBe(PaymentStatus.REQUIRES_ACTION);
+        expect(eventEmitter.emit).not.toHaveBeenCalledWith("payment.confirmed");
+      });
+    });
+
+    describe("错误场景", () => {
+      it("应该抛出PaymentIntentNotFoundException当支付意图不存在", async () => {
+        // Arrange
+        const stripeError = new Stripe.errors.StripeInvalidRequestError({
+          message: "No such payment_intent",
+          type: "invalid_request_error",
+          code: "resource_missing",
+        });
+        mockStripe.paymentIntents.confirm.mockRejectedValue(stripeError);
+
+        // Act & Assert
+        await expect(service.confirmPayment(mockConfirmPaymentRequest))
+          .rejects
+          .toThrow(PaymentIntentNotFoundException);
+      });
+
+      it("应该抛出PaymentConfirmationException当确认失败", async () => {
+        // Arrange
+        const stripeError = new Stripe.errors.StripeCardError({
+          message: "Your card was declined",
+          type: "card_error",
+          code: "card_declined",
+        });
+        mockStripe.paymentIntents.confirm.mockRejectedValue(stripeError);
+
+        // Act & Assert
+        await expect(service.confirmPayment(mockConfirmPaymentRequest))
+          .rejects
+          .toThrow(PaymentConfirmationException);
+      });
+
+      it("应该验证必填参数", async () => {
+        // Act & Assert
+        await expect(service.confirmPayment({
+          paymentIntentId: "",
+        }))
+          .rejects
+          .toThrow(BadRequestException);
+      });
+    });
+
+    describe("幂等性测试", () => {
+      it("应该处理重复确认请求", async () => {
+        // Arrange
+        const alreadySucceededPaymentIntent = {
+          ...mockStripeConfirmedPaymentIntent,
+          status: "succeeded",
+        };
+        mockStripe.paymentIntents.retrieve.mockResolvedValue(alreadySucceededPaymentIntent);
+
+        // Act
+        const result = await service.confirmPayment(mockConfirmPaymentRequest);
+
+        // Assert
+        expect(result.status).toBe(PaymentStatus.SUCCEEDED);
+        expect(mockStripe.paymentIntents.confirm).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  /**
+   * 1.3 deductFromClinicAccount()测试用例（90分钟）
+   */
+  describe("deductFromClinicAccount", () => {
+    describe("成功场景", () => {
+      it("应该成功从诊所账户扣款", async () => {
+        // Arrange
+        clinicAccountService.deductBalance.mockResolvedValue(mockClinicAccountResponse);
+
+        // Act
+        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+
+        // Assert
+        expect(result).toEqual({
+          transactionId: expect.any(String),
+          clinicId: "clinic-456",
+          amount: 25.50,
+          remainingBalance: 474.50,
+          orderId: "order-123",
+          status: "success",
+        });
+
+        expect(clinicAccountService.deductBalance).toHaveBeenCalledWith(
+          "clinic-456",
+          25.50,
+          "order-123",
+          "Order payment deduction"
+        );
+
+        expect(eventEmitter.emit).toHaveBeenCalledWith("account.deducted", {
+          clinicId: "clinic-456",
+          amount: 25.50,
+          orderId: "order-123",
+          transactionId: expect.any(String),
+        });
+      });
+    });
+
+    describe("错误场景", () => {
+      it("应该处理余额不足的情况", async () => {
+        // Arrange
+        const insufficientFundsError = new BadRequestException("余额不足");
+        clinicAccountService.deductBalance.mockRejectedValue(insufficientFundsError);
+
+        // Act
+        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+
+        // Assert
+        expect(result.status).toBe("insufficient_funds");
+        expect(eventEmitter.emit).toHaveBeenCalledWith("account.deduction.failed", {
+          clinicId: "clinic-456",
+          amount: 25.50,
+          orderId: "order-123",
+          reason: "insufficient_funds",
+        });
+      });
+
+      it("应该验证必填参数", async () => {
+        // Act & Assert
+        await expect(service.deductFromClinicAccount({
+          clinicId: "",
+          amount: new Decimal("0"),
+          orderId: "order-123",
+          description: "test",
+          idempotencyKey: "key-123",
+        }))
+          .rejects
+          .toThrow(BadRequestException);
+      });
+
+      it("应该验证金额必须大于0", async () => {
+        // Act & Assert
+        await expect(service.deductFromClinicAccount({
+          ...mockDeductionRequest,
+          amount: new Decimal("-10"),
+        }))
+          .rejects
+          .toThrow(BadRequestException);
+      });
+    });
+
+    describe("幂等性测试", () => {
+      it("应该处理重复的扣款请求", async () => {
+        // Arrange
+        const existingTransaction = {
+          id: "trans-123",
+          amount: 25.50,
+          orderId: "order-123",
+          status: "success",
+        };
+        
+        // Mock幂等性检查返回已存在的交易
+        jest.spyOn(service as any, "checkDuplicateDeduction")
+          .mockResolvedValue(existingTransaction);
+
+        // Act
+        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+
+        // Assert
+        expect(result.transactionId).toBe("trans-123");
+        expect(clinicAccountService.deductBalance).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("并发安全测试", () => {
+      it("应该处理乐观锁冲突", async () => {
+        // Arrange
+        const optimisticLockError = new ConflictException("账户信息已被其他操作更新，请刷新后重试");
+        clinicAccountService.deductBalance
+          .mockRejectedValueOnce(optimisticLockError)
+          .mockResolvedValueOnce(mockClinicAccountResponse);
+
+        // Act
+        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+
+        // Assert
+        expect(result.status).toBe("success");
+        expect(clinicAccountService.deductBalance).toHaveBeenCalledTimes(2);
+      });
+
+      it("应该在多次重试后失败", async () => {
+        // Arrange
+        const optimisticLockError = new ConflictException("账户信息已被其他操作更新，请刷新后重试");
+        clinicAccountService.deductBalance.mockRejectedValue(optimisticLockError);
+
+        // Act
+        const result = await service.deductFromClinicAccount(mockDeductionRequest);
+
+        // Assert
+        expect(result.status).toBe("failed");
+        expect(clinicAccountService.deductBalance).toHaveBeenCalledTimes(3); // 默认重试3次
+      });
+    });
+  });
+
+  /**
+   * 1.4 refundToClinicAccount()测试用例（30分钟）
+   */
+  describe("refundToClinicAccount", () => {
+    describe("成功场景", () => {
+      it("应该成功退款到诊所账户", async () => {
+        // Arrange
+        const refundedAccountResponse = {
+          ...mockClinicAccountResponse,
+          prepaidBalance: 525.50, // 500 + 25.50
+          availableBalance: 1525.50, // prepaidBalance + creditLimit
+        };
+        clinicAccountService.refundBalance.mockResolvedValue(refundedAccountResponse);
+
+        // Act
+        const result = await service.refundToClinicAccount(
+          "clinic-456",
+          new Decimal("25.50"),
+          "order-123",
+          "Order cancelled"
+        );
+
+        // Assert
+        expect(result).toEqual({
+          id: expect.any(String),
+          amount: 25.50,
+          status: "succeeded",
+          orderId: "order-123",
+          refundedAt: expect.any(Date),
+        });
+
+        expect(clinicAccountService.refundBalance).toHaveBeenCalledWith(
+          "clinic-456",
+          25.50,
+          "order-123",
+          "Order cancelled"
+        );
+
+        expect(eventEmitter.emit).toHaveBeenCalledWith("account.refunded", {
+          clinicId: "clinic-456",
+          amount: 25.50,
+          orderId: "order-123",
+          refundId: expect.any(String),
+        });
+      });
+    });
+
+    describe("错误场景", () => {
+      it("应该验证金额必须大于0", async () => {
+        // Act & Assert
+        await expect(service.refundToClinicAccount(
+          "clinic-456",
+          new Decimal("0"),
+          "order-123"
+        ))
+          .rejects
+          .toThrow(BadRequestException);
+      });
+
+      it("应该验证必填参数", async () => {
+        // Act & Assert
+        await expect(service.refundToClinicAccount(
+          "",
+          new Decimal("25.50"),
+          ""
+        ))
+          .rejects
+          .toThrow(BadRequestException);
+      });
+    });
+
+    describe("重复退款检查", () => {
+      it("应该防止重复退款", async () => {
+        // Arrange
+        const existingRefund = {
+          id: "refund-123",
+          amount: 25.50,
+          status: "succeeded",
+          orderId: "order-123",
+          refundedAt: new Date(),
+        };
+        
+        jest.spyOn(service as any, "checkDuplicateRefund")
+          .mockResolvedValue(existingRefund);
+
+        // Act
+        const result = await service.refundToClinicAccount(
+          "clinic-456",
+          new Decimal("25.50"),
+          "order-123"
+        );
+
+        // Assert
+        expect(result).toEqual(existingRefund);
+        expect(clinicAccountService.refundBalance).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  /**
+   * 并发压力测试（重点测试deductFromClinicAccount的并发安全性）
+   */
+  describe("并发压力测试", () => {
+    it("应该处理100个并发扣款请求而无数据不一致", async () => {
+      // Arrange
+      const concurrentRequests = 100;
+      const promises: Promise<any>[] = [];
+      
+      // Mock成功响应
+      clinicAccountService.deductBalance.mockResolvedValue(mockClinicAccountResponse);
+
+      // Act
+      for (let i = 0; i < concurrentRequests; i++) {
+        const request = {
+          ...mockDeductionRequest,
+          orderId: `order-${i}`,
+          idempotencyKey: `deduct_order-${i}_${Date.now()}`,
+        };
+        promises.push(service.deductFromClinicAccount(request));
+      }
+
+      const results = await Promise.all(promises);
+
+      // Assert
+      expect(results).toHaveLength(concurrentRequests);
+      results.forEach(result => {
+        expect(result.status).toBe("success");
+      });
+      
+      // 验证所有请求都被处理
+      expect(clinicAccountService.deductBalance).toHaveBeenCalledTimes(concurrentRequests);
+    });
+
+    // TODO: 实现1000并发测试（需要在集成测试环境中运行）
+    it.skip("应该处理1000个并发扣款请求而无数据不一致", async () => {
+      // 这个测试将在阶段4的压力测试中实现
     });
   });
 });

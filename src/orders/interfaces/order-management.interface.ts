@@ -1,5 +1,19 @@
 import { OrderStatus } from "@prisma/client";
 
+// 订单项目实体接口
+export interface IOrderItem {
+  id: string;
+  medicineId: string;
+  medicineSnapshot: any;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  dosageInstructions?: string;
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // 订单实体接口
 export interface IOrder {
   id: string;
@@ -23,6 +37,7 @@ export interface IOrder {
   expiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
+  items?: IOrderItem[]; // 订单项目列表
 }
 
 // 分页查询结果接口

@@ -11,6 +11,7 @@ import { ClinicAccountModule } from "./clinic-account/clinic-account.module";
 import { IdempotencyMiddleware } from "./common/middleware/idempotency.middleware";
 import { MedicinesModule } from "./medicines/medicines.module";
 import { PaymentModule } from "./payment/payment.module";
+import { OrdersModule } from "./orders/orders.module";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { PaymentModule } from "./payment/payment.module";
     ClinicAccountModule,
     MedicinesModule,
     PaymentModule,
+    OrdersModule, // Task 5A - 订单管理模块
   ],
   controllers: [AppController],
   providers: [AppService],

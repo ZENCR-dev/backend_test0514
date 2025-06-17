@@ -22,6 +22,7 @@ import {
   OrderCancelledEvent,
   APP_EVENTS,
 } from "../../common/events/app.events";
+import { UpdateOrderDto } from "../dto/update-order.dto";
 
 /**
  * 订单实体管理服务 - Task 5A
@@ -146,6 +147,42 @@ export class OrderService implements IOrderManagement {
     );
 
     return orderResult;
+  }
+
+  /**
+   * 更新订单信息（非状态） - Task 5A 新增
+   *
+   * 允许更新备注等非核心状态信息
+   * @param orderId 订单ID
+   * @param updateDto 更新数据
+   * @returns 更新后的订单
+   */
+  async updateOrder(orderId: string, updateDto: UpdateOrderDto): Promise<IOrder> {
+    this.logger.log(`Updating order details for: ${orderId}`);
+    const existingOrder = await this.prisma.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!existingOrder) {
+      throw new NotFoundException(`Order not found: ${orderId}`);
+    }
+
+    if (existingOrder.version !== updateDto.version) {
+      throw new ConflictException("Version conflict. Please refresh and try again.");
+    }
+
+    const updatedOrder = await this.prisma.order.update({
+      where: { id: orderId, version: updateDto.version },
+      data: {
+        notes: updateDto.notes,
+        assignedPharmacyId: updateDto.assignedPharmacyId,
+        version: {
+          increment: 1,
+        },
+      },
+    });
+
+    return this.convertOrderDecimalFields(updatedOrder) as IOrder;
   }
 
   /**

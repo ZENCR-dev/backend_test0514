@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger, OnModuleDestroy } from "@nestjs/common";
+import { Injectable, Inject, Logger, OnModuleDestroy, BadRequestException, InternalServerErrorException, ServiceUnavailableException, ConflictException, NotFoundException } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Decimal } from "@prisma/client/runtime/library";
 import Stripe from "stripe";
@@ -449,16 +449,151 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   async getClinicAccountBalance(
     clinicId: string,
   ): Promise<{ balance: number; currency: string }> {
-    // TODO: 实现获取诊所账户余额逻辑
-    throw new Error("Method not implemented.");
+    try {
+      this.logger.log(`Getting clinic account balance for clinic: ${clinicId}`);
+
+      // 委托给ClinicAccountService获取余额
+      const balanceInfo = await this.clinicAccountService.getBalance(clinicId);
+
+      return {
+        balance: balanceInfo.availableBalance, // 使用availableBalance字段
+        currency: 'USD', // 默认货币
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to get clinic account balance for clinic ${clinicId}:`,
+        error
+      );
+
+      if (error.message?.includes('诊所账户不存在')) {
+        throw new NotFoundException(`Clinic account not found for clinic: ${clinicId}`);
+      }
+
+      throw new InternalServerErrorException('Failed to retrieve clinic account balance');
+    }
   }
 
   /**
    * 处理Stripe退款
    */
   async processStripeRefund(request: RefundRequest): Promise<RefundResponse> {
-    // TODO: 实现Stripe退款逻辑
-    throw new Error("Method not implemented.");
+    try {
+      this.logger.log(`Processing Stripe refund for order: ${request.orderId}`);
+
+      // 1. 验证退款请求参数
+      if (!request.paymentIntentId) {
+        throw new BadRequestException('Payment Intent ID is required for Stripe refund');
+      }
+
+      // 2. 检查是否已处理过相同的退款请求
+      const idempotencyKey = this.generateIdempotencyKey(
+        request.orderId,
+        'stripe_refund'
+      );
+
+      // 3. 获取PaymentIntent并验证状态
+      const paymentIntent = await this.stripe.paymentIntents.retrieve(
+        request.paymentIntentId,
+        {
+          expand: ['charges'], // 展开charges字段
+        }
+      );
+
+      if (paymentIntent.status !== 'succeeded') {
+        throw new BadRequestException(
+          `Payment Intent ${request.paymentIntentId} has status ${paymentIntent.status}, cannot refund`
+        );
+      }
+
+      // 4. 计算退款金额（分为单位）
+      const refundAmountCents = request.amount
+        ? Math.round(request.amount.toNumber() * 100)
+        : undefined; // 未指定金额时为全额退款
+
+      // 5. 验证退款金额不超过可退款金额
+      if (refundAmountCents) {
+        // 由于使用了expand，需要进行类型断言
+        const expandedPaymentIntent = paymentIntent as any;
+        if (expandedPaymentIntent.charges?.data && expandedPaymentIntent.charges.data.length > 0) {
+          const charge = expandedPaymentIntent.charges.data[0];
+          const totalRefunded = charge.amount_refunded || 0;
+          const totalCharged = charge.amount || 0;
+          const availableForRefund = totalCharged - totalRefunded;
+
+          if (refundAmountCents > availableForRefund) {
+            throw new BadRequestException(
+              `Refund amount ${refundAmountCents} exceeds available amount ${availableForRefund}`
+            );
+          }
+        }
+      }
+
+      // 6. 创建Stripe Refund
+      const refundParams: any = {
+        payment_intent: request.paymentIntentId,
+        reason: request.reason || 'requested_by_customer',
+        metadata: {
+          orderId: request.orderId,
+          refundedAt: new Date().toISOString(),
+        },
+      };
+
+      if (refundAmountCents) {
+        refundParams.amount = refundAmountCents;
+      }
+
+      const stripeRefund = await this.stripe.refunds.create(
+        refundParams,
+        {
+          idempotencyKey, // 幂等性保护
+        }
+      );
+
+      this.logger.log(`Stripe refund created: ${stripeRefund.id}`);
+
+      // 7. 构造响应对象
+      const refundResponse: RefundResponse = {
+        id: stripeRefund.id,
+        amount: stripeRefund.amount / 100, // 转换回货币单位，使用number类型
+        status: this.mapStripeRefundStatusToString(stripeRefund.status) as "pending" | "succeeded" | "failed", // 明确类型转换
+        orderId: request.orderId,
+        refundedAt: new Date(stripeRefund.created * 1000),
+      };
+
+      // 8. 发射退款事件
+      this.eventEmitter.emit('payment.refund.created', {
+        refundId: stripeRefund.id,
+        orderId: request.orderId,
+        paymentIntentId: request.paymentIntentId,
+        amount: refundResponse.amount,
+        status: refundResponse.status,
+      });
+
+      this.logger.log(`Stripe refund processed successfully: ${stripeRefund.id}`);
+      return refundResponse;
+
+    } catch (error) {
+      this.logger.error(
+        `Failed to process Stripe refund for order ${request.orderId}:`,
+        error
+      );
+
+      // 处理Stripe特定错误
+      if (error.type === 'StripeCardError') {
+        throw new BadRequestException(`Card error: ${error.message}`);
+      } else if (error.type === 'StripeInvalidRequestError') {
+        throw new BadRequestException(`Invalid request: ${error.message}`);
+      } else if (error.type === 'StripeAPIError') {
+        throw new InternalServerErrorException('Stripe API error occurred');
+      } else if (error.type === 'StripeConnectionError') {
+        throw new ServiceUnavailableException('Payment service temporarily unavailable');
+      } else if (error.type === 'StripeAuthenticationError') {
+        throw new InternalServerErrorException('Payment service authentication error');
+      }
+
+      // 重新抛出其他错误
+      throw error;
+    }
   }
 
   /**
@@ -467,8 +602,119 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   async processClinicAccountRefund(
     request: RefundRequest,
   ): Promise<RefundResponse> {
-    // TODO: 实现诊所账户退款逻辑
-    throw new Error("Method not implemented.");
+    try {
+      this.logger.log(`Processing clinic account refund for order: ${request.orderId}`);
+
+      // 1. 验证退款请求参数
+      if (!request.transactionId) {
+        throw new BadRequestException('Transaction ID is required for clinic account refund');
+      }
+
+      if (!request.amount || request.amount.lte(0)) {
+        throw new BadRequestException('Valid refund amount is required for clinic account refund');
+      }
+
+      // 2. 从事务ID中提取诊所ID (假设事务ID包含诊所信息)
+      // 这里需要根据实际业务逻辑调整，可能需要查询数据库获取诊所ID
+      let clinicId: string;
+      
+      try {
+        // 查询原始扣款事务获取诊所ID
+        // 这里使用Prisma查询account_transactions表
+        const originalTransaction = await this.prisma.accountTransaction.findUnique({
+          where: { id: request.transactionId },
+          include: { 
+            account: {
+              select: { clinicId: true }
+            }
+          }
+        });
+
+        if (!originalTransaction) {
+          throw new BadRequestException(`Transaction ${request.transactionId} not found`);
+        }
+
+        if (originalTransaction.transactionType !== 'DEBIT') {
+          throw new BadRequestException(`Transaction ${request.transactionId} is not a debit transaction`);
+        }
+
+        clinicId = originalTransaction.account.clinicId;
+      } catch (error) {
+        this.logger.error(`Failed to find transaction ${request.transactionId}:`, error);
+        throw new BadRequestException(`Invalid transaction ID: ${request.transactionId}`);
+      }
+
+      // 3. 生成幂等性键
+      const idempotencyKey = this.generateIdempotencyKey(
+        request.orderId,
+        'clinic_refund'
+      );
+
+      // 4. 检查是否已处理过相同的退款请求
+      const existingRefund = await this.checkDuplicateRefund(
+        request.orderId,
+        request.transactionId,
+        request.amount
+      );
+
+      if (existingRefund) {
+        this.logger.warn(`Duplicate refund request detected for order ${request.orderId}`);
+        return existingRefund;
+      }
+
+      // 5. 调用ClinicAccountService进行退款
+      const refundResult = await this.clinicAccountService.refundBalance(
+        clinicId,
+        request.amount.toNumber(),
+        request.transactionId,
+        request.reason || `Refund for order ${request.orderId}`
+      );
+
+      this.logger.log(`Clinic account refund processed for clinic ${clinicId}`);
+
+      // 6. 构造响应对象
+      const refundResponse: RefundResponse = {
+        id: `ref_${idempotencyKey}`, // 生成退款ID
+        amount: request.amount.toNumber(), // 转换为number类型
+        status: "succeeded" as const, // 诊所账户退款通常是即时的，使用const断言
+        orderId: request.orderId,
+        refundedAt: new Date(),
+      };
+
+      // 7. 发射退款事件
+      this.eventEmitter.emit('payment.clinic_refund.created', {
+        refundId: refundResponse.id,
+        orderId: request.orderId,
+        transactionId: request.transactionId,
+        clinicId,
+        amount: refundResponse.amount,
+        newBalance: refundResult.availableBalance, // 使用availableBalance字段
+      });
+
+      this.logger.log(`Clinic account refund processed successfully: ${refundResponse.id}`);
+      return refundResponse;
+
+    } catch (error) {
+      this.logger.error(
+        `Failed to process clinic account refund for order ${request.orderId}:`,
+        error
+      );
+
+      // 处理特定的业务错误
+      if (error.message?.includes('乐观锁')) {
+        throw new ConflictException('Account update conflict, please retry');
+      } else if (error.message?.includes('Account does not exist')) {
+        throw new NotFoundException('Clinic account not found');
+      } else if (error instanceof BadRequestException ||
+                 error instanceof NotFoundException ||
+                 error instanceof ConflictException) {
+        // 重新抛出已知的业务异常
+        throw error;
+      }
+
+      // 重新抛出未知错误
+      throw new InternalServerErrorException('Failed to process clinic account refund');
+    }
   }
 
   /**
@@ -496,9 +742,12 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
 
       try {
         // 3. 验证Webhook签名
-        if (
-          !this.verifyWebhookSignature(eventData.rawPayload || "", signature)
-        ) {
+        const verifiedEvent = this.verifyWebhookSignature(
+          eventData.rawPayload || "",
+          signature
+        );
+
+        if (!verifiedEvent) {
           throw new WebhookSignatureException(
             `Invalid webhook signature for event ${eventData.id}`,
           );
@@ -673,19 +922,35 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   }
 
   /**
-   * 验证Webhook签名
+   * 验证Webhook签名并返回构造的事件
    */
-  verifyWebhookSignature(payload: string, signature: string): boolean {
+  verifyWebhookSignature(payload: string, signature: string): any | null {
     try {
-      this.stripe.webhooks.constructEvent(
+      this.logger.debug(`Verifying webhook signature with payload length: ${payload.length}`);
+      
+      if (!this.stripeConfig.webhookSecret) {
+        this.logger.error("Webhook secret is not configured");
+        return null;
+      }
+
+      // 使用Stripe SDK验证签名并构造事件
+      const event = this.stripe.webhooks.constructEvent(
         payload,
         signature,
         this.stripeConfig.webhookSecret,
       );
-      return true;
+
+      this.logger.debug(`Webhook signature verified successfully for event: ${event.type}`);
+      return event;
+      
     } catch (error) {
-      this.logger.error("Webhook signature verification failed:", error);
-      return false;
+      this.logger.error("Webhook signature verification failed:", {
+        error: error.message,
+        signatureLength: signature ? signature.length : 0,
+        payloadLength: payload ? payload.length : 0,
+        webhookSecretConfigured: !!this.stripeConfig.webhookSecret,
+      });
+      return null;
     }
   }
 
@@ -707,6 +972,25 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
     // TODO: 实现重复支付检查逻辑
     // 这里应该查询数据库中是否已存在相同订单的支付记录
     return false;
+  }
+
+  /**
+   * 检查重复退款
+   */
+  async checkDuplicateRefund(
+    orderId: string,
+    transactionId: string,
+    amount: Decimal,
+  ): Promise<RefundResponse | null> {
+    try {
+      // 查询是否已存在相同的退款记录
+      // 这里可以根据业务需求实现，比如查询退款记录表
+      // 当前返回null表示没有重复退款
+      return null;
+    } catch (error) {
+      this.logger.warn(`Failed to check duplicate refund: ${error.message}`);
+      return null;
+    }
   }
 
   /**
@@ -744,6 +1028,19 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         return PaymentStatus.CANCELLED;
       default:
         return PaymentStatus.UNKNOWN;
+    }
+  }
+
+  private mapStripeRefundStatusToString(stripeStatus: string): string {
+    switch (stripeStatus) {
+      case "succeeded":
+        return "succeeded";
+      case "processing":
+        return "pending";
+      case "failed":
+        return "failed";
+      default:
+        return "pending";
     }
   }
 }

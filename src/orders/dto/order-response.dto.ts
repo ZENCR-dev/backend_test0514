@@ -139,3 +139,28 @@ export class PaginatedOrderResponseDto {
   @ApiProperty({ description: "总页数", example: 5 })
   totalPages: number;
 }
+
+/**
+ * 通用API响应包装器 - Task 5A 统一响应格式
+ * 用于包装所有API响应，提供一致的响应结构
+ */
+export class ApiResponseWrapper<T = any> {
+  @ApiProperty({ description: "操作是否成功", example: true })
+  success: boolean;
+
+  @ApiProperty({ description: "响应数据" })
+  data: T;
+
+  @ApiPropertyOptional({ description: "响应消息", example: "Operation completed successfully" })
+  message?: string;
+
+  @ApiPropertyOptional({ description: "错误信息（仅在失败时返回）" })
+  error?: string;
+
+  @ApiPropertyOptional({ description: "时间戳", example: "2025-06-17T10:30:00.000Z" })
+  timestamp?: string;
+}
+
+// 为了向后兼容，重新导出为OrderResponseDto
+// 实际的Controller会使用ApiResponseWrapper<OrderResponseDto>格式
+export { ApiResponseWrapper as OrderControllerResponseDto };

@@ -11,6 +11,9 @@ import {
   HttpStatus,
   UseGuards,
   Logger,
+  Req,
+  BadRequestException,
+  InternalServerErrorException,
 } from "@nestjs/common";
 import {
   ApiTags,
@@ -327,37 +330,71 @@ export class PaymentController {
     description: "Webhook签名验证失败",
   })
   async handleWebhook(
-    @RawBody() payload: Buffer,
+    @Req() request: any,
     @Headers("stripe-signature") signature: string,
   ): Promise<{ received: boolean }> {
-    this.logger.log("Received Stripe webhook event");
+    try {
+      this.logger.log("Received Stripe webhook event");
+      this.logger.debug(`Request headers: ${JSON.stringify(request.headers)}`);
 
-    // 检查payload是否存在
-    if (!payload) {
-      this.logger.error("Webhook payload is empty");
-      throw new Error("Webhook payload is required");
+      // 获取raw body (从express.raw中间件设置的)
+      const payload = request.body;
+      
+      // 验证payload
+      if (!payload) {
+        this.logger.error("Webhook payload is empty");
+        throw new BadRequestException("Webhook payload is required");
+      }
+
+      // 验证signature
+      if (!signature) {
+        this.logger.error("Webhook signature is missing");
+        throw new BadRequestException("Webhook signature is required");
+      }
+
+      const payloadString = payload.toString();
+      this.logger.debug(`Payload length: ${payloadString.length} bytes`);
+
+      // 验证签名并构造事件
+      const event = await this.paymentService.verifyWebhookSignature(payloadString, signature);
+      
+      if (!event) {
+        this.logger.error("Webhook signature verification failed");
+        throw new BadRequestException("Invalid webhook signature");
+      }
+
+      this.logger.log(`Processing webhook event: ${event.type} (ID: ${event.id})`);
+
+      // 构造正确的WebhookEventData格式
+      const eventData = {
+        id: event.id,
+        type: event.type,
+        data: event.data,
+        created: event.created,
+        rawPayload: payloadString, // 传递原始payload用于重复验证
+      };
+
+      // 处理webhook事件
+      await this.paymentService.handleWebhookEvent(eventData, signature);
+
+      this.logger.log(`Webhook event processed successfully: ${event.id}`);
+      return { received: true };
+
+    } catch (error) {
+      this.logger.error(`Webhook processing failed:`, {
+        error: error.message,
+        stack: error.stack,
+        signature: signature ? signature.substring(0, 20) + '...' : 'missing',
+        hasPayload: !!request.body,
+      });
+
+      // 根据错误类型返回适当的HTTP状态
+      if (error instanceof BadRequestException) {
+        throw error; // 保持400状态
+      }
+      
+      // 其他错误返回500
+      throw new InternalServerErrorException('Failed to process webhook event');
     }
-
-    // 检查signature是否存在
-    if (!signature) {
-      this.logger.error("Webhook signature is missing");
-      throw new Error("Webhook signature is required");
-    }
-
-    const payloadString = payload.toString();
-
-    // 验证签名
-    if (!this.paymentService.verifyWebhookSignature(payloadString, signature)) {
-      this.logger.error("Webhook signature verification failed");
-      throw new Error("Invalid webhook signature");
-    }
-
-    // 解析事件数据
-    const event = JSON.parse(payloadString);
-    this.logger.log(`Processing webhook event: ${event.type}`);
-
-    await this.paymentService.handleWebhookEvent(event, signature);
-
-    return { received: true };
   }
 }

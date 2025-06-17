@@ -42,18 +42,12 @@ export class QueryOrderDto {
   @IsString()
   assignedPharmacyId?: string;
 
-  @ApiPropertyOptional({
-    description: "开始日期",
-    example: "2025-06-01T00:00:00.000Z",
-  })
+  @ApiPropertyOptional({ description: "开始日期 (YYYY-MM-DD)" })
   @IsOptional()
   @IsDateString()
   startDate?: string;
 
-  @ApiPropertyOptional({
-    description: "结束日期",
-    example: "2025-06-30T23:59:59.999Z",
-  })
+  @ApiPropertyOptional({ description: "结束日期 (YYYY-MM-DD)" })
   @IsOptional()
   @IsDateString()
   endDate?: string;
