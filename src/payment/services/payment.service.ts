@@ -1,4 +1,4 @@
-import { Injectable, Inject, Logger } from "@nestjs/common";
+import { Injectable, Inject, Logger, OnModuleDestroy } from "@nestjs/common";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Decimal } from "@prisma/client/runtime/library";
 import Stripe from "stripe";
@@ -46,9 +46,20 @@ import {
  * - 直接调用订单管理接口（通过事件通信）
  */
 @Injectable()
-export class PaymentService implements IPaymentEngine {
+export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   private readonly logger = new Logger(PaymentService.name);
   private readonly stripe: Stripe;
+
+  // 内存幂等性存储机制
+  private readonly eventStore = new Map<
+    string,
+    {
+      processedAt: Date;
+      data: any;
+    }
+  >();
+  private readonly processingEvents = new Set<string>(); // 正在处理的事件ID
+  private readonly cleanupInterval: NodeJS.Timeout;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -70,7 +81,97 @@ export class PaymentService implements IPaymentEngine {
       typescript: true,
     });
 
+    // 启动定时清理任务
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanupExpiredEvents();
+      },
+      60 * 60 * 1000,
+    ); // 每小时清理一次
+
     this.logger.log("PaymentService initialized successfully");
+  }
+
+  /**
+   * 销毁时清理资源
+   */
+  onModuleDestroy(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+  }
+
+  /**
+   * 检查事件是否已被处理（内存幂等性检查）
+   */
+  private isEventProcessed(eventId: string): boolean {
+    // 如果事件正在处理中，也视为已处理
+    if (this.processingEvents.has(eventId)) {
+      return true;
+    }
+
+    const event = this.eventStore.get(eventId);
+    if (!event) {
+      return false;
+    }
+
+    // 检查事件是否已过期（24小时）
+    const now = new Date();
+    const eventAge = now.getTime() - event.processedAt.getTime();
+    const maxAge = 24 * 60 * 60 * 1000; // 24小时
+
+    if (eventAge > maxAge) {
+      this.eventStore.delete(eventId);
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * 记录已处理的事件（内存幂等性记录）
+   */
+  private markEventAsProcessed(eventId: string, data?: any): void {
+    this.eventStore.set(eventId, {
+      processedAt: new Date(),
+      data: data || null,
+    });
+
+    // 移除处理中标记
+    this.processingEvents.delete(eventId);
+
+    this.logger.debug(`Event marked as processed: ${eventId}`);
+  }
+
+  /**
+   * 获取已处理事件的数据
+   */
+  private getProcessedEventData(eventId: string): any {
+    const event = this.eventStore.get(eventId);
+    return event?.data || null;
+  }
+
+  /**
+   * 清理过期的事件记录
+   */
+  private cleanupExpiredEvents(): void {
+    const now = new Date();
+    const maxAge = 24 * 60 * 60 * 1000; // 24小时
+    let cleanedCount = 0;
+
+    for (const [eventId, event] of this.eventStore.entries()) {
+      const eventAge = now.getTime() - event.processedAt.getTime();
+      if (eventAge > maxAge) {
+        this.eventStore.delete(eventId);
+        cleanedCount++;
+      }
+    }
+
+    if (cleanedCount > 0) {
+      this.logger.debug(
+        `Cleaned up ${cleanedCount} expired events from memory store`,
+      );
+    }
   }
 
   /**
@@ -377,8 +478,198 @@ export class PaymentService implements IPaymentEngine {
     eventData: WebhookEventData,
     signature: string,
   ): Promise<void> {
-    // TODO: 实现Webhook事件处理逻辑
-    throw new Error("Method not implemented.");
+    try {
+      this.logger.log(
+        `Processing webhook event: ${eventData.id} (type: ${eventData.type})`,
+      );
+
+      // 1. 内存幂等性检查
+      if (this.isEventProcessed(eventData.id)) {
+        this.logger.debug(
+          `Event ${eventData.id} already processed or being processed, skipping`,
+        );
+        return;
+      }
+
+      // 2. 标记事件为正在处理
+      this.processingEvents.add(eventData.id);
+
+      try {
+        // 3. 验证Webhook签名
+        if (
+          !this.verifyWebhookSignature(eventData.rawPayload || "", signature)
+        ) {
+          throw new WebhookSignatureException(
+            `Invalid webhook signature for event ${eventData.id}`,
+          );
+        }
+
+        // 4. 根据事件类型处理
+        let processedData: any = null;
+
+        switch (eventData.type) {
+          case "payment_intent.succeeded":
+            processedData = await this.handlePaymentSucceeded(eventData);
+            break;
+          case "payment_intent.payment_failed":
+            processedData = await this.handlePaymentFailed(eventData);
+            break;
+          case "payment_intent.canceled":
+            processedData = await this.handlePaymentCanceled(eventData);
+            break;
+          case "charge.dispute.created":
+            processedData = await this.handleChargeDispute(eventData);
+            break;
+          default:
+            this.logger.warn(`Unhandled webhook event type: ${eventData.type}`);
+            processedData = { ignored: true, reason: "unhandled_event_type" };
+        }
+
+        // 5. 标记事件为已处理
+        this.markEventAsProcessed(eventData.id, processedData);
+
+        this.logger.log(
+          `Webhook event processed successfully: ${eventData.id}`,
+        );
+      } catch (error) {
+        // 处理失败时移除处理中标记
+        this.processingEvents.delete(eventData.id);
+        throw error;
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to process webhook event ${eventData.id}:`,
+        error,
+      );
+
+      if (error instanceof WebhookSignatureException) {
+        throw error;
+      }
+
+      throw new WebhookEventProcessingException(
+        eventData.id,
+        eventData.type,
+        error.message,
+      );
+    }
+  }
+
+  /**
+   * 处理支付成功事件
+   */
+  private async handlePaymentSucceeded(
+    eventData: WebhookEventData,
+  ): Promise<any> {
+    const paymentIntent = eventData.data.object;
+    const orderId = paymentIntent.metadata?.orderId;
+
+    if (!orderId) {
+      this.logger.warn(
+        `Payment succeeded but no orderId in metadata: ${paymentIntent.id}`,
+      );
+      return { processed: false, reason: "missing_order_id" };
+    }
+
+    // 发出支付成功事件
+    this.eventEmitter.emit("payment.succeeded", {
+      orderId,
+      paymentIntentId: paymentIntent.id,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency,
+      clinicId: paymentIntent.metadata?.clinicId,
+    });
+
+    return {
+      processed: true,
+      orderId,
+      paymentIntentId: paymentIntent.id,
+      amount: paymentIntent.amount,
+    };
+  }
+
+  /**
+   * 处理支付失败事件
+   */
+  private async handlePaymentFailed(eventData: WebhookEventData): Promise<any> {
+    const paymentIntent = eventData.data.object;
+    const orderId = paymentIntent.metadata?.orderId;
+
+    if (!orderId) {
+      this.logger.warn(
+        `Payment failed but no orderId in metadata: ${paymentIntent.id}`,
+      );
+      return { processed: false, reason: "missing_order_id" };
+    }
+
+    // 发出支付失败事件
+    this.eventEmitter.emit("payment.failed", {
+      orderId,
+      paymentIntentId: paymentIntent.id,
+      failureReason:
+        paymentIntent.last_payment_error?.message || "Unknown error",
+      clinicId: paymentIntent.metadata?.clinicId,
+    });
+
+    return {
+      processed: true,
+      orderId,
+      paymentIntentId: paymentIntent.id,
+      failureReason: paymentIntent.last_payment_error?.message,
+    };
+  }
+
+  /**
+   * 处理支付取消事件
+   */
+  private async handlePaymentCanceled(
+    eventData: WebhookEventData,
+  ): Promise<any> {
+    const paymentIntent = eventData.data.object;
+    const orderId = paymentIntent.metadata?.orderId;
+
+    if (!orderId) {
+      this.logger.warn(
+        `Payment canceled but no orderId in metadata: ${paymentIntent.id}`,
+      );
+      return { processed: false, reason: "missing_order_id" };
+    }
+
+    // 发出支付取消事件
+    this.eventEmitter.emit("payment.canceled", {
+      orderId,
+      paymentIntentId: paymentIntent.id,
+      clinicId: paymentIntent.metadata?.clinicId,
+    });
+
+    return {
+      processed: true,
+      orderId,
+      paymentIntentId: paymentIntent.id,
+    };
+  }
+
+  /**
+   * 处理争议事件
+   */
+  private async handleChargeDispute(eventData: WebhookEventData): Promise<any> {
+    const dispute = eventData.data.object;
+    const chargeId = dispute.charge;
+
+    // 发出争议创建事件
+    this.eventEmitter.emit("payment.dispute.created", {
+      disputeId: dispute.id,
+      chargeId,
+      amount: dispute.amount,
+      reason: dispute.reason,
+      status: dispute.status,
+    });
+
+    return {
+      processed: true,
+      disputeId: dispute.id,
+      chargeId,
+      amount: dispute.amount,
+    };
   }
 
   /**
