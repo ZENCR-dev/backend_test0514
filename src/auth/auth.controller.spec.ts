@@ -36,6 +36,7 @@ describe("AuthController (e2e)", () => {
     register: jest.fn(),
     login: jest.fn(),
     getProfile: jest.fn(),
+    transformToLoginResponseV12: jest.fn(),
   };
 
   const mockPermissionService = {
@@ -149,11 +150,42 @@ describe("AuthController (e2e)", () => {
     };
 
     it("should login successfully with valid credentials", async () => {
-      const loginResponse = {
-        access_token: "mock-jwt-token",
-        user: mockUser,
+      // Mock AuthService.login to return LoginResult format
+      const loginResult = {
+        success: true,
+        accessToken: "mock-jwt-token",
+        refreshToken: "mock-refresh-token",
+        user: {
+          id: "1",
+          email: "test@example.com",
+          role: UserRole.practitioner,
+          profile: {
+            fullName: "Test User",
+            phone: "123456789",
+          },
+        },
       };
-      mockAuthService.login.mockResolvedValue(loginResponse);
+
+      // Mock the v1.2 response format
+      const v12Response = {
+        success: true,
+        data: {
+          accessToken: "mock-jwt-token",
+          refreshToken: "mock-refresh-token",
+          user: {
+            id: "1",
+            email: "test@example.com",
+            name: "Test User",
+            role: "practitioner",
+          },
+        },
+        meta: {
+          timestamp: "2025-06-18T13:00:00.000Z",
+        },
+      };
+
+      mockAuthService.login.mockResolvedValue(loginResult);
+      mockAuthService.transformToLoginResponseV12.mockReturnValue(v12Response);
 
       const response = await request(app.getHttpServer())
         .post("/auth/login")
@@ -161,15 +193,17 @@ describe("AuthController (e2e)", () => {
         .expect(200);
 
       expect(mockAuthService.login).toHaveBeenCalledWith(loginDto);
-      expect(response.body).toEqual(loginResponse);
+      expect(mockAuthService.transformToLoginResponseV12).toHaveBeenCalledWith(
+        loginResult,
+      );
+      expect(response.body).toEqual(v12Response);
     });
 
     it("should return 401 for invalid credentials", async () => {
-      mockAuthService.login.mockRejectedValue(
-        new UnauthorizedException(
-          "Invalid credentials or account not approved.",
-        ),
-      );
+      mockAuthService.login.mockResolvedValue({
+        success: false,
+        message: "Invalid credentials",
+      });
 
       await request(app.getHttpServer())
         .post("/auth/login")

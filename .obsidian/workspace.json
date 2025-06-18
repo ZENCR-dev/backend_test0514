@@ -11,10 +11,14 @@
             "id": "9d4987acb0fd3159",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "scripts/user-data/README.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "新标签页"
+              "title": "README"
             }
           }
         ]
@@ -137,13 +141,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "SOP1.3devdocs/SOPv1.3FinalMVP1.0.md",
+                "file": "scripts/user-data/README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "SOPv1.3FinalMVP1.0 的大纲"
+              "title": "README 的大纲"
             }
           }
         ],

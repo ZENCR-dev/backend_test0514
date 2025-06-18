@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import * as crypto from "crypto";
 import { UserService } from "../user/user.service";
 import {
   JwtPayload,
@@ -14,11 +15,17 @@ import {
   LoginResult,
   RegisterResult,
   PasswordValidationResult,
+  RefreshTokenResult,
 } from "./interfaces/auth.interface";
 import { UserStatus } from "@prisma/client";
 import { AuthLoginDto } from "./dto/auth-login.dto";
 import { AuthRegisterDto } from "./dto/auth-register.dto";
+import { RefreshTokenDto } from "./dto/refresh-token.dto";
 import { FullUserInfo } from "../user/interfaces/user.interface";
+import {
+  transformToLoginResponseV12,
+  transformToRefreshResponseV12,
+} from "./utils/response-transformer";
 
 @Injectable()
 export class AuthService {
@@ -106,9 +113,14 @@ export class AuthService {
 
     const accessToken = this.jwtService.sign(payload);
 
+    // 生成并设置 RefreshToken
+    const refreshToken = this.generateRefreshToken();
+    await this.setRefreshToken(fullUserInfo.id, refreshToken);
+
     return {
       success: true,
       accessToken,
+      refreshToken,
       user: {
         id: fullUserInfo.id,
         email: fullUserInfo.email,
@@ -188,5 +200,154 @@ export class AuthService {
       return null;
     }
     return user;
+  }
+
+  /**
+   * 生成 RefreshToken
+   */
+  generateRefreshToken(): string {
+    return crypto.randomBytes(32).toString("hex");
+  }
+
+  /**
+   * 验证 RefreshToken
+   */
+  async validateRefreshToken(
+    refreshToken: string,
+  ): Promise<FullUserInfo | null> {
+    try {
+      const user = await this.userService.findByRefreshToken(refreshToken);
+
+      if (!user) {
+        this.logger.warn(
+          `Invalid refresh token attempted: ${refreshToken.substring(0, 8)}...`,
+        );
+        return null;
+      }
+
+      // 检查 refreshToken 是否过期
+      if (user.refreshTokenExp && user.refreshTokenExp < new Date()) {
+        this.logger.warn(`Expired refresh token for user ${user.id}`);
+        // 清除过期的 refreshToken
+        await this.userService.clearRefreshToken(user.id);
+        return null;
+      }
+
+      // 检查用户状态
+      if (user.status !== UserStatus.approved) {
+        this.logger.warn(
+          `Refresh token used by inactive user ${user.id}, status: ${user.status}`,
+        );
+        return null;
+      }
+
+      return user;
+    } catch (error) {
+      this.logger.error(
+        `Error validating refresh token: ${error.message}`,
+        error.stack,
+      );
+      return null;
+    }
+  }
+
+  /**
+   * 刷新访问令牌（实现Token轮换机制）
+   */
+  async refreshAccessToken(
+    refreshTokenDto: RefreshTokenDto,
+  ): Promise<RefreshTokenResult> {
+    const user = await this.validateRefreshToken(refreshTokenDto.refreshToken);
+
+    if (!user) {
+      return {
+        success: false,
+        message: "Invalid or expired refresh token",
+      };
+    }
+
+    // 生成新的 accessToken
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const accessToken = this.jwtService.sign(payload);
+
+    // 生成新的 refreshToken（Token轮换机制）
+    const newRefreshToken = this.generateRefreshToken();
+
+    // 更新数据库中的 refreshToken
+    await this.setRefreshToken(user.id, newRefreshToken);
+
+    this.logger.log(
+      `Access token and refresh token refreshed for user ${user.id}`,
+    );
+
+    return {
+      success: true,
+      accessToken,
+      refreshToken: newRefreshToken, // 返回新的refreshToken
+    };
+  }
+
+  /**
+   * 为用户设置 RefreshToken
+   */
+  async setRefreshToken(userId: string, refreshToken: string): Promise<void> {
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 7); // 7天有效期
+
+    await this.userService.updateRefreshToken(
+      userId,
+      refreshToken,
+      expirationDate,
+    );
+  }
+
+  /**
+   * 清除用户的 RefreshToken（用于登出）
+   */
+  async clearRefreshToken(userId: string): Promise<void> {
+    await this.userService.clearRefreshToken(userId);
+  }
+
+  /**
+   * 转换登录结果为 v1.2 API 响应格式
+   */
+  transformToLoginResponseV12(loginResult: LoginResult) {
+    if (
+      !loginResult.success ||
+      !loginResult.user ||
+      !loginResult.accessToken ||
+      !loginResult.refreshToken
+    ) {
+      throw new InternalServerErrorException(
+        "Invalid login result for transformation",
+      );
+    }
+
+    return transformToLoginResponseV12(
+      loginResult.user as any, // 临时类型转换
+      loginResult.accessToken,
+      loginResult.refreshToken,
+    );
+  }
+
+  /**
+   * 转换刷新令牌结果为 v1.2 API 响应格式
+   */
+  transformToRefreshResponseV12(refreshResult: RefreshTokenResult) {
+    if (!refreshResult.success || !refreshResult.accessToken) {
+      throw new InternalServerErrorException(
+        "Invalid refresh result for transformation",
+      );
+    }
+
+    return transformToRefreshResponseV12(
+      refreshResult.accessToken,
+      refreshResult.refreshToken,
+    );
   }
 }

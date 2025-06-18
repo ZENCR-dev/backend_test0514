@@ -1,13 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { FindMedicinesDto } from "./dto/find-medicines.dto";
-import { FindMedicinesResponseDto, MedicineDto } from "./dto/medicine.dto";
+import { MedicineDto } from "./dto/medicine.dto";
+import { MedicineResponseV12Dto } from "./dto/medicine-response-v12.dto";
+import { transformToMedicineResponseV12 } from "./medicine-response-transformer";
 
 @Injectable()
 export class MedicinesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: FindMedicinesDto): Promise<FindMedicinesResponseDto> {
+  async findAll(query: FindMedicinesDto): Promise<MedicineResponseV12Dto> {
     const {
       search,
       page = 1,
@@ -67,12 +69,7 @@ export class MedicinesService {
     // 计算总页数
     const totalPages = Math.ceil(total / limit);
 
-    return {
-      data,
-      total,
-      page,
-      limit,
-      totalPages,
-    };
+    // 使用transformer转换为v1.2格式
+    return transformToMedicineResponseV12(data, total, page, limit, totalPages);
   }
 }

@@ -308,4 +308,56 @@ export class UserService {
     });
     return { message: `User with ID ${id} deleted successfully` };
   }
+
+  /**
+   * 根据 RefreshToken 查找用户
+   */
+  async findByRefreshToken(refreshToken: string): Promise<FullUserInfo | null> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        refreshToken,
+        refreshTokenExp: {
+          gte: new Date(), // 只查找未过期的 token
+        },
+      },
+      include: { profile: true },
+    });
+
+    if (!user) return null;
+
+    const { password, ...result } = user;
+    return result as FullUserInfo;
+  }
+
+  /**
+   * 更新用户的 RefreshToken
+   */
+  async updateRefreshToken(
+    userId: string,
+    refreshToken: string,
+    expirationDate: Date,
+  ): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        refreshToken,
+        refreshTokenExp: expirationDate,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  /**
+   * 清除用户的 RefreshToken
+   */
+  async clearRefreshToken(userId: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        refreshToken: null,
+        refreshTokenExp: null,
+        updatedAt: new Date(),
+      },
+    });
+  }
 }

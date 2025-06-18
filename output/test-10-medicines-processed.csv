@@ -1,0 +1,11 @@
+中文名,英文名,拼音名,SKU,分类,单位,需要处方,基础价格,状态
+当归,Angelica sinensis,danggui,DG,补益药,g,否,0.85,active
+川芎,Ligusticum chuanxiong,chuanxiong,CX,活血药,g,否,0.92,active
+白芍,Paeonia lactiflora,baishao,BS,其他中药,g,否,1.15,active
+熟地黄,Rehmannia glutinosa,shudihuang,SDH,补益药,g,否,0.78,active
+人参,Panax ginseng,renshen,RS,补益药,g,否,15.5,active
+党参,Codonopsis pilosula,dangshen,DS,补益药,g,否,1.25,active
+黄芪,Astragalus membranaceus,huangqi,HQ,补益药,g,否,0.65,active
+甘草,Glycyrrhiza uralensis,gancao,GC,其他中药,g,否,0.45,active
+陈皮,Citrus reticulata,chenpi,CP,理气药,g,否,0.55,active
+半夏,Pinellia ternata,banxia,BX,化痰药,g,是,1.8,active

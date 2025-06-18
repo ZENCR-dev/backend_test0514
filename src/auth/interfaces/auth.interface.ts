@@ -45,7 +45,56 @@ export interface LoginResult {
   success: boolean;
   user?: AuthResponse["user"];
   accessToken?: string;
+  refreshToken?: string;
   message?: string;
+}
+
+/**
+ * RefreshToken 请求接口
+ */
+export interface RefreshTokenDto {
+  refreshToken: string;
+}
+
+/**
+ * RefreshToken 响应接口
+ */
+export interface RefreshTokenResult {
+  success: boolean;
+  accessToken?: string;
+  refreshToken?: string; // 可选：如果实现 token 轮换
+  message?: string;
+}
+
+/**
+ * v1.2 API 响应格式接口
+ */
+export interface ApiResponseV12<T = any> {
+  success: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
+    details?: any;
+    timestamp: string;
+  };
+  meta?: {
+    timestamp: string;
+  };
+}
+
+/**
+ * v1.2 认证响应数据接口
+ */
+export interface AuthResponseDataV12 {
+  accessToken: string;
+  refreshToken: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+    role: string; // 小写格式
+  };
 }
 
 /**

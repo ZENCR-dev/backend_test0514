@@ -1,0 +1,1102 @@
+[
+  {
+    "name": "当归",
+    "chineseName": "当归",
+    "englishName": "Angelica sinensis",
+    "pinyinName": "danggui",
+    "sku": "DG",
+    "description": "当归 (Angelica sinensis)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.85,
+    "metadata": {
+      "importIndex": 1,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "当归",
+        "englishName": "Angelica sinensis",
+        "pricePerGram": 0.85
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "川芎",
+    "chineseName": "川芎",
+    "englishName": "Ligusticum chuanxiong",
+    "pinyinName": "chuanxiong",
+    "sku": "CX",
+    "description": "川芎 (Ligusticum chuanxiong)",
+    "category": "活血药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.92,
+    "metadata": {
+      "importIndex": 2,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "川芎",
+        "englishName": "Ligusticum chuanxiong",
+        "pricePerGram": 0.92
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "白芍",
+    "chineseName": "白芍",
+    "englishName": "Paeonia lactiflora",
+    "pinyinName": "baishao",
+    "sku": "BS",
+    "description": "白芍 (Paeonia lactiflora)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.15,
+    "metadata": {
+      "importIndex": 3,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "白芍",
+        "englishName": "Paeonia lactiflora",
+        "pricePerGram": 1.15
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "熟地黄",
+    "chineseName": "熟地黄",
+    "englishName": "Rehmannia glutinosa",
+    "pinyinName": "shudihuang",
+    "sku": "SDH",
+    "description": "熟地黄 (Rehmannia glutinosa)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.78,
+    "metadata": {
+      "importIndex": 4,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "熟地黄",
+        "englishName": "Rehmannia glutinosa",
+        "pricePerGram": 0.78
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "人参",
+    "chineseName": "人参",
+    "englishName": "Panax ginseng",
+    "pinyinName": "renshen",
+    "sku": "RS",
+    "description": "人参 (Panax ginseng)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 15.5,
+    "metadata": {
+      "importIndex": 5,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "人参",
+        "englishName": "Panax ginseng",
+        "pricePerGram": 15.5
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "党参",
+    "chineseName": "党参",
+    "englishName": "Codonopsis pilosula",
+    "pinyinName": "dangshen",
+    "sku": "DS",
+    "description": "党参 (Codonopsis pilosula)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.25,
+    "metadata": {
+      "importIndex": 6,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "党参",
+        "englishName": "Codonopsis pilosula",
+        "pricePerGram": 1.25
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "黄芪",
+    "chineseName": "黄芪",
+    "englishName": "Astragalus membranaceus",
+    "pinyinName": "huangqi",
+    "sku": "HQ",
+    "description": "黄芪 (Astragalus membranaceus)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.65,
+    "metadata": {
+      "importIndex": 7,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "黄芪",
+        "englishName": "Astragalus membranaceus",
+        "pricePerGram": 0.65
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "甘草",
+    "chineseName": "甘草",
+    "englishName": "Glycyrrhiza uralensis",
+    "pinyinName": "gancao",
+    "sku": "GC",
+    "description": "甘草 (Glycyrrhiza uralensis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.45,
+    "metadata": {
+      "importIndex": 8,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "甘草",
+        "englishName": "Glycyrrhiza uralensis",
+        "pricePerGram": 0.45
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "陈皮",
+    "chineseName": "陈皮",
+    "englishName": "Citrus reticulata",
+    "pinyinName": "chenpi",
+    "sku": "CP",
+    "description": "陈皮 (Citrus reticulata)",
+    "category": "理气药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.55,
+    "metadata": {
+      "importIndex": 9,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "陈皮",
+        "englishName": "Citrus reticulata",
+        "pricePerGram": 0.55
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "半夏",
+    "chineseName": "半夏",
+    "englishName": "Pinellia ternata",
+    "pinyinName": "banxia",
+    "sku": "BX",
+    "description": "半夏 (Pinellia ternata)",
+    "category": "化痰药",
+    "unit": "g",
+    "requiresPrescription": true,
+    "basePrice": 1.8,
+    "metadata": {
+      "importIndex": 10,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "半夏",
+        "englishName": "Pinellia ternata",
+        "pricePerGram": 1.8
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "茯苓",
+    "chineseName": "茯苓",
+    "englishName": "Poria cocos",
+    "pinyinName": "fuling",
+    "sku": "FL",
+    "description": "茯苓 (Poria cocos)",
+    "category": "化痰药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.7,
+    "metadata": {
+      "importIndex": 11,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "茯苓",
+        "englishName": "Poria cocos",
+        "pricePerGram": 0.7
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "白术",
+    "chineseName": "白术",
+    "englishName": "Atractylodes macrocephala",
+    "pinyinName": "baizhu",
+    "sku": "BZ",
+    "description": "白术 (Atractylodes macrocephala)",
+    "category": "化痰药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.2,
+    "metadata": {
+      "importIndex": 12,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "白术",
+        "englishName": "Atractylodes macrocephala",
+        "pricePerGram": 1.2
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "薄荷",
+    "chineseName": "薄荷",
+    "englishName": "Mentha haplocalyx",
+    "pinyinName": "bohe",
+    "sku": "BH",
+    "description": "薄荷 (Mentha haplocalyx)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.6,
+    "metadata": {
+      "importIndex": 13,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "薄荷",
+        "englishName": "Mentha haplocalyx",
+        "pricePerGram": 0.6
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "厚朴",
+    "chineseName": "厚朴",
+    "englishName": "Magnolia officinalis",
+    "pinyinName": "houpo",
+    "sku": "HP",
+    "description": "厚朴 (Magnolia officinalis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.95,
+    "metadata": {
+      "importIndex": 14,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "厚朴",
+        "englishName": "Magnolia officinalis",
+        "pricePerGram": 0.95
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "杜仲",
+    "chineseName": "杜仲",
+    "englishName": "Eucommia ulmoides",
+    "pinyinName": "duzhong",
+    "sku": "DZ",
+    "description": "杜仲 (Eucommia ulmoides)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.35,
+    "metadata": {
+      "importIndex": 15,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "杜仲",
+        "englishName": "Eucommia ulmoides",
+        "pricePerGram": 1.35
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "枸杞子",
+    "chineseName": "枸杞子",
+    "englishName": "Lycium barbarum",
+    "pinyinName": "gouqizi",
+    "sku": "GQZ",
+    "description": "枸杞子 (Lycium barbarum)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 2.8,
+    "metadata": {
+      "importIndex": 16,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "枸杞子",
+        "englishName": "Lycium barbarum",
+        "pricePerGram": 2.8
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "牛膝",
+    "chineseName": "牛膝",
+    "englishName": "Achyranthes bidentata",
+    "pinyinName": "niuxi",
+    "sku": "NX",
+    "description": "牛膝 (Achyranthes bidentata)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.88,
+    "metadata": {
+      "importIndex": 17,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "牛膝",
+        "englishName": "Achyranthes bidentata",
+        "pricePerGram": 0.88
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "车前子",
+    "chineseName": "车前子",
+    "englishName": "Plantago asiatica",
+    "pinyinName": "cheqianzi",
+    "sku": "CQZ",
+    "description": "车前子 (Plantago asiatica)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.75,
+    "metadata": {
+      "importIndex": 18,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "车前子",
+        "englishName": "Plantago asiatica",
+        "pricePerGram": 0.75
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "知母",
+    "chineseName": "知母",
+    "englishName": "Anemarrhena asphodeloides",
+    "pinyinName": "zhimu",
+    "sku": "ZM",
+    "description": "知母 (Anemarrhena asphodeloides)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.05,
+    "metadata": {
+      "importIndex": 19,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "知母",
+        "englishName": "Anemarrhena asphodeloides",
+        "pricePerGram": 1.05
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "浙贝母",
+    "chineseName": "浙贝母",
+    "englishName": "Fritillaria thunbergii",
+    "pinyinName": "zhebeimu",
+    "sku": "ZBM",
+    "description": "浙贝母 (Fritillaria thunbergii)",
+    "category": "止咳药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 8.5,
+    "metadata": {
+      "importIndex": 20,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "浙贝母",
+        "englishName": "Fritillaria thunbergii",
+        "pricePerGram": 8.5
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "川贝母",
+    "chineseName": "川贝母",
+    "englishName": "Fritillaria cirrhosa",
+    "pinyinName": "chuanbeimu",
+    "sku": "CBM",
+    "description": "川贝母 (Fritillaria cirrhosa)",
+    "category": "止咳药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 25,
+    "metadata": {
+      "importIndex": 21,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "川贝母",
+        "englishName": "Fritillaria cirrhosa",
+        "pricePerGram": 25
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "藏红花",
+    "chineseName": "藏红花",
+    "englishName": "Crocus sativus",
+    "pinyinName": "zanghonghua",
+    "sku": "ZHH",
+    "description": "藏红花 (Crocus sativus)",
+    "category": "活血药",
+    "unit": "g",
+    "requiresPrescription": true,
+    "basePrice": 150,
+    "metadata": {
+      "importIndex": 22,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "藏红花",
+        "englishName": "Crocus sativus",
+        "pricePerGram": 150
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "番泻叶",
+    "chineseName": "番泻叶",
+    "englishName": "Cassia angustifolia",
+    "pinyinName": "fanxieye",
+    "sku": "FXY",
+    "description": "番泻叶 (Cassia angustifolia)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.5,
+    "metadata": {
+      "importIndex": 23,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "番泻叶",
+        "englishName": "Cassia angustifolia",
+        "pricePerGram": 1.5
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "诃子",
+    "chineseName": "诃子",
+    "englishName": "Terminalia chebula",
+    "pinyinName": "hezi",
+    "sku": "HZ",
+    "description": "诃子 (Terminalia chebula)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 2.2,
+    "metadata": {
+      "importIndex": 24,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "诃子",
+        "englishName": "Terminalia chebula",
+        "pricePerGram": 2.2
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "没药",
+    "chineseName": "没药",
+    "englishName": "Commiphora myrrha",
+    "pinyinName": "moyao",
+    "sku": "MY",
+    "description": "没药 (Commiphora myrrha)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 12,
+    "metadata": {
+      "importIndex": 25,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "没药",
+        "englishName": "Commiphora myrrha",
+        "pricePerGram": 12
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "乳香",
+    "chineseName": "乳香",
+    "englishName": "Boswellia carterii",
+    "pinyinName": "ruxiang",
+    "sku": "RX",
+    "description": "乳香 (Boswellia carterii)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 10.5,
+    "metadata": {
+      "importIndex": 26,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "乳香",
+        "englishName": "Boswellia carterii",
+        "pricePerGram": 10.5
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "血竭",
+    "chineseName": "血竭",
+    "englishName": "Daemonorops draco",
+    "pinyinName": "xuejie",
+    "sku": "XJ",
+    "description": "血竭 (Daemonorops draco)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 35,
+    "metadata": {
+      "importIndex": 27,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "血竭",
+        "englishName": "Daemonorops draco",
+        "pricePerGram": 35
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "阿胶",
+    "chineseName": "阿胶",
+    "englishName": "Equus asinus",
+    "pinyinName": "ajiao",
+    "sku": "AJ",
+    "description": "阿胶 (Equus asinus)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 45,
+    "metadata": {
+      "importIndex": 28,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "阿胶",
+        "englishName": "Equus asinus",
+        "pricePerGram": 45
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "龟板",
+    "chineseName": "龟板",
+    "englishName": "Chinemys reevesii",
+    "pinyinName": "guiban",
+    "sku": "GB",
+    "description": "龟板 (Chinemys reevesii)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 18,
+    "metadata": {
+      "importIndex": 29,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "龟板",
+        "englishName": "Chinemys reevesii",
+        "pricePerGram": 18
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "鳖甲",
+    "chineseName": "鳖甲",
+    "englishName": "Trionyx sinensis",
+    "pinyinName": "biejia",
+    "sku": "BJ",
+    "description": "鳖甲 (Trionyx sinensis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 22,
+    "metadata": {
+      "importIndex": 30,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "鳖甲",
+        "englishName": "Trionyx sinensis",
+        "pricePerGram": 22
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "蛤蚧",
+    "chineseName": "蛤蚧",
+    "englishName": "Gekko gecko",
+    "pinyinName": "gejie",
+    "sku": "GJ",
+    "description": "蛤蚧 (Gekko gecko)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 85,
+    "metadata": {
+      "importIndex": 31,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "蛤蚧",
+        "englishName": "Gekko gecko",
+        "pricePerGram": 85
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "海马",
+    "chineseName": "海马",
+    "englishName": "Hippocampus kelloggi",
+    "pinyinName": "haima",
+    "sku": "HM",
+    "description": "海马 (Hippocampus kelloggi)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 120,
+    "metadata": {
+      "importIndex": 32,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "海马",
+        "englishName": "Hippocampus kelloggi",
+        "pricePerGram": 120
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "石决明",
+    "chineseName": "石决明",
+    "englishName": "Haliotis diversicolor",
+    "pinyinName": "shijueming",
+    "sku": "SJM",
+    "description": "石决明 (Haliotis diversicolor)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 3.5,
+    "metadata": {
+      "importIndex": 33,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "石决明",
+        "englishName": "Haliotis diversicolor",
+        "pricePerGram": 3.5
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "夜明砂",
+    "chineseName": "夜明砂",
+    "englishName": "Vespertilio superans",
+    "pinyinName": "yemingsha",
+    "sku": "YMS",
+    "description": "夜明砂 (Vespertilio superans)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 12.5,
+    "metadata": {
+      "importIndex": 34,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "夜明砂",
+        "englishName": "Vespertilio superans",
+        "pricePerGram": 12.5
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "五倍子",
+    "chineseName": "五倍子",
+    "englishName": "Rhus chinensis",
+    "pinyinName": "wubeizi",
+    "sku": "WBZ",
+    "description": "五倍子 (Rhus chinensis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.9,
+    "metadata": {
+      "importIndex": 35,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "五倍子",
+        "englishName": "Rhus chinensis",
+        "pricePerGram": 1.9
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "五加皮",
+    "chineseName": "五加皮",
+    "englishName": "Acanthopanax gracilistylus",
+    "pinyinName": "wujiapi",
+    "sku": "WJP",
+    "description": "五加皮 (Acanthopanax gracilistylus)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 2.4,
+    "metadata": {
+      "importIndex": 36,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "五加皮",
+        "englishName": "Acanthopanax gracilistylus",
+        "pricePerGram": 2.4
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "五味子",
+    "chineseName": "五味子",
+    "englishName": "Schisandra chinensis",
+    "pinyinName": "wuweizi",
+    "sku": "WWZ",
+    "description": "五味子 (Schisandra chinensis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 8,
+    "metadata": {
+      "importIndex": 37,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "五味子",
+        "englishName": "Schisandra chinensis",
+        "pricePerGram": 8
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "五指毛桃",
+    "chineseName": "五指毛桃",
+    "englishName": "Ficus hirta",
+    "pinyinName": "wuzhimoutao",
+    "sku": "WZMT",
+    "description": "五指毛桃 (Ficus hirta)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 3.2,
+    "metadata": {
+      "importIndex": 38,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "五指毛桃",
+        "englishName": "Ficus hirta",
+        "pricePerGram": 3.2
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "仙茅",
+    "chineseName": "仙茅",
+    "englishName": "Curculigo orchioides",
+    "pinyinName": "xianmao",
+    "sku": "XM",
+    "description": "仙茅 (Curculigo orchioides)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 4.8,
+    "metadata": {
+      "importIndex": 39,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "仙茅",
+        "englishName": "Curculigo orchioides",
+        "pricePerGram": 4.8
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "佛手",
+    "chineseName": "佛手",
+    "englishName": "Citrus medica",
+    "pinyinName": "foshou",
+    "sku": "FS",
+    "description": "佛手 (Citrus medica)",
+    "category": "理气药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 3.7,
+    "metadata": {
+      "importIndex": 40,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "佛手",
+        "englishName": "Citrus medica",
+        "pricePerGram": 3.7
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "金银花",
+    "chineseName": "金银花",
+    "englishName": "Lonicera japonica",
+    "pinyinName": "jinyinhua",
+    "sku": "JYH",
+    "description": "金银花 (Lonicera japonica)",
+    "category": "清热药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 2.1,
+    "metadata": {
+      "importIndex": 41,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "金银花",
+        "englishName": "Lonicera japonica",
+        "pricePerGram": 2.1
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "连翘",
+    "chineseName": "连翘",
+    "englishName": "Forsythia suspensa",
+    "pinyinName": "lianqiao",
+    "sku": "LQ",
+    "description": "连翘 (Forsythia suspensa)",
+    "category": "清热药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.85,
+    "metadata": {
+      "importIndex": 42,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "连翘",
+        "englishName": "Forsythia suspensa",
+        "pricePerGram": 1.85
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "板蓝根",
+    "chineseName": "板蓝根",
+    "englishName": "Isatis indigotica",
+    "pinyinName": "banlangen",
+    "sku": "BLG",
+    "description": "板蓝根 (Isatis indigotica)",
+    "category": "清热药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.95,
+    "metadata": {
+      "importIndex": 43,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "板蓝根",
+        "englishName": "Isatis indigotica",
+        "pricePerGram": 0.95
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "大青叶",
+    "chineseName": "大青叶",
+    "englishName": "Isatis indigotica",
+    "pinyinName": "daqingye",
+    "sku": "DQY",
+    "description": "大青叶 (Isatis indigotica)",
+    "category": "清热药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.05,
+    "metadata": {
+      "importIndex": 44,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "大青叶",
+        "englishName": "Isatis indigotica",
+        "pricePerGram": 1.05
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "蒲公英",
+    "chineseName": "蒲公英",
+    "englishName": "Taraxacum mongolicum",
+    "pinyinName": "pugongying",
+    "sku": "PGY",
+    "description": "蒲公英 (Taraxacum mongolicum)",
+    "category": "清热药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.75,
+    "metadata": {
+      "importIndex": 45,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "蒲公英",
+        "englishName": "Taraxacum mongolicum",
+        "pricePerGram": 0.75
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "紫花地丁",
+    "chineseName": "紫花地丁",
+    "englishName": "Viola philippica",
+    "pinyinName": "zihuadiding",
+    "sku": "ZHDD",
+    "description": "紫花地丁 (Viola philippica)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.35,
+    "metadata": {
+      "importIndex": 46,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "紫花地丁",
+        "englishName": "Viola philippica",
+        "pricePerGram": 1.35
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "野菊花",
+    "chineseName": "野菊花",
+    "englishName": "Chrysanthemum indicum",
+    "pinyinName": "yejuhua",
+    "sku": "YJH",
+    "description": "野菊花 (Chrysanthemum indicum)",
+    "category": "清热药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.6,
+    "metadata": {
+      "importIndex": 47,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "野菊花",
+        "englishName": "Chrysanthemum indicum",
+        "pricePerGram": 1.6
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "夏枯草",
+    "chineseName": "夏枯草",
+    "englishName": "Prunella vulgaris",
+    "pinyinName": "xiakucao",
+    "sku": "XKC",
+    "description": "夏枯草 (Prunella vulgaris)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.85,
+    "metadata": {
+      "importIndex": 48,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "夏枯草",
+        "englishName": "Prunella vulgaris",
+        "pricePerGram": 0.85
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "决明子",
+    "chineseName": "决明子",
+    "englishName": "Cassia obtusifolia",
+    "pinyinName": "juemingzi",
+    "sku": "JMZ",
+    "description": "决明子 (Cassia obtusifolia)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.65,
+    "metadata": {
+      "importIndex": 49,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "决明子",
+        "englishName": "Cassia obtusifolia",
+        "pricePerGram": 0.65
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "菊花",
+    "chineseName": "菊花",
+    "englishName": "Chrysanthemum morifolium",
+    "pinyinName": "juhua",
+    "sku": "JH",
+    "description": "菊花 (Chrysanthemum morifolium)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 3.2,
+    "metadata": {
+      "importIndex": 50,
+      "processedAt": "2025-06-18T02:25:44.365Z",
+      "originalData": {
+        "chineseName": "菊花",
+        "englishName": "Chrysanthemum morifolium",
+        "pricePerGram": 3.2
+      }
+    },
+    "status": "active"
+  }
+]

@@ -30,6 +30,8 @@ export interface UserProfileInfo {
  */
 export interface FullUserInfo extends UserInfo {
   profile?: UserProfileInfo;
+  refreshToken?: string | null;
+  refreshTokenExp?: Date | null;
 }
 
 /**

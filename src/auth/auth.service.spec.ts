@@ -20,6 +20,9 @@ describe("AuthService", () => {
             createUser: jest.fn(),
             findByEmail: jest.fn(),
             findById: jest.fn(),
+            updateRefreshToken: jest.fn(),
+            findByRefreshToken: jest.fn(),
+            clearRefreshToken: jest.fn(),
           },
         },
         {
@@ -73,11 +76,18 @@ describe("AuthService", () => {
         password: "hashedpassword",
         role: UserRole.practitioner,
         status: UserStatus.approved,
+        profile: {
+          fullName: "Test User",
+          phone: "123456789",
+        },
       };
       jest
         .spyOn(service, "validateUserPassword")
         .mockResolvedValue({ isValid: true, user: user });
       (userService.findById as jest.Mock).mockResolvedValue(user);
+      (userService.updateRefreshToken as jest.Mock).mockResolvedValue(
+        undefined,
+      );
       (jwtService.sign as jest.Mock).mockReturnValue("test_token");
 
       const result = await service.login({
@@ -86,6 +96,8 @@ describe("AuthService", () => {
       });
       expect(result.success).toBe(true);
       expect(result.accessToken).toEqual("test_token");
+      expect(result.refreshToken).toBeDefined();
+      expect(userService.updateRefreshToken).toHaveBeenCalled();
     });
 
     it("should fail for invalid credentials", async () => {

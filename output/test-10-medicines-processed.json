@@ -1,0 +1,222 @@
+[
+  {
+    "name": "当归",
+    "chineseName": "当归",
+    "englishName": "Angelica sinensis",
+    "pinyinName": "danggui",
+    "sku": "DG",
+    "description": "当归 (Angelica sinensis)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.85,
+    "metadata": {
+      "importIndex": 1,
+      "processedAt": "2025-06-18T02:21:15.979Z",
+      "originalData": {
+        "chineseName": "当归",
+        "englishName": "Angelica sinensis",
+        "pricePerGram": 0.85
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "川芎",
+    "chineseName": "川芎",
+    "englishName": "Ligusticum chuanxiong",
+    "pinyinName": "chuanxiong",
+    "sku": "CX",
+    "description": "川芎 (Ligusticum chuanxiong)",
+    "category": "活血药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.92,
+    "metadata": {
+      "importIndex": 2,
+      "processedAt": "2025-06-18T02:21:15.979Z",
+      "originalData": {
+        "chineseName": "川芎",
+        "englishName": "Ligusticum chuanxiong",
+        "pricePerGram": 0.92
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "白芍",
+    "chineseName": "白芍",
+    "englishName": "Paeonia lactiflora",
+    "pinyinName": "baishao",
+    "sku": "BS",
+    "description": "白芍 (Paeonia lactiflora)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.15,
+    "metadata": {
+      "importIndex": 3,
+      "processedAt": "2025-06-18T02:21:15.980Z",
+      "originalData": {
+        "chineseName": "白芍",
+        "englishName": "Paeonia lactiflora",
+        "pricePerGram": 1.15
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "熟地黄",
+    "chineseName": "熟地黄",
+    "englishName": "Rehmannia glutinosa",
+    "pinyinName": "shudihuang",
+    "sku": "SDH",
+    "description": "熟地黄 (Rehmannia glutinosa)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.78,
+    "metadata": {
+      "importIndex": 4,
+      "processedAt": "2025-06-18T02:21:15.980Z",
+      "originalData": {
+        "chineseName": "熟地黄",
+        "englishName": "Rehmannia glutinosa",
+        "pricePerGram": 0.78
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "人参",
+    "chineseName": "人参",
+    "englishName": "Panax ginseng",
+    "pinyinName": "renshen",
+    "sku": "RS",
+    "description": "人参 (Panax ginseng)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 15.5,
+    "metadata": {
+      "importIndex": 5,
+      "processedAt": "2025-06-18T02:21:15.980Z",
+      "originalData": {
+        "chineseName": "人参",
+        "englishName": "Panax ginseng",
+        "pricePerGram": 15.5
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "党参",
+    "chineseName": "党参",
+    "englishName": "Codonopsis pilosula",
+    "pinyinName": "dangshen",
+    "sku": "DS",
+    "description": "党参 (Codonopsis pilosula)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 1.25,
+    "metadata": {
+      "importIndex": 6,
+      "processedAt": "2025-06-18T02:21:15.980Z",
+      "originalData": {
+        "chineseName": "党参",
+        "englishName": "Codonopsis pilosula",
+        "pricePerGram": 1.25
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "黄芪",
+    "chineseName": "黄芪",
+    "englishName": "Astragalus membranaceus",
+    "pinyinName": "huangqi",
+    "sku": "HQ",
+    "description": "黄芪 (Astragalus membranaceus)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.65,
+    "metadata": {
+      "importIndex": 7,
+      "processedAt": "2025-06-18T02:21:15.980Z",
+      "originalData": {
+        "chineseName": "黄芪",
+        "englishName": "Astragalus membranaceus",
+        "pricePerGram": 0.65
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "甘草",
+    "chineseName": "甘草",
+    "englishName": "Glycyrrhiza uralensis",
+    "pinyinName": "gancao",
+    "sku": "GC",
+    "description": "甘草 (Glycyrrhiza uralensis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.45,
+    "metadata": {
+      "importIndex": 8,
+      "processedAt": "2025-06-18T02:21:15.980Z",
+      "originalData": {
+        "chineseName": "甘草",
+        "englishName": "Glycyrrhiza uralensis",
+        "pricePerGram": 0.45
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "陈皮",
+    "chineseName": "陈皮",
+    "englishName": "Citrus reticulata",
+    "pinyinName": "chenpi",
+    "sku": "CP",
+    "description": "陈皮 (Citrus reticulata)",
+    "category": "理气药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.55,
+    "metadata": {
+      "importIndex": 9,
+      "processedAt": "2025-06-18T02:21:15.980Z",
+      "originalData": {
+        "chineseName": "陈皮",
+        "englishName": "Citrus reticulata",
+        "pricePerGram": 0.55
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "半夏",
+    "chineseName": "半夏",
+    "englishName": "Pinellia ternata",
+    "pinyinName": "banxia",
+    "sku": "BX",
+    "description": "半夏 (Pinellia ternata)",
+    "category": "化痰药",
+    "unit": "g",
+    "requiresPrescription": true,
+    "basePrice": 1.8,
+    "metadata": {
+      "importIndex": 10,
+      "processedAt": "2025-06-18T02:21:15.980Z",
+      "originalData": {
+        "chineseName": "半夏",
+        "englishName": "Pinellia ternata",
+        "pricePerGram": 1.8
+      }
+    },
+    "status": "active"
+  }
+]
