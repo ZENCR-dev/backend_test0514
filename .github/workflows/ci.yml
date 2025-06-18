@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: ['**']  # 在所有分支推送时触发
   pull_request:
     branches: [main, develop]
 
