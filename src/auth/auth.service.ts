@@ -1,6 +1,5 @@
 import {
   Injectable,
-  UnauthorizedException,
   Inject,
   Logger,
   InternalServerErrorException,

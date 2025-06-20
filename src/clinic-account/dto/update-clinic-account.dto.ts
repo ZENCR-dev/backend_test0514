@@ -1,6 +1,6 @@
 import { PartialType } from "@nestjs/swagger";
 import { CreateClinicAccountDto } from "./create-clinic-account.dto";
-import { IsOptional, IsString, IsNumber, Min } from "class-validator";
+import { IsOptional, IsNumber, Min } from "class-validator";
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 

@@ -1,17 +1,11 @@
 import { describe, test, expect } from '@jest/globals';
+import responseSamples from '../../output/api-response-samples.json';
 
 /**
  * API 契约测试 - 响应格式静态验证
  * 验证 output/api-response-samples.json 中的响应样本是否符合前端期望的 v1.2 格式
  */
 describe('API Response Format Contract Tests', () => {
-  let responseSamples: any;
-
-  beforeAll(() => {
-    // 动态加载 API 响应样本数据
-    responseSamples = require('../../output/api-response-samples.json');
-  });
-
   describe('认证模块响应格式验证', () => {
     test('POST /auth/login - 登录成功响应格式', () => {
       const loginResponse = responseSamples.samples.auth_login_success;

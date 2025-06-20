@@ -119,4 +119,14 @@ export class PerformanceMonitoringMiddleware implements NestMiddleware {
       this.logger.error('Failed to flush performance metrics:', error);
     }
   }
+
+  private logPerformanceMetrics(
+    method: string,
+    originalUrl: string,
+    statusCode: number,
+    responseTime: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    error?: Error,
+  ) {
+  }
 }

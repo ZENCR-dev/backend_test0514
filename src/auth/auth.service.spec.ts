@@ -1,50 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { AuthService } from "./auth.service";
-import { UserService } from "../user/user.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { JwtService } from "@nestjs/jwt";
-import { ConfigService } from "@nestjs/config";
 import { UserRole, UserStatus } from "@prisma/client";
 
 describe("AuthService", () => {
   let service: AuthService;
-  let userService: UserService;
-  let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        AuthService,
-        {
-          provide: UserService,
-          useValue: {
-            createUser: jest.fn(),
-            findByEmail: jest.fn(),
-            findById: jest.fn(),
-            updateRefreshToken: jest.fn(),
-            findByRefreshToken: jest.fn(),
-            clearRefreshToken: jest.fn(),
-          },
-        },
-        {
-          provide: JwtService,
-          useValue: {
-            sign: jest.fn(),
-          },
-        },
-        {
-          provide: "AUTH_CONFIG",
-          useValue: {
-            jwtSecret: "test_secret",
-            jwtExpiresIn: "1d",
-            bcryptSaltRounds: 10,
-          },
-        },
-      ],
+      providers: [AuthService, PrismaService, JwtService],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    userService = module.get<UserService>(UserService);
-    jwtService = module.get<JwtService>(JwtService);
   });
 
   it("should be defined", () => {
@@ -60,7 +28,7 @@ describe("AuthService", () => {
         fullName: "Test User",
       };
       const user = { id: "1", ...registerDto };
-      (userService.createUser as jest.Mock).mockResolvedValue(user);
+      (service.userService.createUser as jest.Mock).mockResolvedValue(user);
 
       const result = await service.register(registerDto);
       expect(result.success).toBe(true);
@@ -84,11 +52,11 @@ describe("AuthService", () => {
       jest
         .spyOn(service, "validateUserPassword")
         .mockResolvedValue({ isValid: true, user: user });
-      (userService.findById as jest.Mock).mockResolvedValue(user);
-      (userService.updateRefreshToken as jest.Mock).mockResolvedValue(
+      (service.userService.findById as jest.Mock).mockResolvedValue(user);
+      (service.userService.updateRefreshToken as jest.Mock).mockResolvedValue(
         undefined,
       );
-      (jwtService.sign as jest.Mock).mockReturnValue("test_token");
+      (service.jwtService.sign as jest.Mock).mockReturnValue("test_token");
 
       const result = await service.login({
         email: "test@example.com",
@@ -97,7 +65,7 @@ describe("AuthService", () => {
       expect(result.success).toBe(true);
       expect(result.accessToken).toEqual("test_token");
       expect(result.refreshToken).toBeDefined();
-      expect(userService.updateRefreshToken).toHaveBeenCalled();
+      expect(service.userService.updateRefreshToken).toHaveBeenCalled();
     });
 
     it("should fail for invalid credentials", async () => {
