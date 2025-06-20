@@ -35,7 +35,7 @@ describe("AuthService", () => {
         PrismaService,
         { provide: UserService, useValue: mockUserServiceMethods },
         { provide: JwtService, useValue: mockJwtServiceMethods },
-        { provide: 'AUTH_CONFIG', useValue: mockAuthConfig },
+        { provide: "AUTH_CONFIG", useValue: mockAuthConfig },
       ],
     }).compile();
 
@@ -58,7 +58,11 @@ describe("AuthService", () => {
         phone: "123456789",
         address: "Test Address",
       };
-      const user = { id: "1", email: registerDto.email, role: registerDto.role };
+      const user = {
+        id: "1",
+        email: registerDto.email,
+        role: registerDto.role,
+      };
       mockUserService.createUser.mockResolvedValue(user as any);
 
       const result = await service.register(registerDto);
@@ -79,7 +83,7 @@ describe("AuthService", () => {
           phone: "123456789",
         },
       };
-      
+
       jest
         .spyOn(service, "validateUserPassword")
         .mockResolvedValue({ isValid: true, user: user });
@@ -90,7 +94,7 @@ describe("AuthService", () => {
         email: "test@example.com",
         password: "password123",
       });
-      
+
       expect(result.success).toBe(true);
       expect(result.accessToken).toEqual("test_token");
       expect(result.refreshToken).toBeDefined();
@@ -100,12 +104,12 @@ describe("AuthService", () => {
       jest
         .spyOn(service, "validateUserPassword")
         .mockResolvedValue({ isValid: false });
-      
+
       const result = await service.login({
         email: "test@example.com",
         password: "wrongpassword",
       });
-      
+
       expect(result.success).toBe(false);
     });
   });

@@ -41,7 +41,7 @@ describe("AuthController", () => {
         Reflector,
         { provide: UserService, useValue: mockUserService },
         { provide: PermissionService, useValue: mockPermissionService },
-        { provide: 'AUTH_CONFIG', useValue: mockAuthConfig },
+        { provide: "AUTH_CONFIG", useValue: mockAuthConfig },
       ],
     }).compile();
 
