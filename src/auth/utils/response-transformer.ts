@@ -1,8 +1,8 @@
 import {
   AuthResponseDataV12,
   ApiResponseV12,
-} from '../interfaces/auth.interface';
-import { User, UserProfile } from '@prisma/client';
+} from "../interfaces/auth.interface";
+import { User, UserProfile } from "@prisma/client";
 
 /**
  * 角色名称转换映射

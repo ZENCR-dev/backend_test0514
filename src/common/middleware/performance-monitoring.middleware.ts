@@ -1,7 +1,7 @@
-import { Injectable, NestMiddleware, Logger } from '@nestjs/common';
-import { Request, Response, NextFunction } from 'express';
-import { readFileSync, existsSync, appendFileSync } from 'fs';
-import { join } from 'path';
+import { Injectable, NestMiddleware, Logger } from "@nestjs/common";
+import { Request, Response, NextFunction } from "express";
+import { readFileSync, existsSync, appendFileSync } from "fs";
+import { join } from "path";
 
 interface PerformanceMetric {
   timestamp: string;
@@ -15,7 +15,7 @@ interface PerformanceMetric {
 
 @Injectable()
 export class PerformanceMonitoringMiddleware implements NestMiddleware {
-  private readonly logger = new Logger('PerformanceMonitoring');
+  private readonly logger = new Logger("PerformanceMonitoring");
   private config: any;
   private metricsBuffer: PerformanceMetric[] = [];
   private lastFlush = Date.now();
@@ -28,20 +28,28 @@ export class PerformanceMonitoringMiddleware implements NestMiddleware {
 
   private loadConfig() {
     try {
-      const configPath = join(process.cwd(), 'config', 'monitoring', 'performance.json');
+      const configPath = join(
+        process.cwd(),
+        "config",
+        "monitoring",
+        "performance.json",
+      );
       if (existsSync(configPath)) {
-        this.config = JSON.parse(readFileSync(configPath, 'utf8'));
+        this.config = JSON.parse(readFileSync(configPath, "utf8"));
       } else {
         // 默认配置
         this.config = {
           enabled: true,
           thresholds: { api: { warning: 300, critical: 1000 } },
-          monitoring: { logLevel: 'info', sampleRate: 1.0 }
+          monitoring: { logLevel: "info", sampleRate: 1.0 },
         };
       }
     } catch (error) {
-      this.logger.warn('Failed to load performance config, using defaults');
-      this.config = { enabled: true, thresholds: { api: { warning: 300, critical: 1000 } } };
+      this.logger.warn("Failed to load performance config, using defaults");
+      this.config = {
+        enabled: true,
+        thresholds: { api: { warning: 300, critical: 1000 } },
+      };
     }
   }
 
@@ -59,11 +67,11 @@ export class PerformanceMonitoringMiddleware implements NestMiddleware {
     const originalUrl = req.originalUrl;
 
     // 只监控API端点
-    if (!originalUrl.startsWith('/api/')) {
+    if (!originalUrl.startsWith("/api/")) {
       return next();
     }
 
-    res.on('finish', () => {
+    res.on("finish", () => {
       const duration = Date.now() - startTime;
       this.recordMetric({
         timestamp: new Date().toISOString(),
@@ -71,8 +79,8 @@ export class PerformanceMonitoringMiddleware implements NestMiddleware {
         url: originalUrl,
         duration,
         statusCode: res.statusCode,
-        userAgent: req.get('User-Agent'),
-        ip: req.ip
+        userAgent: req.get("User-Agent"),
+        ip: req.ip,
       });
 
       // 实时警告
@@ -84,7 +92,7 @@ export class PerformanceMonitoringMiddleware implements NestMiddleware {
 
   private recordMetric(metric: PerformanceMetric) {
     this.metricsBuffer.push(metric);
-    
+
     // 如果缓冲区太大，立即刷新
     if (this.metricsBuffer.length > 100) {
       this.flushMetrics();
@@ -93,12 +101,16 @@ export class PerformanceMonitoringMiddleware implements NestMiddleware {
 
   private checkThresholds(url: string, duration: number) {
     const thresholds = this.config.thresholds.api;
-    
+
     if (duration > thresholds.critical) {
-      this.logger.error(`⚠️ CRITICAL: ${url} took ${duration}ms (threshold: ${thresholds.critical}ms)`);
+      this.logger.error(
+        `⚠️ CRITICAL: ${url} took ${duration}ms (threshold: ${thresholds.critical}ms)`,
+      );
     } else if (duration > thresholds.warning) {
-      this.logger.warn(`⚠️ WARNING: ${url} took ${duration}ms (threshold: ${thresholds.warning}ms)`);
-    } else if (this.config.monitoring.logLevel === 'debug') {
+      this.logger.warn(
+        `⚠️ WARNING: ${url} took ${duration}ms (threshold: ${thresholds.warning}ms)`,
+      );
+    } else if (this.config.monitoring.logLevel === "debug") {
       this.logger.debug(`✅ OK: ${url} took ${duration}ms`);
     }
   }
@@ -107,16 +119,24 @@ export class PerformanceMonitoringMiddleware implements NestMiddleware {
     if (this.metricsBuffer.length === 0) return;
 
     try {
-      const logFile = join(process.cwd(), 'logs', 'monitoring', `performance-${new Date().toISOString().split('T')[0]}.jsonl`);
-      const logData = this.metricsBuffer.map(m => JSON.stringify(m)).join('\n') + '\n';
-      
+      const logFile = join(
+        process.cwd(),
+        "logs",
+        "monitoring",
+        `performance-${new Date().toISOString().split("T")[0]}.jsonl`,
+      );
+      const logData =
+        this.metricsBuffer.map((m) => JSON.stringify(m)).join("\n") + "\n";
+
       appendFileSync(logFile, logData);
-      
-      this.logger.log(`📊 Flushed ${this.metricsBuffer.length} performance metrics`);
+
+      this.logger.log(
+        `📊 Flushed ${this.metricsBuffer.length} performance metrics`,
+      );
       this.metricsBuffer = [];
       this.lastFlush = Date.now();
     } catch (error) {
-      this.logger.error('Failed to flush performance metrics:', error);
+      this.logger.error("Failed to flush performance metrics:", error);
     }
   }
 
@@ -127,6 +147,5 @@ export class PerformanceMonitoringMiddleware implements NestMiddleware {
     responseTime: number,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     error?: Error,
-  ) {
-  }
+  ) {}
 }

@@ -4,17 +4,17 @@ import {
   ExecutionContext,
   CallHandler,
   Logger,
-} from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { Reflector } from '@nestjs/core';
-import { PermissionService } from '../services/permission.service';
+} from "@nestjs/common";
+import { Observable } from "rxjs";
+import { tap } from "rxjs/operators";
+import { Reflector } from "@nestjs/core";
+import { PermissionService } from "../services/permission.service";
 import {
   PERMISSION_METADATA_KEY,
   REQUIRE_OWNERSHIP_KEY,
   REQUIRE_CLINIC_MEMBERSHIP_KEY,
-} from '../decorators/permissions.decorator';
-import { Action, Resource } from '../interfaces/permission.interface';
+} from "../decorators/permissions.decorator";
+import { Action, Resource } from "../interfaces/permission.interface";
 
 @Injectable()
 export class PermissionInterceptor implements NestInterceptor {
@@ -31,7 +31,10 @@ export class PermissionInterceptor implements NestInterceptor {
         try {
           const permissions = this.reflector.getAllAndOverride<
             { action: Action; resource: Resource }[]
-          >(PERMISSION_METADATA_KEY, [context.getHandler(), context.getClass()]);
+          >(PERMISSION_METADATA_KEY, [
+            context.getHandler(),
+            context.getClass(),
+          ]);
 
           if (!permissions || permissions.length === 0) {
             return;
@@ -41,7 +44,7 @@ export class PermissionInterceptor implements NestInterceptor {
           const user = request.user;
 
           if (!user) {
-            this.logger.warn('No user found in request for permission logging');
+            this.logger.warn("No user found in request for permission logging");
             return;
           }
 
@@ -50,10 +53,11 @@ export class PermissionInterceptor implements NestInterceptor {
             [context.getHandler(), context.getClass()],
           );
 
-          const requiresClinicMembership = this.reflector.getAllAndOverride<boolean>(
-            REQUIRE_CLINIC_MEMBERSHIP_KEY,
-            [context.getHandler(), context.getClass()],
-          );
+          const requiresClinicMembership =
+            this.reflector.getAllAndOverride<boolean>(
+              REQUIRE_CLINIC_MEMBERSHIP_KEY,
+              [context.getHandler(), context.getClass()],
+            );
 
           // Extract resource information
           const resourceId = request.params?.id || request.query?.id;
@@ -74,14 +78,14 @@ export class PermissionInterceptor implements NestInterceptor {
 
             this.logger.log(
               `Permission check: User ${user.id} (${user.role}) - ${permission.action}:${permission.resource} - ${
-                checkResult.allowed ? 'ALLOWED' : 'DENIED'
-              } - ${checkResult.reason || 'No reason provided'}`,
+                checkResult.allowed ? "ALLOWED" : "DENIED"
+              } - ${checkResult.reason || "No reason provided"}`,
             );
           }
         } catch (error) {
           this.logger.error(
-            'Error in permission interceptor:',
-            error instanceof Error ? error.message : 'Unknown error',
+            "Error in permission interceptor:",
+            error instanceof Error ? error.message : "Unknown error",
           );
         }
       }),
@@ -133,6 +137,6 @@ export class PermissionInterceptor implements NestInterceptor {
     };
 
     // Future: Send to analytics service
-    this.logger.debug('Permission metrics logged');
+    this.logger.debug("Permission metrics logged");
   }
 }
