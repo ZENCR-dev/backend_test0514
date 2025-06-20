@@ -1,0 +1,194 @@
+{
+  "timestamp": "2025-06-19T09:15:52.415Z",
+  "summary": {
+    "overallStatus": "POOR",
+    "totalChecks": 8,
+    "passedChecks": 6,
+    "failedChecks": 2,
+    "executionTime": 1369,
+    "averageResponseTime": 165.875
+  },
+  "detailedResults": [
+    {
+      "status": "PASS",
+      "responseTime": 708,
+      "details": {
+        "prismaConnected": true,
+        "tablesCount": 15,
+        "connectionTest": [
+          {
+            "test": 1
+          }
+        ],
+        "availableTables": [
+          {
+            "table_name": "_prisma_migrations"
+          },
+          {
+            "table_name": "system_configs"
+          },
+          {
+            "table_name": "users"
+          },
+          {
+            "table_name": "user_profiles"
+          },
+          {
+            "table_name": "clinics"
+          },
+          {
+            "table_name": "clinic_accounts"
+          },
+          {
+            "table_name": "account_transactions"
+          },
+          {
+            "table_name": "pharmacies"
+          },
+          {
+            "table_name": "pharmacy_inventory"
+          },
+          {
+            "table_name": "medicines"
+          },
+          {
+            "table_name": "orders"
+          },
+          {
+            "table_name": "order_items"
+          },
+          {
+            "table_name": "payments"
+          },
+          {
+            "table_name": "fulfillment_proofs"
+          },
+          {
+            "table_name": "settlements"
+          }
+        ]
+      },
+      "issues": []
+    },
+    {
+      "status": "PASS",
+      "responseTime": 546,
+      "details": {
+        "requiredTables": [
+          "users",
+          "medicines",
+          "orders",
+          "clinic_accounts"
+        ],
+        "existingTables": [
+          "_prisma_migrations",
+          "system_configs",
+          "users",
+          "user_profiles",
+          "clinics",
+          "clinic_accounts",
+          "account_transactions",
+          "pharmacies",
+          "pharmacy_inventory",
+          "medicines",
+          "orders",
+          "order_items",
+          "payments",
+          "fulfillment_proofs",
+          "settlements"
+        ],
+        "missingTables": [],
+        "dataChecks": [
+          {
+            "table": "medicines",
+            "count": 50
+          },
+          {
+            "table": "users",
+            "count": 2
+          }
+        ],
+        "schemaValid": true
+      },
+      "issues": []
+    },
+    {
+      "status": "FAIL",
+      "responseTime": 62,
+      "details": {
+        "loginEndpoint": "FAIL",
+        "refreshEndpoint": "OK",
+        "userInfoEndpoint": "OK",
+        "tokenObtained": false
+      },
+      "issues": [
+        "登录端点验证失败"
+      ]
+    },
+    {
+      "status": "FAIL",
+      "responseTime": 7,
+      "details": {
+        "formatCompliance": false,
+        "paginationWorking": false,
+        "searchWorking": false
+      },
+      "issues": [
+        "药品列表API调用失败",
+        "搜索功能验证失败"
+      ]
+    },
+    {
+      "status": "PASS",
+      "responseTime": 1,
+      "details": {
+        "memoryUsage": 50.2,
+        "cpuUsage": 0,
+        "diskUsage": 45.3,
+        "totalMemory": 31.7,
+        "freeMemory": 15.8,
+        "cpuCount": 24,
+        "platform": "win32",
+        "architecture": "x64",
+        "hostname": "DESKTOP-G014TMQ",
+        "uptime": 311.7
+      },
+      "issues": []
+    },
+    {
+      "status": "PASS",
+      "responseTime": 3,
+      "details": {
+        "averageResponseTime": 2,
+        "maxResponseTime": 2,
+        "testEndpointsCount": 2
+      },
+      "issues": []
+    },
+    {
+      "status": "PASS",
+      "responseTime": 0,
+      "details": {
+        "mcpFeedbackEnhanced": "CONNECTED",
+        "mcpSequentialThinking": "CONNECTED",
+        "mcpSupabase": "CONNECTED",
+        "mcpContext7": "CONNECTED"
+      },
+      "issues": []
+    },
+    {
+      "status": "PASS",
+      "responseTime": 0,
+      "details": {
+        "colorSupport": true,
+        "progressBarSupport": true,
+        "userInteractionSupport": true,
+        "terminalColumns": 103,
+        "terminalRows": 2,
+        "isTTY": true
+      },
+      "issues": []
+    }
+  ],
+  "version": "2.0"
+}

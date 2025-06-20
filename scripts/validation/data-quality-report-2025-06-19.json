@@ -1,0 +1,265 @@
+{
+  "summary": {
+    "totalTests": 22,
+    "passedTests": 22,
+    "failedTests": 0,
+    "warningTests": 0,
+    "overallStatus": "EXCELLENT",
+    "executionTime": 3814
+  },
+  "results": [
+    {
+      "category": "CONNECTION",
+      "test": "Database Connectivity",
+      "status": "PASS",
+      "message": "Database connection successful",
+      "timestamp": "2025-06-19T03:52:57.712Z"
+    },
+    {
+      "category": "SCHEMA",
+      "test": "Table Existence",
+      "status": "PASS",
+      "message": "All 14 expected tables exist",
+      "timestamp": "2025-06-19T03:52:57.865Z"
+    },
+    {
+      "category": "CONSISTENCY",
+      "test": "User Profile Mapping",
+      "status": "PASS",
+      "message": "All users have corresponding profiles",
+      "timestamp": "2025-06-19T03:52:58.013Z"
+    },
+    {
+      "category": "CONSISTENCY",
+      "test": "Clinic Account Mapping",
+      "status": "PASS",
+      "message": "All clinics have corresponding accounts",
+      "timestamp": "2025-06-19T03:52:58.170Z"
+    },
+    {
+      "category": "INTEGRITY",
+      "test": "Orders -> Users (practitioner)",
+      "status": "PASS",
+      "message": "No orphaned records found",
+      "timestamp": "2025-06-19T03:52:58.326Z"
+    },
+    {
+      "category": "INTEGRITY",
+      "test": "Orders -> Users (patient)",
+      "status": "PASS",
+      "message": "No orphaned records found",
+      "timestamp": "2025-06-19T03:52:58.475Z"
+    },
+    {
+      "category": "INTEGRITY",
+      "test": "Order Items -> Orders",
+      "status": "PASS",
+      "message": "No orphaned records found",
+      "timestamp": "2025-06-19T03:52:58.628Z"
+    },
+    {
+      "category": "INTEGRITY",
+      "test": "Order Items -> Medicines",
+      "status": "PASS",
+      "message": "No orphaned records found",
+      "timestamp": "2025-06-19T03:52:58.782Z"
+    },
+    {
+      "category": "INTEGRITY",
+      "test": "Pharmacy Inventory -> Pharmacies",
+      "status": "PASS",
+      "message": "No orphaned records found",
+      "timestamp": "2025-06-19T03:52:58.945Z"
+    },
+    {
+      "category": "BUSINESS",
+      "test": "User Role Validation",
+      "status": "PASS",
+      "message": "All user roles are valid",
+      "timestamp": "2025-06-19T03:52:59.091Z"
+    },
+    {
+      "category": "BUSINESS",
+      "test": "Order Amount Consistency",
+      "status": "PASS",
+      "message": "All order amounts match item totals",
+      "timestamp": "2025-06-19T03:52:59.244Z"
+    },
+    {
+      "category": "BUSINESS",
+      "test": "Account Balance Logic",
+      "status": "PASS",
+      "message": "All account balances are logically correct",
+      "timestamp": "2025-06-19T03:52:59.393Z"
+    },
+    {
+      "category": "STATISTICS",
+      "test": "User Role Distribution",
+      "status": "PASS",
+      "message": "User role distribution analysis complete",
+      "details": [
+        {
+          "role": "admin",
+          "count": "1"
+        },
+        {
+          "role": "practitioner",
+          "count": "1"
+        }
+      ],
+      "timestamp": "2025-06-19T03:52:59.599Z"
+    },
+    {
+      "category": "STATISTICS",
+      "test": "Order Status Distribution",
+      "status": "PASS",
+      "message": "Order status distribution analysis complete",
+      "details": [],
+      "timestamp": "2025-06-19T03:52:59.809Z"
+    },
+    {
+      "category": "STATISTICS",
+      "test": "Medicine Status Distribution",
+      "status": "PASS",
+      "message": "Medicine status distribution analysis complete",
+      "details": [
+        {
+          "status": "active",
+          "count": "50"
+        }
+      ],
+      "timestamp": "2025-06-19T03:52:59.995Z"
+    },
+    {
+      "category": "QUALITY",
+      "test": "users.email Null Check",
+      "status": "PASS",
+      "message": "No null or invalid values found",
+      "timestamp": "2025-06-19T03:53:00.154Z"
+    },
+    {
+      "category": "QUALITY",
+      "test": "medicines.name Null Check",
+      "status": "PASS",
+      "message": "No null or invalid values found",
+      "timestamp": "2025-06-19T03:53:00.310Z"
+    },
+    {
+      "category": "QUALITY",
+      "test": "pharmacies.name Null Check",
+      "status": "PASS",
+      "message": "No null or invalid values found",
+      "timestamp": "2025-06-19T03:53:00.460Z"
+    },
+    {
+      "category": "QUALITY",
+      "test": "orders.total_amount Null Check",
+      "status": "PASS",
+      "message": "No null or invalid values found",
+      "timestamp": "2025-06-19T03:53:00.608Z"
+    },
+    {
+      "category": "QUALITY",
+      "test": "Duplicate Email Check",
+      "status": "PASS",
+      "message": "No duplicate emails found",
+      "timestamp": "2025-06-19T03:53:00.754Z"
+    },
+    {
+      "category": "PERFORMANCE",
+      "test": "Table Size Analysis",
+      "status": "PASS",
+      "message": "Table size analysis complete",
+      "details": [
+        {
+          "table_name": "medicines",
+          "size_pretty": "440 kB"
+        },
+        {
+          "table_name": "users",
+          "size_pretty": "96 kB"
+        },
+        {
+          "table_name": "orders",
+          "size_pretty": "88 kB"
+        },
+        {
+          "table_name": "user_profiles",
+          "size_pretty": "64 kB"
+        },
+        {
+          "table_name": "account_transactions",
+          "size_pretty": "56 kB"
+        },
+        {
+          "table_name": "fulfillment_proofs",
+          "size_pretty": "40 kB"
+        },
+        {
+          "table_name": "_prisma_migrations",
+          "size_pretty": "32 kB"
+        },
+        {
+          "table_name": "clinic_accounts",
+          "size_pretty": "32 kB"
+        },
+        {
+          "table_name": "pharmacies",
+          "size_pretty": "32 kB"
+        },
+        {
+          "table_name": "pharmacy_inventory",
+          "size_pretty": "24 kB"
+        },
+        {
+          "table_name": "clinics",
+          "size_pretty": "16 kB"
+        },
+        {
+          "table_name": "order_items",
+          "size_pretty": "16 kB"
+        },
+        {
+          "table_name": "payments",
+          "size_pretty": "16 kB"
+        },
+        {
+          "table_name": "system_configs",
+          "size_pretty": "16 kB"
+        },
+        {
+          "table_name": "settlements",
+          "size_pretty": "16 kB"
+        }
+      ],
+      "timestamp": "2025-06-19T03:53:00.911Z"
+    },
+    {
+      "category": "PERFORMANCE",
+      "test": "Row Count Analysis",
+      "status": "PASS",
+      "message": "Row count analysis complete",
+      "details": [
+        {
+          "table_name": "users",
+          "row_count": "2"
+        },
+        {
+          "table_name": "medicines",
+          "row_count": "50"
+        },
+        {
+          "table_name": "orders",
+          "row_count": "0"
+        }
+      ],
+      "timestamp": "2025-06-19T03:53:01.061Z"
+    }
+  ],
+  "metadata": {
+    "databaseVersion": "PostgreSQL",
+    "schemaVersion": "1.0",
+    "executedAt": "2025-06-19T03:53:01.062Z",
+    "executedBy": "Data Quality Checker v1.0"
+  }
+}

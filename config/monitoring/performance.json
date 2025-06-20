@@ -1,0 +1,32 @@
+{
+  "enabled": true,
+  "thresholds": {
+    "api": {
+      "warning": 300,
+      "critical": 1000
+    },
+    "database": {
+      "warning": 200,
+      "critical": 500
+    },
+    "search": {
+      "warning": 300,
+      "critical": 1000
+    }
+  },
+  "monitoring": {
+    "logLevel": "info",
+    "sampleRate": 1,
+    "enableMetrics": true,
+    "enableAlerts": true
+  },
+  "endpoints": [
+    "/api/v1/medicines",
+    "/api/v1/medicines/search",
+    "/api/v1/medicines/categories",
+    "/api/v1/medicines/:id",
+    "/api/v1/auth/login",
+    "/api/v1/auth/me"
+  ],
+  "timestamp": "2025-06-20T01:01:37.792Z"
+}

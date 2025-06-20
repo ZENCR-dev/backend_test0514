@@ -1,0 +1,92 @@
+{
+  "validation_rules": {
+    "required_tables": [
+      "users",
+      "user_profiles", 
+      "clinics",
+      "clinic_accounts",
+      "account_transactions",
+      "medicines",
+      "pharmacies",
+      "pharmacy_inventory",
+      "orders",
+      "order_items",
+      "payments",
+      "fulfillment_proofs",
+      "settlements",
+      "system_configs"
+    ],
+    "business_rules": {
+      "user_roles": ["practitioner", "patient", "pharmacy_operator", "admin"],
+      "user_status": ["pending", "approved", "suspended"],
+      "order_status": ["DRAFT", "PAYMENT_FAILED", "PAID", "PENDING_REVIEW", "REJECTED", "FULFILLED", "CANCELLED", "EXPIRED"],
+      "payment_status": ["pending", "processing", "completed", "failed", "refunded"],
+      "account_status": ["active", "suspended", "frozen"]
+    },
+    "data_quality_thresholds": {
+      "max_null_percentage": 5,
+      "max_duplicate_percentage": 1,
+      "min_data_freshness_hours": 24
+    },
+    "performance_thresholds": {
+      "max_table_size_mb": 1000,
+      "min_index_usage": 10,
+      "max_query_time_ms": 5000
+    }
+  },
+  "check_categories": {
+    "CONNECTION": {
+      "enabled": true,
+      "critical": true,
+      "description": "Database connection and basic connectivity"
+    },
+    "SCHEMA": {
+      "enabled": true,
+      "critical": true,
+      "description": "Table structure and schema validation"
+    },
+    "CONSISTENCY": {
+      "enabled": true,
+      "critical": false,
+      "description": "Data consistency across related tables"
+    },
+    "INTEGRITY": {
+      "enabled": true,
+      "critical": true,
+      "description": "Foreign key and referential integrity"
+    },
+    "BUSINESS": {
+      "enabled": true,
+      "critical": true,
+      "description": "Business rule validation"
+    },
+    "STATISTICS": {
+      "enabled": true,
+      "critical": false,
+      "description": "Data distribution and statistical analysis"
+    },
+    "QUALITY": {
+      "enabled": true,
+      "critical": false,
+      "description": "Data quality issues (nulls, duplicates)"
+    },
+    "PERFORMANCE": {
+      "enabled": true,
+      "critical": false,
+      "description": "Performance metrics and optimization"
+    }
+  },
+  "reporting": {
+    "save_reports": true,
+    "report_format": "json",
+    "include_details": true,
+    "email_on_failure": false,
+    "slack_webhook": null
+  },
+  "execution_settings": {
+    "timeout_seconds": 300,
+    "retry_attempts": 3,
+    "parallel_execution": false,
+    "verbose_logging": true
+  }
+} 

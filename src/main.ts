@@ -83,7 +83,7 @@ async function bootstrap() {
       },
       "idempotency",
     )
-    .addServer("http://localhost:3000", "Development Server")
+    .addServer("http://localhost:3001", "Development Server")
     .addServer("https://api.tcm-platform.com", "Production Server")
     .addTag("auth", "Authentication endpoints")
     .addTag("users", "User management")
@@ -101,7 +101,7 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 3001;
   await app.listen(port);
 
   logger.log(

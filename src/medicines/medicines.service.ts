@@ -30,6 +30,7 @@ export class MedicinesService {
             { englishName: { contains: search, mode: "insensitive" as const } },
             { pinyinName: { contains: search, mode: "insensitive" as const } },
             { chineseName: { contains: search, mode: "insensitive" as const } },
+            { sku: { contains: search, mode: "insensitive" as const } },
           ],
         }
       : {};

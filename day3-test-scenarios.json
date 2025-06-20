@@ -1,0 +1,55 @@
+{
+  "day3_test_scenarios": {
+    "pagination_test": {
+      "description": "分页功能测试",
+      "test_data_count": 30,
+      "sku_pattern": "PAGE_TEST_%",
+      "expected_pages": 3,
+      "items_per_page": 10
+    },
+    "sorting_test": {
+      "description": "排序功能测试",
+      "test_data": [
+        {
+          "sku": "SORT_A_001",
+          "name": "A排序测试药品",
+          "price": 10
+        },
+        {
+          "sku": "SORT_M_500",
+          "name": "M排序测试药品",
+          "price": 50.5
+        },
+        {
+          "sku": "SORT_Z_999",
+          "name": "Z排序测试药品",
+          "price": 99.99
+        }
+      ],
+      "sort_fields": [
+        "name",
+        "price",
+        "sku"
+      ]
+    },
+    "search_performance_test": {
+      "description": "搜索性能压力测试",
+      "test_data_count": 20,
+      "sku_pattern": "SEARCH_PERF_%",
+      "concurrent_searches": 10,
+      "expected_response_time_ms": 300
+    },
+    "concurrent_test": {
+      "description": "并发请求测试",
+      "test_data_count": 15,
+      "sku_pattern": "CONCURRENT_%",
+      "concurrent_users": 50,
+      "expected_success_rate": 100
+    }
+  },
+  "data_verification": {
+    "total_test_records": 0,
+    "creation_time": "2025-06-20T08:02:33.310Z",
+    "ready_for_day3": true
+  }
+}

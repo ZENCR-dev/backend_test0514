@@ -1,0 +1,87 @@
+{
+  "config": {
+    "enabled": true,
+    "thresholds": {
+      "api": {
+        "warning": 300,
+        "critical": 1000
+      },
+      "database": {
+        "warning": 200,
+        "critical": 500
+      },
+      "search": {
+        "warning": 300,
+        "critical": 1000
+      }
+    },
+    "monitoring": {
+      "logLevel": "info",
+      "sampleRate": 1,
+      "enableMetrics": true,
+      "enableAlerts": true
+    },
+    "endpoints": [
+      "/api/v1/medicines",
+      "/api/v1/medicines/search",
+      "/api/v1/medicines/categories",
+      "/api/v1/medicines/:id",
+      "/api/v1/auth/login",
+      "/api/v1/auth/me"
+    ],
+    "timestamp": "2025-06-20T01:01:37.792Z"
+  },
+  "setupResult": {
+    "success": true,
+    "configurationSteps": [
+      {
+        "step": "创建监控目录结构",
+        "status": "SUCCESS",
+        "details": "目录创建完成: logs/monitoring, config/monitoring, scripts/results",
+        "duration": 1
+      },
+      {
+        "step": "创建性能配置文件",
+        "status": "SUCCESS",
+        "details": "配置文件已保存: D:\\develop\\backend_test0514\\config\\monitoring\\performance.json",
+        "duration": 0
+      },
+      {
+        "step": "创建性能监控中间件",
+        "status": "SUCCESS",
+        "details": "中间件已创建: src\\common\\middleware\\performance-monitoring.middleware.ts",
+        "duration": 0
+      },
+      {
+        "step": "创建监控面板脚本",
+        "status": "SUCCESS",
+        "details": "监控面板已创建: scripts\\monitoring-dashboard.ts",
+        "duration": 1
+      },
+      {
+        "step": "更新package.json脚本",
+        "status": "SUCCESS",
+        "details": "添加了监控相关的npm脚本命令",
+        "duration": 0
+      }
+    ],
+    "summary": {
+      "configFilesCreated": 3,
+      "endpointsConfigured": 6,
+      "thresholdsSet": 3,
+      "estimatedOverhead": "< 5ms per request"
+    }
+  },
+  "instructions": {
+    "nextSteps": [
+      "1. 重启后端服务 (npm run start:dev)",
+      "2. 在app.module.ts中注册PerformanceMonitoringMiddleware",
+      "3. 运行 npm run monitoring:dashboard 查看性能数据",
+      "4. DAY 2联调时持续监控性能指标"
+    ],
+    "quickCommands": [
+      "npm run monitoring:dashboard - 查看性能面板",
+      "npm run monitoring:status - 查看系统状态"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "test:contract": "jest --config=test/contract/jest.config.js",
+    "test:contract:format": "jest --config=test/contract/jest.config.js test/contract/response-format.contract.spec.ts",
+    "test:contract:endpoints": "jest --config=test/contract/jest.config.js test/contract/endpoints.contract.spec.ts",
+    "test:contract:demo": "jest --config=test/contract/jest.config.js test/contract/endpoints-demo.contract.spec.ts"
+  },
+  "devDependencies": {
+    "supertest": "^6.0.3",
+    "@types/supertest": "^2.0.12"
+  }
+} 

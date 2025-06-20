@@ -7,7 +7,7 @@ console.log('🔍 开始系统验证...\n');
 
 // 简化验证脚本
 async function verifyAPIs() {
-  const baseUrl = 'http://localhost:3000/api/v1';
+  const baseUrl = 'http://localhost:3001/api/v1';
   
   console.log('📋 验证药品API...');
   

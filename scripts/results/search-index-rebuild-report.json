@@ -1,0 +1,77 @@
+{
+  "operations": [
+    {
+      "name": "drop_old_search_index",
+      "type": "DROP",
+      "sql": "DROP INDEX IF EXISTS idx_medicines_search_old;",
+      "description": "删除旧的搜索索引",
+      "status": "SUCCESS",
+      "duration": 520
+    },
+    {
+      "name": "create_compound_search_index",
+      "type": "CREATE",
+      "sql": "CREATE INDEX IF NOT EXISTS idx_medicines_search_compound \n            ON medicines(status, name, pinyin_name, chinese_name, english_name) \n            WHERE status = 'active';",
+      "description": "创建复合搜索索引（状态+多字段搜索）",
+      "status": "SUCCESS",
+      "duration": 219
+    },
+    {
+      "name": "create_category_status_index",
+      "type": "CREATE",
+      "sql": "CREATE INDEX IF NOT EXISTS idx_medicines_category_status \n            ON medicines(category, status) \n            WHERE status = 'active';",
+      "description": "创建分类状态复合索引",
+      "status": "SUCCESS",
+      "duration": 155
+    },
+    {
+      "name": "create_price_range_index",
+      "type": "CREATE",
+      "sql": "CREATE INDEX IF NOT EXISTS idx_medicines_price_range \n            ON medicines(base_price, status) \n            WHERE status = 'active';",
+      "description": "创建价格范围索引",
+      "status": "SUCCESS",
+      "duration": 151
+    },
+    {
+      "name": "create_fulltext_search_index",
+      "type": "CREATE",
+      "sql": "CREATE INDEX IF NOT EXISTS idx_medicines_fulltext \n            ON medicines USING GIN(to_tsvector('simple', \n              COALESCE(name, '') || ' ' || \n              COALESCE(chinese_name, '') || ' ' || \n              COALESCE(english_name, '') || ' ' || \n              COALESCE(pinyin_name, '')\n            )) WHERE status = 'active';",
+      "description": "创建全文搜索索引（PostgreSQL GIN）",
+      "status": "SUCCESS",
+      "duration": 213
+    },
+    {
+      "name": "optimize_sku_index",
+      "type": "CREATE",
+      "sql": "CREATE UNIQUE INDEX IF NOT EXISTS idx_medicines_sku_unique \n            ON medicines(sku) WHERE status = 'active';",
+      "description": "优化SKU唯一性索引",
+      "status": "SUCCESS",
+      "duration": 227
+    },
+    {
+      "name": "verify_indexes",
+      "type": "CHECK",
+      "sql": "SELECT indexname, indexdef \n            FROM pg_indexes \n            WHERE tablename = 'medicines' \n            AND indexname LIKE 'idx_medicines_%'\n            ORDER BY indexname;",
+      "description": "验证索引创建结果",
+      "status": "SUCCESS",
+      "duration": 171
+    }
+  ],
+  "results": {
+    "totalOperations": 7,
+    "successful": 7,
+    "failed": 0,
+    "skipped": 0,
+    "totalDuration": 1656,
+    "timestamp": "2025-06-20T01:01:24.279Z"
+  },
+  "summary": {
+    "success": true,
+    "message": "All index operations completed successfully",
+    "recommendations": [
+      "搜索索引已优化，建议进行全面的搜索性能测试",
+      "定期运行此脚本以维护最佳搜索性能",
+      "监控查询性能，如有性能下降请重新运行索引优化"
+    ]
+  }
+}

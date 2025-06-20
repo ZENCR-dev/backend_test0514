@@ -13,7 +13,7 @@ interface TestResult {
 }
 
 class SystemVerifier {
-  private baseUrl = 'http://localhost:3000/api/v1';
+  private baseUrl = 'http://localhost:3001/api/v1';
   private testResults: TestResult[] = [];
   private authToken: string | null = null;
 

@@ -1,0 +1,79 @@
+{
+  "success": true,
+  "checks": [
+    {
+      "name": "药品数据存在性",
+      "status": "PASS",
+      "details": "发现 50 条药品记录",
+      "value": 50
+    },
+    {
+      "name": "活跃药品比例",
+      "status": "PASS",
+      "details": "活跃药品比例健康: 50/50",
+      "value": "100.0%"
+    },
+    {
+      "name": "必填字段完整性",
+      "status": "PASS",
+      "details": "所有记录的必填字段完整",
+      "value": 0
+    },
+    {
+      "name": "SKU唯一性",
+      "status": "PASS",
+      "details": "所有SKU都是唯一的",
+      "value": 0
+    },
+    {
+      "name": "药品分类",
+      "status": "PASS",
+      "details": "分类分布健康: 7 个分类",
+      "value": 7
+    },
+    {
+      "name": "分类分布",
+      "status": "PASS",
+      "details": "主要分类分布: 其他中药: 28, 补益药: 7, 清热药: 6, 化痰药: 3, 止咳药: 2",
+      "value": 7
+    },
+    {
+      "name": "价格数据",
+      "status": "PASS",
+      "details": "价格数据合理: ¥0.45 - ¥150.00, 平均¥12.46",
+      "value": 12.4646
+    },
+    {
+      "name": "高价药品",
+      "status": "WARNING",
+      "details": "发现 2 个高价药品(>¥100)，请确认价格正确",
+      "value": 2
+    },
+    {
+      "name": "搜索功能",
+      "status": "PASS",
+      "details": "搜索功能正常: 中文(1) 拼音(2) 英文(1)",
+      "value": 4
+    },
+    {
+      "name": "查询性能",
+      "status": "PASS",
+      "details": "分页查询性能优秀: 169ms",
+      "value": "169ms"
+    },
+    {
+      "name": "搜索性能",
+      "status": "PASS",
+      "details": "搜索查询性能良好: 179ms",
+      "value": "179ms"
+    }
+  ],
+  "summary": {
+    "totalMedicines": 50,
+    "activeMedicines": 50,
+    "categoriesCount": 7,
+    "averagePrice": 12.4646,
+    "indexesStatus": "OPTIMIZED"
+  },
+  "timestamp": "2025-06-20T01:01:14.496Z"
+}

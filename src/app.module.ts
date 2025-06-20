@@ -12,6 +12,7 @@ import { IdempotencyMiddleware } from "./common/middleware/idempotency.middlewar
 import { MedicinesModule } from "./medicines/medicines.module";
 import { PaymentModule } from "./payment/payment.module";
 import { OrdersModule } from "./orders/orders.module";
+// import { HealthModule } from "./health/health.module"; // 临时禁用健康模块
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { OrdersModule } from "./orders/orders.module";
     MedicinesModule,
     PaymentModule,
     OrdersModule, // Task 5A - 订单管理模块
+    // HealthModule, // 临时禁用
   ],
   controllers: [AppController],
   providers: [AppService],

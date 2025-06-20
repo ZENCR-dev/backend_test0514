@@ -9,7 +9,7 @@ const path = require('path');
 async function generateAPISamples() {
   console.log('📄 开始生成API响应样本...\n');
   
-  const baseUrl = 'http://localhost:3000/api/v1';
+  const baseUrl = 'http://localhost:3001/api/v1';
   const samples = {};
   
   try {

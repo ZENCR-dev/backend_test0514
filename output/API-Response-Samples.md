@@ -1,8 +1,8 @@
 # 新西兰中医处方平台 API 响应样本
 
 **版本**: v1.2
-**生成时间**: 2025-06-18T03:21:04.322Z
-**基础URL**: http://localhost:3000/api/v1
+**生成时间**: 2025-06-20T07:32:20.015Z
+**基础URL**: http://localhost:3001/api/v1
 
 本文档包含所有API端点的标准响应格式示例，供前端开发团队参考
 
@@ -54,8 +54,8 @@
 {
   "success": true,
   "data": {
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWMxMndsM24wMDAydWdwZ3VyZGV6dDd6IiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MDIxNjg2MSwiZXhwIjoxNzUwODIxNjYxLCJhdWQiOiJ0Y20tcGxhdGZvcm0tdXNlcnMiLCJpc3MiOiJ0Y20tcHJlc2NyaXB0aW9uLXBsYXRmb3JtIn0.ToVtH388JTDsUV4JeJ8bIQ_dpeTKR1Zz6psaKH2gPQI",
-    "refreshToken": "a2ac717d0f0a7d165c2a25af8e5a7a09c74b308d21e532f4e8d22b6ccb943b20",
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWMxMndsM24wMDAydWdwZ3VyZGV6dDd6IiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MDQwNDczNywiZXhwIjoxNzUxMDA5NTM3LCJhdWQiOiJ0Y20tcGxhdGZvcm0tdXNlcnMiLCJpc3MiOiJ0Y20tcHJlc2NyaXB0aW9uLXBsYXRmb3JtIn0.3jliCEEgEo_vdLCuKxcbJ1_V0L5o0GqE7E5Rx112zLw",
+    "refreshToken": "ba687d6f59b120adfd383a4a325545891e8f558b0439c7b530a28920869bd158",
     "user": {
       "id": "cmc12wl3n0002ugpgurdezt7z",
       "email": "admin@example.com",
@@ -64,7 +64,7 @@
     }
   },
   "meta": {
-    "timestamp": "2025-06-18T03:21:01.902Z"
+    "timestamp": "2025-06-20T07:32:17.378Z"
   }
 }
 ```
@@ -82,9 +82,9 @@
   "referralCode": null,
   "referredBy": null,
   "createdAt": "2025-06-17T22:12:23.891Z",
-  "updatedAt": "2025-06-18T03:21:01.736Z",
-  "refreshToken": "a2ac717d0f0a7d165c2a25af8e5a7a09c74b308d21e532f4e8d22b6ccb943b20",
-  "refreshTokenExp": "2025-06-25T03:21:01.736Z",
+  "updatedAt": "2025-06-20T07:32:17.174Z",
+  "refreshToken": "ba687d6f59b120adfd383a4a325545891e8f558b0439c7b530a28920869bd158",
+  "refreshTokenExp": "2025-06-27T07:32:17.174Z",
   "profile": {
     "id": "cmc12wl3n0003ugpgqy6hvlb7",
     "userId": "cmc12wl3n0002ugpgurdezt7z",
@@ -108,11 +108,11 @@
 {
   "success": true,
   "data": {
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWMxMndsM24wMDAydWdwZ3VyZGV6dDd6IiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MDIxNjg2MiwiZXhwIjoxNzUwODIxNjYyLCJhdWQiOiJ0Y20tcGxhdGZvcm0tdXNlcnMiLCJpc3MiOiJ0Y20tcHJlc2NyaXB0aW9uLXBsYXRmb3JtIn0.87fdWg8pNktLIUe8X9qZSX4Vl4RdCHKIT2c2GLXOKeE",
-    "refreshToken": "ce4b40b2968261d6b929fbbbc29660408aef67aa4b64100c3b3c0255b5616210"
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbWMxMndsM24wMDAydWdwZ3VyZGV6dDd6IiwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MDQwNDczOCwiZXhwIjoxNzUxMDA5NTM4LCJhdWQiOiJ0Y20tcGxhdGZvcm0tdXNlcnMiLCJpc3MiOiJ0Y20tcHJlc2NyaXB0aW9uLXBsYXRmb3JtIn0.Iz3Htwo65UOf7NEYdp6xs4L1Lbh0DfdQXzijsqrEuhM",
+    "refreshToken": "a8dca46ea5fffecd482d7778d37991b0d4bb72c7675f3ed892f4907bdde4a02d"
   },
   "meta": {
-    "timestamp": "2025-06-18T03:21:03.081Z"
+    "timestamp": "2025-06-20T07:32:18.658Z"
   }
 }
 ```
@@ -254,7 +254,7 @@
     }
   ],
   "meta": {
-    "timestamp": "2025-06-18T03:21:03.322Z",
+    "timestamp": "2025-06-20T07:32:18.915Z",
     "pagination": {
       "total": 50,
       "page": 1,
@@ -397,7 +397,7 @@
     }
   ],
   "meta": {
-    "timestamp": "2025-06-18T03:21:03.568Z",
+    "timestamp": "2025-06-20T07:32:19.177Z",
     "pagination": {
       "total": 50,
       "page": 2,
@@ -440,7 +440,7 @@
     }
   ],
   "meta": {
-    "timestamp": "2025-06-18T03:21:03.815Z",
+    "timestamp": "2025-06-20T07:32:19.434Z",
     "pagination": {
       "total": 1,
       "page": 1,
@@ -958,7 +958,7 @@
     }
   ],
   "meta": {
-    "timestamp": "2025-06-18T03:21:04.066Z",
+    "timestamp": "2025-06-20T07:32:19.709Z",
     "pagination": {
       "total": 50,
       "page": 1,
@@ -975,7 +975,7 @@
   "success": true,
   "data": [],
   "meta": {
-    "timestamp": "2025-06-18T03:21:04.308Z",
+    "timestamp": "2025-06-20T07:32:20.008Z",
     "pagination": {
       "total": 50,
       "page": 999,
