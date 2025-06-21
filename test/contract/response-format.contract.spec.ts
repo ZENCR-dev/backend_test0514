@@ -37,7 +37,7 @@ describe('API Response Format Contract Tests', () => {
       expect(typeof user.id).toBe('string');
       expect(typeof user.email).toBe('string');
       expect(typeof user.name).toBe('string');
-      expect(['admin', 'doctor', 'pharmacy', 'patient']).toContain(user.role);
+      expect(['admin', 'practitioner', 'pharmacy_operator', 'patient']).toContain(user.role);
       
       // Meta 信息验证
       expect(loginResponse.meta).toHaveProperty('timestamp');

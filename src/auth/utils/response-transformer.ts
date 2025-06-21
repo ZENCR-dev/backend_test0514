@@ -5,22 +5,6 @@ import {
 import { User, UserProfile } from "@prisma/client";
 
 /**
- * 角色名称转换映射
- */
-const ROLE_MAPPING = {
-  DOCTOR: "doctor",
-  PHARMACY_OPERATOR: "pharmacy",
-  ADMIN: "admin",
-} as const;
-
-/**
- * 转换用户角色为小写格式
- */
-export function transformRole(role: string): string {
-  return ROLE_MAPPING[role as keyof typeof ROLE_MAPPING] || role.toLowerCase();
-}
-
-/**
  * 从用户信息中提取姓名
  */
 export function extractUserName(
@@ -50,7 +34,7 @@ export function transformToLoginResponseV12(
         id: user.id,
         email: user.email,
         name: extractUserName(user),
-        role: transformRole(user.role),
+        role: user.role,
       },
     },
     meta: {

@@ -113,4 +113,30 @@ describe("AuthService", () => {
       expect(result.success).toBe(false);
     });
   });
+
+  describe("transformToLoginResponseV12", () => {
+    it("should return the user with a transformed, lowercase role", () => {
+      const loginResult = {
+        success: true,
+        accessToken: "fake_access_token",
+        refreshToken: "fake_refresh_token",
+        user: {
+          id: "user-1",
+          email: "test@example.com",
+          role: UserRole.admin,
+          status: UserStatus.approved,
+          profile: {
+            fullName: "Test Admin",
+            phone: "111222333",
+          },
+        },
+      };
+
+      const transformedResponse =
+        service.transformToLoginResponseV12(loginResult);
+
+      expect(transformedResponse.success).toBe(true);
+      expect(transformedResponse.data.user.role).toBe("admin");
+    });
+  });
 });

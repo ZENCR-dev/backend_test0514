@@ -12,7 +12,7 @@ export class UserResponseV12Dto {
 
   @ApiProperty({
     description: "用户角色",
-    enum: ["doctor", "pharmacy", "admin"],
+    enum: ["admin", "practitioner", "pharmacy_operator", "patient"],
   })
   role: string;
 }
