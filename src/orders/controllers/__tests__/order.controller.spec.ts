@@ -123,7 +123,7 @@ describe("OrderController", () => {
 
   describe("findAll (GET /orders)", () => {
     it("should return paginated orders for a doctor", async () => {
-      const user = createMockUser("doctor", "doctor-123");
+      const user = createMockUser("practitioner", "doctor-123");
       const req = createMockRequest(user);
       const query: QueryOrderDto = { page: 1, limit: 10 };
       const paginatedResult = createMockPaginatedResult();
@@ -158,7 +158,7 @@ describe("OrderController", () => {
 
   describe("findOne (GET /orders/:id)", () => {
     it("should return an order if user is authorized", async () => {
-      const user = createMockUser("doctor", "doctor-123");
+      const user = createMockUser("practitioner", "doctor-123");
       const req = createMockRequest(user);
       const order = createMockOrder({ practitionerId: "doctor-123" });
       mockOrderService.getOrderById.mockResolvedValue(order);
@@ -170,7 +170,7 @@ describe("OrderController", () => {
     });
 
     it("should throw ForbiddenException for unauthorized access", async () => {
-      const user = createMockUser("doctor", "another-doctor");
+      const user = createMockUser("practitioner", "another-doctor");
       const req = createMockRequest(user);
       const order = createMockOrder({ practitionerId: "doctor-123" });
       mockOrderService.getOrderById.mockResolvedValue(order);
@@ -181,7 +181,7 @@ describe("OrderController", () => {
     });
 
     it("should throw NotFoundException if order does not exist", async () => {
-      const user = createMockUser("doctor");
+      const user = createMockUser("practitioner");
       const req = createMockRequest(user);
       mockOrderService.getOrderById.mockRejectedValue(new NotFoundException());
 
@@ -193,7 +193,7 @@ describe("OrderController", () => {
 
   describe("create (POST /orders)", () => {
     it("should create an order successfully", async () => {
-      const user = createMockUser("doctor", "doctor-123");
+      const user = createMockUser("practitioner", "doctor-123");
       const req = createMockRequest(user);
       const createDto: CreateOrderDto = {
         practitionerId: "doctor-123",
@@ -222,7 +222,7 @@ describe("OrderController", () => {
 
   describe("update (PATCH /orders/:id)", () => {
     it("should update an order successfully", async () => {
-      const user = createMockUser("doctor", "doctor-123");
+      const user = createMockUser("practitioner", "doctor-123");
       const req = createMockRequest(user);
       const updateDto: UpdateOrderDto = { notes: "updated note", version: 1 };
       const existingOrder = createMockOrder({
@@ -245,7 +245,7 @@ describe("OrderController", () => {
     });
 
     it("should throw ConflictException on version mismatch", async () => {
-      const user = createMockUser("doctor", "doctor-123");
+      const user = createMockUser("practitioner", "doctor-123");
       const req = createMockRequest(user);
       const updateDto: UpdateOrderDto = { notes: "updated note", version: 1 };
       const existingOrder = createMockOrder({
@@ -263,7 +263,7 @@ describe("OrderController", () => {
 
   describe("remove (DELETE /orders/:id)", () => {
     it("should cancel an order successfully", async () => {
-      const user = createMockUser("doctor", "doctor-123");
+      const user = createMockUser("practitioner", "doctor-123");
       const req = createMockRequest(user, { version: 1 }); // 模拟body中的version
       const existingOrder = createMockOrder({
         practitionerId: "doctor-123",
@@ -285,7 +285,7 @@ describe("OrderController", () => {
     });
 
     it("should throw BadRequestException if order is not in cancellable state", async () => {
-      const user = createMockUser("doctor", "doctor-123");
+      const user = createMockUser("practitioner", "doctor-123");
       const req = createMockRequest(user, { version: 1 });
       const existingOrder = createMockOrder({
         practitionerId: "doctor-123",
