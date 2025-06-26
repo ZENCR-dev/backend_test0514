@@ -43,7 +43,6 @@ describe("API Response Format Contract Tests", () => {
         "pharmacy_operator",
         "patient",
       ]).toContain(user.role);
-
       // Meta 信息验证
       expect(loginResponse.meta).toHaveProperty("timestamp");
       expect(typeof loginResponse.meta.timestamp).toBe("string");

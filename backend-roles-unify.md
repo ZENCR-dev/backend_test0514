@@ -93,8 +93,6 @@ npx ts-node scripts/update-user-roles.ts
 
 前端可以按照 `frontend-roles-unify.md` 进行对应修改，确保角色枚举统一为 `admin`/`practitioner`/`pharmacy_operator`/`patient`（全小写）。
 
-> _文档由后端自动化脚本生成并维护，最新进度以 PR 合并记录为准。_
-
 ---
 ## 2025-06-21 进度更新
 
@@ -119,3 +117,5 @@ npx ts-node scripts/update-user-roles.ts
 :white_check_mark: 角色枚举统一专项已高质量闭环，建议后续所有新功能严格依照新枚举标准开发，避免历史遗留问题反复。
 
 _核心小组如需详细技术细节或后续支持，请随时联系后端团队。_ 
+
+> _文档由后端自动化脚本生成并维护，最新进度以 PR 合并记录为准。_
