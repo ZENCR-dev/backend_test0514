@@ -24,78 +24,78 @@ export enum PrescriptionStatus {
 }
 
 export class PatientInfoDto {
-  @ApiProperty({ description: '患者姓名' })
+  @ApiProperty({ description: "患者姓名" })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiPropertyOptional({ description: '患者年龄' })
+  @ApiPropertyOptional({ description: "患者年龄" })
   @IsOptional()
   @IsNumber()
   @Min(0)
   age?: number;
 
-  @ApiPropertyOptional({ description: '患者性别' })
+  @ApiPropertyOptional({ description: "患者性别" })
   @IsOptional()
   @IsString()
   gender?: string;
 
-  @ApiPropertyOptional({ description: '患者联系电话' })
+  @ApiPropertyOptional({ description: "患者联系电话" })
   @IsOptional()
   @IsString()
   phone?: string;
 
-  @ApiPropertyOptional({ description: '患者症状描述' })
+  @ApiPropertyOptional({ description: "患者症状描述" })
   @IsOptional()
   @IsString()
   symptoms?: string;
 
-  @ApiPropertyOptional({ description: '诊断信息' })
+  @ApiPropertyOptional({ description: "诊断信息" })
   @IsOptional()
   @IsString()
   diagnosis?: string;
 }
 
 export class PrescriptionMedicineDto {
-  @ApiProperty({ description: '药品ID' })
+  @ApiProperty({ description: "药品ID" })
   @IsString()
   @IsNotEmpty()
   medicineId: string;
 
-  @ApiProperty({ description: '药品数量' })
+  @ApiProperty({ description: "药品数量" })
   @IsNumber()
   @Min(1)
   quantity: number;
 
-  @ApiProperty({ description: '用药说明' })
+  @ApiProperty({ description: "用药说明" })
   @IsString()
   @IsNotEmpty()
   dosageInstructions: string;
 
-  @ApiPropertyOptional({ description: '药品备注' })
+  @ApiPropertyOptional({ description: "药品备注" })
   @IsOptional()
   @IsString()
   notes?: string;
 }
 
 export class CreatePrescriptionDto {
-  @ApiProperty({ description: '诊所ID' })
+  @ApiProperty({ description: "诊所ID" })
   @IsString()
   @IsNotEmpty()
   clinicId: string;
 
-  @ApiProperty({ description: '患者信息', type: PatientInfoDto })
+  @ApiProperty({ description: "患者信息", type: PatientInfoDto })
   @ValidateNested()
   @Type(() => PatientInfoDto)
   patientInfo: PatientInfoDto;
 
-  @ApiProperty({ description: '处方药品列表', type: [PrescriptionMedicineDto] })
+  @ApiProperty({ description: "处方药品列表", type: [PrescriptionMedicineDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PrescriptionMedicineDto)
   medicines: PrescriptionMedicineDto[];
 
-  @ApiPropertyOptional({ description: '处方备注' })
+  @ApiPropertyOptional({ description: "处方备注" })
   @IsOptional()
   @IsString()
   notes?: string;

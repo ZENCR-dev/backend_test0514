@@ -58,8 +58,18 @@ export class PrescriptionsController {
     summary: "获取处方列表",
     description: "获取当前医生的处方列表",
   })
-  @ApiQuery({ name: "page", required: false, type: Number, description: "页码" })
-  @ApiQuery({ name: "limit", required: false, type: Number, description: "每页数量" })
+  @ApiQuery({
+    name: "page",
+    required: false,
+    type: Number,
+    description: "页码",
+  })
+  @ApiQuery({
+    name: "limit",
+    required: false,
+    type: Number,
+    description: "每页数量",
+  })
   @ApiResponse({
     status: 200,
     description: "成功获取处方列表",
@@ -187,13 +197,17 @@ export class PrescriptionsController {
   })
   async getCategorySummary(@CurrentUser() user: any) {
     // 简单的统计实现
-    const prescriptions = await this.prescriptionsService.findAll(user.id, { page: 1, limit: 1000 });
-    
+    const prescriptions = await this.prescriptionsService.findAll(user.id, {
+      page: 1,
+      limit: 1000,
+    });
+
     const summary = {
       total: prescriptions.data.length,
-      draft: prescriptions.data.filter(p => p.status === 'DRAFT').length,
-      issued: prescriptions.data.filter(p => p.status === 'PAID').length, // PAID对应已开具
-      dispensed: prescriptions.data.filter(p => p.status === 'FULFILLED').length,
+      draft: prescriptions.data.filter((p) => p.status === "DRAFT").length,
+      issued: prescriptions.data.filter((p) => p.status === "PAID").length, // PAID对应已开具
+      dispensed: prescriptions.data.filter((p) => p.status === "FULFILLED")
+        .length,
     };
 
     return {

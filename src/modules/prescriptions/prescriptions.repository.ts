@@ -1,11 +1,15 @@
-import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common";
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
-import { 
-  PRESCRIPTION_STATUS, 
-  PAYMENT_STATUS, 
-  MEDICINE_STATUS, 
+import {
+  PRESCRIPTION_STATUS,
+  PAYMENT_STATUS,
+  MEDICINE_STATUS,
   PRESCRIPTION_ID_PREFIX,
-  ERROR_MESSAGES 
+  ERROR_MESSAGES,
 } from "./constants/prescription.constants";
 
 interface CreatePrescriptionData {
@@ -34,34 +38,36 @@ export class PrescriptionsRepository {
 
   async create(data: CreatePrescriptionData) {
     // 批量验证药品并计算总价 (修复N+1查询问题)
-    const medicineIds = data.medicines.map(m => m.medicineId);
+    const medicineIds = data.medicines.map((m) => m.medicineId);
     const medicinesData = await this.prisma.medicine.findMany({
-      where: { 
+      where: {
         id: { in: medicineIds },
-        status: MEDICINE_STATUS.ACTIVE // 确保药品激活
+        status: MEDICINE_STATUS.ACTIVE, // 确保药品激活
       },
-      select: { 
-        id: true, 
+      select: {
+        id: true,
         basePrice: true,
         name: true,
         chineseName: true,
         englishName: true,
         sku: true,
         unit: true,
-        category: true
+        category: true,
       },
     });
 
     // 验证所有药品都存在且激活
     if (medicinesData.length !== data.medicines.length) {
-      const foundIds = medicinesData.map(m => m.id);
-      const missingIds = medicineIds.filter(id => !foundIds.includes(id));
-      throw new BadRequestException(`${ERROR_MESSAGES.INVALID_MEDICINE_IDS}: ${missingIds.join(', ')}`);
+      const foundIds = medicinesData.map((m) => m.id);
+      const missingIds = medicineIds.filter((id) => !foundIds.includes(id));
+      throw new BadRequestException(
+        `${ERROR_MESSAGES.INVALID_MEDICINE_IDS}: ${missingIds.join(", ")}`,
+      );
     }
 
     // 创建药品ID到数据的映射，便于快速查找
-    const medicineMap = new Map(medicinesData.map(m => [m.id, m]));
-    
+    const medicineMap = new Map(medicinesData.map((m) => [m.id, m]));
+
     // 检查重复药品
     const uniqueMedicineIds = new Set(medicineIds);
     if (uniqueMedicineIds.size !== medicineIds.length) {
@@ -187,7 +193,7 @@ export class PrescriptionsRepository {
     ]);
 
     return {
-      data: orders.map(order => this.transformOrderToPrescription(order)),
+      data: orders.map((order) => this.transformOrderToPrescription(order)),
       total,
     };
   }
@@ -336,7 +342,7 @@ export class PrescriptionsRepository {
   async updateStatus(id: string, status: string) {
     const updatedOrder = await this.prisma.order.update({
       where: { id },
-      data: { 
+      data: {
         status: status as any,
         updatedAt: new Date(),
       },
@@ -356,17 +362,19 @@ export class PrescriptionsRepository {
       totalAmount: order.totalAmount,
       notes: order.notes,
       qrCodeData: order.qrCodeData,
-      medicines: order.items?.map((item: any) => ({
-        medicineId: item.medicineId,
-        medicineName: item.medicine?.name || item.medicineSnapshot?.name,
-        chineseName: item.medicine?.chineseName || item.medicineSnapshot?.chineseName,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        totalPrice: item.totalPrice,
-        dosageInstructions: item.dosageInstructions,
-        notes: item.notes,
-        unit: item.medicine?.unit || item.medicineSnapshot?.unit,
-      })) || [],
+      medicines:
+        order.items?.map((item: any) => ({
+          medicineId: item.medicineId,
+          medicineName: item.medicine?.name || item.medicineSnapshot?.name,
+          chineseName:
+            item.medicine?.chineseName || item.medicineSnapshot?.chineseName,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          totalPrice: item.totalPrice,
+          dosageInstructions: item.dosageInstructions,
+          notes: item.notes,
+          unit: item.medicine?.unit || item.medicineSnapshot?.unit,
+        })) || [],
       practitioner: order.practitioner,
       clinic: order.clinic,
       createdAt: order.createdAt,

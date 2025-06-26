@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
+import { Injectable } from "@nestjs/common";
+import * as crypto from "crypto";
 
 export interface QRCodeData {
   prescriptionId: string;
@@ -14,7 +14,8 @@ export interface QRCodeData {
 
 @Injectable()
 export class QRCodeService {
-  private readonly secretKey = process.env.QR_CODE_SECRET || 'default-secret-key';
+  private readonly secretKey =
+    process.env.QR_CODE_SECRET || "default-secret-key";
   private readonly expirationHours = 72; // QR码有效期72小时
 
   /**
@@ -22,10 +23,12 @@ export class QRCodeService {
    */
   generateQRCodeData(prescription: any): QRCodeData {
     const issuedAt = new Date().toISOString();
-    const expiresAt = new Date(Date.now() + this.expirationHours * 60 * 60 * 1000).toISOString();
+    const expiresAt = new Date(
+      Date.now() + this.expirationHours * 60 * 60 * 1000,
+    ).toISOString();
     const verifyCode = this.generateVerifyCode();
 
-    const qrData: Omit<QRCodeData, 'signature'> = {
+    const qrData: Omit<QRCodeData, "signature"> = {
       prescriptionId: prescription.prescriptionId,
       patientName: prescription.patientInfo.name,
       doctorId: prescription.doctorId,
@@ -51,9 +54,9 @@ export class QRCodeService {
       // 检查是否过期
       const now = new Date();
       const expiresAt = new Date(qrData.expiresAt);
-      
+
       if (now > expiresAt) {
-        return { isValid: false, error: '处方已过期' };
+        return { isValid: false, error: "处方已过期" };
       }
 
       // 验证签名
@@ -61,12 +64,12 @@ export class QRCodeService {
       const expectedSignature = this.generateSignature(dataWithoutSignature);
 
       if (signature !== expectedSignature) {
-        return { isValid: false, error: '处方验证失败，数据可能被篡改' };
+        return { isValid: false, error: "处方验证失败，数据可能被篡改" };
       }
 
       return { isValid: true };
     } catch (error) {
-      return { isValid: false, error: '处方数据格式错误' };
+      return { isValid: false, error: "处方数据格式错误" };
     }
   }
 
@@ -74,8 +77,10 @@ export class QRCodeService {
    * 生成QR码字符串（用于前端QR码生成）
    */
   generateQRCodeString(qrData: QRCodeData): string {
-    const baseUrl = process.env.APP_BASE_URL || 'https://tcm-prescription.nz';
-    const encodedData = Buffer.from(JSON.stringify(qrData)).toString('base64url');
+    const baseUrl = process.env.APP_BASE_URL || "https://tcm-prescription.nz";
+    const encodedData = Buffer.from(JSON.stringify(qrData)).toString(
+      "base64url",
+    );
     return `${baseUrl}/verify?data=${encodedData}`;
   }
 
@@ -85,13 +90,13 @@ export class QRCodeService {
   parseQRCodeString(qrCodeString: string): QRCodeData | null {
     try {
       const url = new URL(qrCodeString);
-      const encodedData = url.searchParams.get('data');
-      
+      const encodedData = url.searchParams.get("data");
+
       if (!encodedData) {
         return null;
       }
 
-      const jsonString = Buffer.from(encodedData, 'base64url').toString();
+      const jsonString = Buffer.from(encodedData, "base64url").toString();
       return JSON.parse(jsonString) as QRCodeData;
     } catch (error) {
       return null;
@@ -102,18 +107,18 @@ export class QRCodeService {
    * 生成验证码
    */
   private generateVerifyCode(): string {
-    return crypto.randomBytes(4).toString('hex').toUpperCase();
+    return crypto.randomBytes(4).toString("hex").toUpperCase();
   }
 
   /**
    * 生成数字签名
    */
-  private generateSignature(data: Omit<QRCodeData, 'signature'>): string {
+  private generateSignature(data: Omit<QRCodeData, "signature">): string {
     const dataString = JSON.stringify(data, Object.keys(data).sort());
     return crypto
-      .createHmac('sha256', this.secretKey)
+      .createHmac("sha256", this.secretKey)
       .update(dataString)
-      .digest('hex');
+      .digest("hex");
   }
 
   /**
@@ -129,4 +134,4 @@ export class QRCodeService {
       qrCodeString,
     };
   }
-} 
+}

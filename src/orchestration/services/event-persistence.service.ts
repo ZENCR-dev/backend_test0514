@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { EventLog, EventProcessingStatus } from '@prisma/client';
+import { Injectable, Logger } from "@nestjs/common";
+import { PrismaService } from "../../prisma/prisma.service";
+import { EventLog, EventProcessingStatus } from "@prisma/client";
 
 /**
  * 事件持久化数据接口
@@ -35,7 +35,7 @@ export interface EventStats {
 
 /**
  * 事件持久化服务
- * 
+ *
  * 负责将业务编排服务的事件持久化到数据库中，
  * 提供事件查询、统计和管理功能
  */
@@ -47,7 +47,7 @@ export class EventPersistenceService {
 
   /**
    * 持久化单个事件
-   * 
+   *
    * @param eventData 事件数据
    * @returns 创建的事件日志记录
    */
@@ -68,18 +68,23 @@ export class EventPersistenceService {
       this.logger.debug(`Event persisted successfully: ${eventLog.id}`);
       return eventLog;
     } catch (error) {
-      this.logger.error(`Failed to persist event: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to persist event: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
   /**
    * 批量持久化事件
-   * 
+   *
    * @param eventsData 事件数据数组
    * @returns 批量创建结果
    */
-  async persistEventsBatch(eventsData: EventPersistenceData[]): Promise<{ count: number }> {
+  async persistEventsBatch(
+    eventsData: EventPersistenceData[],
+  ): Promise<{ count: number }> {
     if (eventsData.length === 0) {
       return { count: 0 };
     }
@@ -88,7 +93,7 @@ export class EventPersistenceService {
 
     try {
       const result = await this.prisma.eventLog.createMany({
-        data: eventsData.map(event => ({
+        data: eventsData.map((event) => ({
           eventType: event.eventType,
           eventId: event.eventId,
           payload: event.payload,
@@ -100,14 +105,17 @@ export class EventPersistenceService {
       this.logger.debug(`Batch persisted ${result.count} events successfully`);
       return result;
     } catch (error) {
-      this.logger.error(`Failed to persist events batch: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to persist events batch: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
   /**
    * 查询事件列表
-   * 
+   *
    * @param filters 查询过滤器
    * @returns 事件列表
    */
@@ -121,7 +129,9 @@ export class EventPersistenceService {
       limit = 100,
     } = filters;
 
-    this.logger.debug(`Querying events with filters: ${JSON.stringify(filters)}`);
+    this.logger.debug(
+      `Querying events with filters: ${JSON.stringify(filters)}`,
+    );
 
     try {
       // 构建查询条件
@@ -147,7 +157,7 @@ export class EventPersistenceService {
 
       const events = await this.prisma.eventLog.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: limit,
         skip: (page - 1) * limit,
       });
@@ -155,14 +165,17 @@ export class EventPersistenceService {
       this.logger.debug(`Found ${events.length} events`);
       return events;
     } catch (error) {
-      this.logger.error(`Failed to query events: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to query events: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
   /**
    * 根据ID获取特定事件
-   * 
+   *
    * @param eventId 事件ID
    * @returns 事件记录或null
    */
@@ -182,14 +195,17 @@ export class EventPersistenceService {
 
       return event;
     } catch (error) {
-      this.logger.error(`Failed to get event by ID: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to get event by ID: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
   /**
    * 更新事件处理状态
-   * 
+   *
    * @param eventId 事件ID
    * @param status 新的处理状态
    * @param error 错误信息（可选）
@@ -216,18 +232,21 @@ export class EventPersistenceService {
       this.logger.debug(`Event status updated successfully: ${eventId}`);
       return updatedEvent;
     } catch (error) {
-      this.logger.error(`Failed to update event status: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to update event status: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
   /**
    * 获取事件统计信息
-   * 
+   *
    * @returns 事件统计数据
    */
   async getEventStats(): Promise<EventStats> {
-    this.logger.debug('Getting event statistics');
+    this.logger.debug("Getting event statistics");
 
     try {
       // 获取总事件数
@@ -235,24 +254,24 @@ export class EventPersistenceService {
 
       // 按事件类型分组统计
       const eventsByTypeRaw = await this.prisma.eventLog.groupBy({
-        by: ['eventType'],
+        by: ["eventType"],
         _count: { id: true },
       });
 
       // 按处理状态分组统计
       const eventsByStatusRaw = await this.prisma.eventLog.groupBy({
-        by: ['processingStatus'],
+        by: ["processingStatus"],
         _count: { id: true },
       });
 
       // 转换为更友好的格式
       const eventsByType: Record<string, number> = {};
-      eventsByTypeRaw.forEach(item => {
+      eventsByTypeRaw.forEach((item) => {
         eventsByType[item.eventType] = item._count.id;
       });
 
       const eventsByStatus: Record<EventProcessingStatus, number> = {} as any;
-      eventsByStatusRaw.forEach(item => {
+      eventsByStatusRaw.forEach((item) => {
         eventsByStatus[item.processingStatus] = item._count.id;
       });
 
@@ -265,20 +284,23 @@ export class EventPersistenceService {
       this.logger.debug(`Event statistics: ${JSON.stringify(stats)}`);
       return stats;
     } catch (error) {
-      this.logger.error(`Failed to get event statistics: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to get event statistics: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
   /**
    * 清理过期事件
-   * 
+   *
    * @param olderThanDays 清理多少天前的事件
    * @returns 删除的事件数量
    */
   async cleanupOldEvents(olderThanDays: number): Promise<number> {
     if (olderThanDays <= 0) {
-      throw new Error('olderThanDays must be a positive number');
+      throw new Error("olderThanDays must be a positive number");
     }
 
     this.logger.log(`Cleaning up events older than ${olderThanDays} days`);
@@ -298,20 +320,28 @@ export class EventPersistenceService {
       this.logger.log(`Cleaned up ${result.count} old events`);
       return result.count;
     } catch (error) {
-      this.logger.error(`Failed to cleanup old events: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to cleanup old events: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
   /**
    * 获取失败的事件用于重试
-   * 
+   *
    * @param maxAttempts 最大重试次数
    * @param limit 返回的事件数量限制
    * @returns 失败的事件列表
    */
-  async retryFailedEvents(maxAttempts: number, limit: number = 100): Promise<EventLog[]> {
-    this.logger.debug(`Getting failed events for retry (max attempts: ${maxAttempts})`);
+  async retryFailedEvents(
+    maxAttempts: number,
+    limit: number = 100,
+  ): Promise<EventLog[]> {
+    this.logger.debug(
+      `Getting failed events for retry (max attempts: ${maxAttempts})`,
+    );
 
     try {
       const failedEvents = await this.prisma.eventLog.findMany({
@@ -320,20 +350,23 @@ export class EventPersistenceService {
           processingAttempts: { lt: maxAttempts },
         },
         take: limit,
-        orderBy: { createdAt: 'asc' }, // 优先处理较早的事件
+        orderBy: { createdAt: "asc" }, // 优先处理较早的事件
       });
 
       this.logger.debug(`Found ${failedEvents.length} failed events for retry`);
       return failedEvents;
     } catch (error) {
-      this.logger.error(`Failed to get retry events: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to get retry events: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
 
   /**
    * 增加事件处理尝试次数
-   * 
+   *
    * @param eventId 事件ID
    * @returns 更新后的事件记录
    */
@@ -349,11 +382,16 @@ export class EventPersistenceService {
         },
       });
 
-      this.logger.debug(`Incremented attempts for event ${eventId} to ${updatedEvent.processingAttempts}`);
+      this.logger.debug(
+        `Incremented attempts for event ${eventId} to ${updatedEvent.processingAttempts}`,
+      );
       return updatedEvent;
     } catch (error) {
-      this.logger.error(`Failed to increment attempts: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to increment attempts: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
-} 
+}

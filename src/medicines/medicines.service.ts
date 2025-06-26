@@ -19,7 +19,14 @@ export class MedicinesService {
     } = query;
 
     // 服务端验证 sortBy 字段
-    const allowedSortBy = ["name", "pinyinName", "category", "createdAt", "updatedAt", "basePrice"];
+    const allowedSortBy = [
+      "name",
+      "pinyinName",
+      "category",
+      "createdAt",
+      "updatedAt",
+      "basePrice",
+    ];
     const safeSortBy = allowedSortBy.includes(sortBy) ? sortBy : "name";
 
     // 构建搜索条件
@@ -76,21 +83,21 @@ export class MedicinesService {
 
   async getCategories() {
     const categories = await this.prisma.medicine.groupBy({
-      by: ['category'],
+      by: ["category"],
       where: {
-        status: 'active',
+        status: "active",
       },
       _count: {
         category: true,
       },
       orderBy: {
         _count: {
-          category: 'desc',
+          category: "desc",
         },
       },
     });
 
-    const formattedCategories = categories.map(item => ({
+    const formattedCategories = categories.map((item) => ({
       category: item.category,
       count: item._count.category,
     }));
@@ -105,7 +112,7 @@ export class MedicinesService {
     const medicine = await this.prisma.medicine.findFirst({
       where: {
         id: id,
-        status: 'active',
+        status: "active",
       },
     });
 

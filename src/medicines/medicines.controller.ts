@@ -25,7 +25,7 @@ export class MedicinesController {
     return this.medicinesService.findAll(query);
   }
 
-  @Get('categories')
+  @Get("categories")
   @ApiOperation({
     summary: "获取药品分类列表",
     description: "获取所有药品的分类信息",
@@ -34,35 +34,35 @@ export class MedicinesController {
     status: 200,
     description: "成功获取分类列表",
     schema: {
-      type: 'object',
+      type: "object",
       properties: {
-        success: { type: 'boolean', example: true },
+        success: { type: "boolean", example: true },
         data: {
-          type: 'array',
+          type: "array",
           items: {
-            type: 'object',
+            type: "object",
             properties: {
-              category: { type: 'string', example: '补益药' },
-              count: { type: 'number', example: 12 }
-            }
-          }
-        }
-      }
-    }
+              category: { type: "string", example: "补益药" },
+              count: { type: "number", example: 12 },
+            },
+          },
+        },
+      },
+    },
   })
   async getCategories() {
     return this.medicinesService.getCategories();
   }
 
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({
     summary: "获取药品详情",
     description: "根据ID获取单个药品的详细信息",
   })
   @ApiParam({
-    name: 'id',
-    description: '药品ID',
-    type: 'string',
+    name: "id",
+    description: "药品ID",
+    type: "string",
   })
   @ApiResponse({
     status: 200,
@@ -72,7 +72,7 @@ export class MedicinesController {
     status: 404,
     description: "药品不存在",
   })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param("id") id: string) {
     return this.medicinesService.findOne(id);
   }
 }

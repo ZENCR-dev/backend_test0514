@@ -43,19 +43,19 @@ async function bootstrap() {
           "http://localhost:3006",
           "http://localhost:3007",
           "http://localhost:3008",
-          "http://localhost:3009"
+          "http://localhost:3009",
         ];
 
   app.enableCors({
     origin: corsOrigins,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: [
-      "Content-Type", 
-      "Authorization", 
+      "Content-Type",
+      "Authorization",
       "idempotency-key",
       "X-Requested-With",
       "Accept",
-      "Origin"
+      "Origin",
     ],
     credentials: true,
     optionsSuccessStatus: 200, // 支持旧版浏览器

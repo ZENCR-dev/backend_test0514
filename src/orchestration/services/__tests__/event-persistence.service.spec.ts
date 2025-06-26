@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { EventPersistenceService } from '../event-persistence.service';
-import { PrismaService } from '../../../prisma/prisma.service';
-import { Logger } from '@nestjs/common';
-import { EventProcessingStatus } from '@prisma/client';
+import { Test, TestingModule } from "@nestjs/testing";
+import { EventPersistenceService } from "../event-persistence.service";
+import { PrismaService } from "../../../prisma/prisma.service";
+import { Logger } from "@nestjs/common";
+import { EventProcessingStatus } from "@prisma/client";
 
-describe('EventPersistenceService', () => {
+describe("EventPersistenceService", () => {
   let service: EventPersistenceService;
   let prismaService: PrismaService;
 
@@ -39,21 +39,21 @@ describe('EventPersistenceService', () => {
     jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  describe('persistEvent', () => {
-    it('should persist a single event successfully', async () => {
+  describe("persistEvent", () => {
+    it("should persist a single event successfully", async () => {
       const eventData = {
-        eventType: 'PAYMENT_SUCCEEDED',
-        eventId: 'payment-123',
-        payload: { orderId: 'order-123', amount: 100 },
-        metadata: { source: 'payment-service' },
+        eventType: "PAYMENT_SUCCEEDED",
+        eventId: "payment-123",
+        payload: { orderId: "order-123", amount: 100 },
+        metadata: { source: "payment-service" },
       };
 
       const expectedResult = {
-        id: 'event-log-123',
+        id: "event-log-123",
         ...eventData,
         processingStatus: EventProcessingStatus.PENDING,
         processingAttempts: 0,
@@ -77,32 +77,36 @@ describe('EventPersistenceService', () => {
       expect(result).toEqual(expectedResult);
     });
 
-    it('should handle persistence errors gracefully', async () => {
+    it("should handle persistence errors gracefully", async () => {
       const eventData = {
-        eventType: 'PAYMENT_FAILED',
-        payload: { orderId: 'order-123' },
+        eventType: "PAYMENT_FAILED",
+        payload: { orderId: "order-123" },
       };
 
-      mockPrismaService.eventLog.create.mockRejectedValue(new Error('Database error'));
+      mockPrismaService.eventLog.create.mockRejectedValue(
+        new Error("Database error"),
+      );
 
-      await expect(service.persistEvent(eventData)).rejects.toThrow('Database error');
+      await expect(service.persistEvent(eventData)).rejects.toThrow(
+        "Database error",
+      );
     });
   });
 
-  describe('persistEventsBatch', () => {
-    it('should persist multiple events in batch', async () => {
+  describe("persistEventsBatch", () => {
+    it("should persist multiple events in batch", async () => {
       const eventsData = [
         {
-          eventType: 'PAYMENT_SUCCEEDED',
-          eventId: 'payment-123',
-          payload: { orderId: 'order-123' },
+          eventType: "PAYMENT_SUCCEEDED",
+          eventId: "payment-123",
+          payload: { orderId: "order-123" },
           metadata: { amount: 100 },
         },
         {
-          eventType: 'ORDER_STATUS_CHANGED',
-          eventId: 'order-123',
-          payload: { status: 'PAID' },
-          metadata: { previousStatus: 'PENDING' },
+          eventType: "ORDER_STATUS_CHANGED",
+          eventId: "order-123",
+          payload: { status: "PAID" },
+          metadata: { previousStatus: "PENDING" },
         },
       ];
 
@@ -112,7 +116,7 @@ describe('EventPersistenceService', () => {
       const result = await service.persistEventsBatch(eventsData);
 
       expect(mockPrismaService.eventLog.createMany).toHaveBeenCalledWith({
-        data: eventsData.map(event => ({
+        data: eventsData.map((event) => ({
           eventType: event.eventType,
           eventId: event.eventId,
           payload: event.payload,
@@ -123,20 +127,20 @@ describe('EventPersistenceService', () => {
       expect(result).toEqual(batchResult);
     });
 
-    it('should handle empty batch gracefully', async () => {
+    it("should handle empty batch gracefully", async () => {
       const result = await service.persistEventsBatch([]);
       expect(result).toEqual({ count: 0 });
       expect(mockPrismaService.eventLog.createMany).not.toHaveBeenCalled();
     });
   });
 
-  describe('getEvents', () => {
-    it('should retrieve events with default pagination', async () => {
+  describe("getEvents", () => {
+    it("should retrieve events with default pagination", async () => {
       const mockEvents = [
         {
-          id: 'event-1',
-          eventType: 'PAYMENT_SUCCEEDED',
-          payload: { orderId: 'order-123' },
+          id: "event-1",
+          eventType: "PAYMENT_SUCCEEDED",
+          payload: { orderId: "order-123" },
           createdAt: new Date(),
         },
       ];
@@ -147,19 +151,19 @@ describe('EventPersistenceService', () => {
 
       expect(mockPrismaService.eventLog.findMany).toHaveBeenCalledWith({
         where: {},
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: 100,
         skip: 0,
       });
       expect(result).toEqual(mockEvents);
     });
 
-    it('should retrieve events with custom filters', async () => {
+    it("should retrieve events with custom filters", async () => {
       const filters = {
-        eventType: 'PAYMENT_SUCCEEDED',
+        eventType: "PAYMENT_SUCCEEDED",
         processingStatus: EventProcessingStatus.COMPLETED,
-        startDate: new Date('2023-01-01'),
-        endDate: new Date('2023-12-31'),
+        startDate: new Date("2023-01-01"),
+        endDate: new Date("2023-12-31"),
         page: 2,
         limit: 50,
       };
@@ -178,20 +182,20 @@ describe('EventPersistenceService', () => {
             lte: filters.endDate,
           },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: filters.limit,
         skip: (filters.page - 1) * filters.limit,
       });
     });
   });
 
-  describe('getEventById', () => {
-    it('should retrieve a specific event by ID', async () => {
-      const eventId = 'event-123';
+  describe("getEventById", () => {
+    it("should retrieve a specific event by ID", async () => {
+      const eventId = "event-123";
       const mockEvent = {
         id: eventId,
-        eventType: 'PAYMENT_SUCCEEDED',
-        payload: { orderId: 'order-123' },
+        eventType: "PAYMENT_SUCCEEDED",
+        payload: { orderId: "order-123" },
       };
 
       mockPrismaService.eventLog.findUnique.mockResolvedValue(mockEvent);
@@ -204,18 +208,18 @@ describe('EventPersistenceService', () => {
       expect(result).toEqual(mockEvent);
     });
 
-    it('should return null for non-existent event', async () => {
+    it("should return null for non-existent event", async () => {
       mockPrismaService.eventLog.findUnique.mockResolvedValue(null);
 
-      const result = await service.getEventById('non-existent');
+      const result = await service.getEventById("non-existent");
 
       expect(result).toBeNull();
     });
   });
 
-  describe('updateEventStatus', () => {
-    it('should update event processing status successfully', async () => {
-      const eventId = 'event-123';
+  describe("updateEventStatus", () => {
+    it("should update event processing status successfully", async () => {
+      const eventId = "event-123";
       const status = EventProcessingStatus.COMPLETED;
       const error = null;
 
@@ -241,10 +245,10 @@ describe('EventPersistenceService', () => {
       expect(result).toEqual(updatedEvent);
     });
 
-    it('should update event with error information', async () => {
-      const eventId = 'event-123';
+    it("should update event with error information", async () => {
+      const eventId = "event-123";
       const status = EventProcessingStatus.FAILED;
-      const error = 'Processing failed due to network error';
+      const error = "Processing failed due to network error";
 
       await service.updateEventStatus(eventId, status, error);
 
@@ -260,15 +264,18 @@ describe('EventPersistenceService', () => {
     });
   });
 
-  describe('getEventStats', () => {
-    it('should return event statistics', async () => {
+  describe("getEventStats", () => {
+    it("should return event statistics", async () => {
       const mockStats = [
-        { eventType: 'PAYMENT_SUCCEEDED', _count: { id: 100 } },
-        { eventType: 'PAYMENT_FAILED', _count: { id: 10 } },
+        { eventType: "PAYMENT_SUCCEEDED", _count: { id: 100 } },
+        { eventType: "PAYMENT_FAILED", _count: { id: 10 } },
       ];
 
       const mockStatusStats = [
-        { processingStatus: EventProcessingStatus.COMPLETED, _count: { id: 90 } },
+        {
+          processingStatus: EventProcessingStatus.COMPLETED,
+          _count: { id: 90 },
+        },
         { processingStatus: EventProcessingStatus.FAILED, _count: { id: 20 } },
       ];
 
@@ -283,8 +290,8 @@ describe('EventPersistenceService', () => {
       expect(result).toEqual({
         totalEvents: 110,
         eventsByType: {
-          'PAYMENT_SUCCEEDED': 100,
-          'PAYMENT_FAILED': 10,
+          PAYMENT_SUCCEEDED: 100,
+          PAYMENT_FAILED: 10,
         },
         eventsByStatus: {
           [EventProcessingStatus.COMPLETED]: 90,
@@ -294,12 +301,14 @@ describe('EventPersistenceService', () => {
     });
   });
 
-  describe('cleanupOldEvents', () => {
-    it('should cleanup events older than specified days', async () => {
+  describe("cleanupOldEvents", () => {
+    it("should cleanup events older than specified days", async () => {
       const olderThanDays = 30;
       const deletedCount = 150;
 
-      mockPrismaService.eventLog.deleteMany.mockResolvedValue({ count: deletedCount });
+      mockPrismaService.eventLog.deleteMany.mockResolvedValue({
+        count: deletedCount,
+      });
 
       const result = await service.cleanupOldEvents(olderThanDays);
 
@@ -316,22 +325,22 @@ describe('EventPersistenceService', () => {
       expect(result).toBe(deletedCount);
     });
 
-    it('should validate olderThanDays parameter', async () => {
+    it("should validate olderThanDays parameter", async () => {
       await expect(service.cleanupOldEvents(-1)).rejects.toThrow(
-        'olderThanDays must be a positive number'
+        "olderThanDays must be a positive number",
       );
       await expect(service.cleanupOldEvents(0)).rejects.toThrow(
-        'olderThanDays must be a positive number'
+        "olderThanDays must be a positive number",
       );
     });
   });
 
-  describe('retryFailedEvents', () => {
-    it('should get failed events for retry', async () => {
+  describe("retryFailedEvents", () => {
+    it("should get failed events for retry", async () => {
       const mockFailedEvents = [
         {
-          id: 'event-1',
-          eventType: 'PAYMENT_SUCCEEDED',
+          id: "event-1",
+          eventType: "PAYMENT_SUCCEEDED",
           processingAttempts: 2,
         },
       ];
@@ -346,15 +355,15 @@ describe('EventPersistenceService', () => {
           processingAttempts: { lt: 5 },
         },
         take: 100,
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: "asc" },
       });
       expect(result).toEqual(mockFailedEvents);
     });
   });
 
-  describe('incrementAttempts', () => {
-    it('should increment processing attempts', async () => {
-      const eventId = 'event-123';
+  describe("incrementAttempts", () => {
+    it("should increment processing attempts", async () => {
+      const eventId = "event-123";
       const updatedEvent = {
         id: eventId,
         processingAttempts: 3,
@@ -374,4 +383,4 @@ describe('EventPersistenceService', () => {
       expect(result).toEqual(updatedEvent);
     });
   });
-}); 
+});

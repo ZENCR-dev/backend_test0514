@@ -21,7 +21,7 @@ export function extractUserName(
  * 转换为 v1.2 API 响应格式 - 登录响应
  */
 export function transformToLoginResponseV12(
-  user: User & { profile?: UserProfile | null } | any,
+  user: (User & { profile?: UserProfile | null }) | any,
   accessToken: string,
   refreshToken: string,
 ): ApiResponseV12<AuthResponseDataV12> {
@@ -32,7 +32,9 @@ export function transformToLoginResponseV12(
 
   if (!user.id || !user.email || user.role === undefined) {
     console.error("Invalid user object structure:", JSON.stringify(user));
-    throw new Error("User object is missing required properties (id, email, or role)");
+    throw new Error(
+      "User object is missing required properties (id, email, or role)",
+    );
   }
 
   return {

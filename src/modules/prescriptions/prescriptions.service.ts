@@ -29,7 +29,8 @@ export class PrescriptionsService {
       };
 
       // 创建处方
-      const prescription = await this.prescriptionsRepository.create(prescriptionData);
+      const prescription =
+        await this.prescriptionsRepository.create(prescriptionData);
 
       return {
         success: true,
@@ -109,15 +110,15 @@ export class PrescriptionsService {
 
       // 构建更新数据
       const updateData: any = {};
-      
+
       if (updatePrescriptionDto.patientInfo) {
         updateData.patientInfo = updatePrescriptionDto.patientInfo;
       }
-      
+
       if (updatePrescriptionDto.medicines) {
         updateData.medicines = updatePrescriptionDto.medicines;
       }
-      
+
       if (updatePrescriptionDto.notes !== undefined) {
         updateData.notes = updatePrescriptionDto.notes;
       }
@@ -172,20 +173,22 @@ export class PrescriptionsService {
       const prescription = result.data;
 
       // 检查处方状态
-      if (prescription.status !== 'DRAFT') {
-        throw new Error('只有草稿状态的处方才能开具');
+      if (prescription.status !== "DRAFT") {
+        throw new Error("只有草稿状态的处方才能开具");
       }
 
       // 生成QR码数据
-      const prescriptionWithQR = this.qrCodeService.updatePrescriptionQRCode(prescription);
+      const prescriptionWithQR =
+        this.qrCodeService.updatePrescriptionQRCode(prescription);
 
       // 更新处方状态为PAID（对应已开具）
-      const updatedPrescription = await this.prescriptionsRepository.updateStatus(id, 'PAID');
+      const updatedPrescription =
+        await this.prescriptionsRepository.updateStatus(id, "PAID");
 
       // 更新QR码数据到数据库
       if (prescriptionWithQR.qrCodeData) {
         await this.prescriptionsRepository.update(id, {
-          notes: `${prescription.notes || ''}\n[QR码已生成]`.trim(),
+          notes: `${prescription.notes || ""}\n[QR码已生成]`.trim(),
         });
       }
 
@@ -212,23 +215,25 @@ export class PrescriptionsService {
     try {
       // 解析QR码数据
       const qrData = this.qrCodeService.parseQRCodeString(qrCodeString);
-      
+
       if (!qrData) {
-        throw new Error('无效的QR码格式');
+        throw new Error("无效的QR码格式");
       }
 
       // 验证QR码数据
       const verification = this.qrCodeService.verifyQRCodeData(qrData);
 
       if (!verification.isValid) {
-        throw new Error(verification.error || '处方验证失败');
+        throw new Error(verification.error || "处方验证失败");
       }
 
       // 查询处方详情
-      const prescription = await this.prescriptionsRepository.findById(qrData.prescriptionId);
+      const prescription = await this.prescriptionsRepository.findById(
+        qrData.prescriptionId,
+      );
 
       if (!prescription) {
-        throw new Error('处方不存在');
+        throw new Error("处方不存在");
       }
 
       return {
@@ -253,7 +258,8 @@ export class PrescriptionsService {
       // 验证处方存在和权限
       await this.findOne(id, doctorId);
 
-      const updatedPrescription = await this.prescriptionsRepository.updateStatus(id, status);
+      const updatedPrescription =
+        await this.prescriptionsRepository.updateStatus(id, status);
 
       return {
         success: true,
@@ -278,7 +284,11 @@ export class PrescriptionsService {
     }
 
     for (const medicine of medicines) {
-      if (!medicine.medicineId || !medicine.quantity || !medicine.dosageInstructions) {
+      if (
+        !medicine.medicineId ||
+        !medicine.quantity ||
+        !medicine.dosageInstructions
+      ) {
         throw new Error("药品信息不完整：缺少药品ID、数量或用药说明");
       }
 

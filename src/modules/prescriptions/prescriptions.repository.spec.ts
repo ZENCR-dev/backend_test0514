@@ -14,7 +14,7 @@ describe("PrescriptionsRepository", () => {
       englishName: "Banlangen Granules",
       sku: "BLG001",
       unit: "袋",
-      basePrice: 10.50,
+      basePrice: 10.5,
       category: "中成药",
       status: "active",
     },
@@ -25,7 +25,7 @@ describe("PrescriptionsRepository", () => {
       englishName: "Ganmao Qingre Granules",
       sku: "GMQR002",
       unit: "袋",
-      basePrice: 15.80,
+      basePrice: 15.8,
       category: "中成药",
       status: "active",
     },
@@ -130,11 +130,13 @@ describe("PrescriptionsRepository", () => {
   describe("create", () => {
     it("should create prescription successfully", async () => {
       // 模拟药品查询返回
-      mockPrisma.medicine.findMany.mockResolvedValue(mockMedicineData.slice(0, 1));
+      mockPrisma.medicine.findMany.mockResolvedValue(
+        mockMedicineData.slice(0, 1),
+      );
       mockPrisma.order.create.mockResolvedValue(mockOrder);
-      
+
       // 模拟findById返回
-      jest.spyOn(repository, 'findById').mockResolvedValue({
+      jest.spyOn(repository, "findById").mockResolvedValue({
         id: mockOrder.id,
         prescriptionId: mockOrder.platformOrderId,
         doctorId: mockOrder.practitionerId,
@@ -144,7 +146,7 @@ describe("PrescriptionsRepository", () => {
         totalAmount: mockOrder.totalAmount,
         notes: mockOrder.notes,
         qrCodeData: null, // 添加缺失的属性
-        medicines: mockOrder.items.map(item => ({
+        medicines: mockOrder.items.map((item) => ({
           medicineId: item.medicineId,
           medicineName: item.medicine.name,
           chineseName: item.medicine.chineseName,
@@ -164,9 +166,9 @@ describe("PrescriptionsRepository", () => {
       const result = await repository.create(mockCreateData);
 
       expect(mockPrisma.medicine.findMany).toHaveBeenCalledWith({
-        where: { 
-          id: { in: ['medicine-123'] },
-          status: 'active'
+        where: {
+          id: { in: ["medicine-123"] },
+          status: "active",
         },
         select: expect.objectContaining({
           id: true,
@@ -219,7 +221,7 @@ describe("PrescriptionsRepository", () => {
       mockPrisma.medicine.findMany.mockResolvedValue([]);
 
       await expect(repository.create(mockCreateData)).rejects.toThrow(
-        "包含无效或已停用的药品ID: medicine-123"
+        "包含无效或已停用的药品ID: medicine-123",
       );
 
       expect(mockPrisma.medicine.findMany).toHaveBeenCalled();
@@ -235,10 +237,13 @@ describe("PrescriptionsRepository", () => {
         ],
       };
 
-      mockPrisma.medicine.findMany.mockResolvedValue([mockMedicineData[0], mockMedicineData[0]]);
+      mockPrisma.medicine.findMany.mockResolvedValue([
+        mockMedicineData[0],
+        mockMedicineData[0],
+      ]);
 
       await expect(repository.create(duplicateData)).rejects.toThrow(
-        "处方中包含重复的药品"
+        "处方中包含重复的药品",
       );
 
       expect(mockPrisma.order.create).not.toHaveBeenCalled();
@@ -267,7 +272,7 @@ describe("PrescriptionsRepository", () => {
         totalAmount: 184, // (10.5 * 10) + (15.8 * 5) = 105 + 79 = 184
       });
 
-      jest.spyOn(repository, 'findById').mockResolvedValue({} as any);
+      jest.spyOn(repository, "findById").mockResolvedValue({} as any);
 
       await repository.create(multiMedicineData);
 
@@ -276,7 +281,7 @@ describe("PrescriptionsRepository", () => {
           data: expect.objectContaining({
             totalAmount: 184,
           }),
-        })
+        }),
       );
     });
   });
@@ -320,7 +325,7 @@ describe("PrescriptionsRepository", () => {
         expect.objectContaining({
           skip: 10, // (2-1) * 10
           take: 10,
-        })
+        }),
       );
     });
   });
@@ -362,7 +367,7 @@ describe("PrescriptionsRepository", () => {
         ...mockOrder,
         ...updateData,
       });
-      jest.spyOn(repository, 'findById').mockResolvedValue({} as any);
+      jest.spyOn(repository, "findById").mockResolvedValue({} as any);
 
       await repository.update("order-123", updateData);
 
@@ -380,7 +385,7 @@ describe("PrescriptionsRepository", () => {
       mockPrisma.order.findUnique.mockResolvedValue(null);
 
       await expect(
-        repository.update("non-existent", { notes: "test" })
+        repository.update("non-existent", { notes: "test" }),
       ).rejects.toThrow("处方不存在");
     });
   });
@@ -408,17 +413,17 @@ describe("PrescriptionsRepository", () => {
         status: "PAID",
       });
 
-      jest.spyOn(repository, 'findById').mockResolvedValue({} as any);
+      jest.spyOn(repository, "findById").mockResolvedValue({} as any);
 
       await repository.updateStatus("order-123", "PAID");
 
       expect(mockPrisma.order.update).toHaveBeenCalledWith({
         where: { id: "order-123" },
-        data: { 
+        data: {
           status: "PAID",
           updatedAt: expect.any(Date),
         },
       });
     });
   });
-}); 
+});

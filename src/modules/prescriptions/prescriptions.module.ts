@@ -7,8 +7,8 @@ import { PrescriptionsService } from "./prescriptions.service";
 import { PrescriptionsRepository } from "./prescriptions.repository";
 import { MedicinesModule } from "../../medicines/medicines.module";
 import { AuthModule } from "../../auth/auth.module";
-import { QRCodeService } from './services/qr-code.service';
-import { PrismaModule } from '../../prisma/prisma.module';
+import { QRCodeService } from "./services/qr-code.service";
+import { PrismaModule } from "../../prisma/prisma.module";
 
 @Module({
   imports: [
@@ -17,11 +17,7 @@ import { PrismaModule } from '../../prisma/prisma.module';
     PrismaModule,
   ],
   controllers: [PrescriptionsController],
-  providers: [
-    PrescriptionsService,
-    PrescriptionsRepository,
-    QRCodeService,
-  ],
+  providers: [PrescriptionsService, PrescriptionsRepository, QRCodeService],
   exports: [
     PrescriptionsService, // 导出服务供其他模块使用
   ],
