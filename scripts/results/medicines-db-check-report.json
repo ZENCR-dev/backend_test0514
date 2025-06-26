@@ -58,14 +58,14 @@
     {
       "name": "查询性能",
       "status": "PASS",
-      "details": "分页查询性能优秀: 169ms",
-      "value": "169ms"
+      "details": "分页查询性能优秀: 185ms",
+      "value": "185ms"
     },
     {
       "name": "搜索性能",
       "status": "PASS",
-      "details": "搜索查询性能良好: 179ms",
-      "value": "179ms"
+      "details": "搜索查询性能良好: 178ms",
+      "value": "178ms"
     }
   ],
   "summary": {
@@ -75,5 +75,5 @@
     "averagePrice": 12.4646,
     "indexesStatus": "OPTIMIZED"
   },
-  "timestamp": "2025-06-20T01:01:14.496Z"
+  "timestamp": "2025-06-21T02:56:35.674Z"
 }

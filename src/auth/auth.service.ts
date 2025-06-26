@@ -327,11 +327,32 @@ export class AuthService {
       );
     }
 
-    return transformToLoginResponseV12(
-      loginResult.user as any, // 临时类型转换
-      loginResult.accessToken,
-      loginResult.refreshToken,
-    );
+    // 添加对user对象结构的详细检查
+    const { user } = loginResult;
+    if (!user.id || !user.email || user.role === undefined) {
+      this.logger.error(
+        `Invalid user object structure in login result: ${JSON.stringify(user)}`,
+      );
+      throw new InternalServerErrorException(
+        "User object is missing required properties (id, email, or role)",
+      );
+    }
+
+    try {
+      return transformToLoginResponseV12(
+        user, // 移除临时类型转换，让检查在transformToLoginResponseV12函数中进行
+        loginResult.accessToken,
+        loginResult.refreshToken,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Error transforming login response: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        "Failed to transform login response",
+      );
+    }
   }
 
   /**

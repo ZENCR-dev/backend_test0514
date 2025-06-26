@@ -328,6 +328,9 @@ enum OrderStatus {
   FULFILLED
   CANCELLED
   EXPIRED
+  PROCESSING
+  READY_FOR_PICKUP
+  COMPLETED
 }
 
 enum PaymentStatus {
@@ -362,4 +365,32 @@ enum AccountStatus {
   active
   suspended
   frozen
+}
+
+model EventLog {
+  id                   String             @id @default(cuid()) @map("id")
+  eventType            String             @map("event_type") @db.VarChar(100)
+  eventId              String?            @map("event_id") @db.VarChar(255)
+  payload              Json               @map("payload")
+  metadata             Json?              @map("metadata")
+  processingStatus     EventProcessingStatus @default(PENDING) @map("processing_status")
+  processingAttempts   Int                @default(0) @map("processing_attempts")
+  lastProcessingError  String?            @map("last_processing_error")
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  processedAt          DateTime?          @map("processed_at") @db.Timestamptz(6)
+
+  @@index([eventType])
+  @@index([processingStatus])
+  @@index([createdAt])
+  @@index([eventType, createdAt])
+  @@map("event_logs")
+}
+
+enum EventProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  RETRYING
 }

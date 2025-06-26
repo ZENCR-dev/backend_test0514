@@ -7,14 +7,21 @@ import { PrescriptionsService } from "./prescriptions.service";
 import { PrescriptionsRepository } from "./prescriptions.repository";
 import { MedicinesModule } from "../../medicines/medicines.module";
 import { AuthModule } from "../../auth/auth.module";
+import { QRCodeService } from './services/qr-code.service';
+import { PrismaModule } from '../../prisma/prisma.module';
 
 @Module({
   imports: [
     MedicinesModule, // 导入药品模块，用于处方药品验证
     AuthModule, // 导入认证模块，用于医生权限验证
+    PrismaModule,
   ],
   controllers: [PrescriptionsController],
-  providers: [PrescriptionsService, PrescriptionsRepository],
+  providers: [
+    PrescriptionsService,
+    PrescriptionsRepository,
+    QRCodeService,
+  ],
   exports: [
     PrescriptionsService, // 导出服务供其他模块使用
   ],

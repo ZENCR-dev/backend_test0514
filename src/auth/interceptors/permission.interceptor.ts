@@ -116,13 +116,13 @@ export class PermissionInterceptor implements NestInterceptor {
 
   // Method for permission analytics
   private logPermissionMetrics(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     user: any,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     permission: { action: Action; resource: Resource },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     allowed: boolean,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     responseTime: number,
   ) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -22,7 +22,7 @@ export class FindMedicinesDto {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value.trim())
-  @IsIn(["name", "pinyinName", "category", "createdAt"])
+  @IsIn(["name", "pinyinName", "category", "createdAt", "updatedAt", "basePrice"])
   sortBy?: string = "name";
 
   @IsOptional()

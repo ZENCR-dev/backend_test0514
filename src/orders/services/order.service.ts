@@ -614,15 +614,27 @@ export class OrderService implements IOrderManagement {
         OrderStatus.PENDING_REVIEW,
         OrderStatus.FULFILLED,
         OrderStatus.CANCELLED,
-      ], // 已支付可以待审核、履约或取消
+        OrderStatus.PROCESSING,
+      ], // 已支付可以待审核、履约、处理中或取消
       [OrderStatus.PENDING_REVIEW]: [
         OrderStatus.REJECTED,
         OrderStatus.FULFILLED,
-      ], // 待审核可以拒绝或履约
+        OrderStatus.PROCESSING,
+      ], // 待审核可以拒绝、履约或处理中
       [OrderStatus.REJECTED]: [OrderStatus.DRAFT], // 拒绝后可以重新草稿
       [OrderStatus.FULFILLED]: [], // 已履约是终态，不允许转换
       [OrderStatus.CANCELLED]: [], // 已取消是终态，不允许转换
       [OrderStatus.EXPIRED]: [OrderStatus.DRAFT], // 过期后可以重新草稿
+      [OrderStatus.PROCESSING]: [
+        OrderStatus.FULFILLED,
+        OrderStatus.READY_FOR_PICKUP,
+        OrderStatus.CANCELLED,
+      ], // 处理中可以履约、准备取货或取消
+      [OrderStatus.READY_FOR_PICKUP]: [
+        OrderStatus.COMPLETED,
+        OrderStatus.CANCELLED,
+      ], // 准备取货可以完成或取消
+      [OrderStatus.COMPLETED]: [], // 已完成是终态，不允许转换
     };
 
     const allowedTargets = allowedTransitions[currentStatus] || [];

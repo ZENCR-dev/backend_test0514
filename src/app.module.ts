@@ -1,7 +1,7 @@
 import { Module, MiddlewareConsumer, NestModule } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { EventEmitterModule } from "@nestjs/event-emitter";
 import { validate } from "./config/env.validation";
 import { AuthModule } from "./auth/auth.module";
@@ -12,8 +12,15 @@ import { IdempotencyMiddleware } from "./common/middleware/idempotency.middlewar
 import { MedicinesModule } from "./medicines/medicines.module";
 import { PaymentModule } from "./payment/payment.module";
 import { OrdersModule } from "./orders/orders.module";
+import { PrescriptionsModule } from './modules/prescriptions/prescriptions.module';
+import { OrchestrationModule } from './orchestration/orchestration.module';
 // import { HealthModule } from "./health/health.module"; // 临时禁用健康模块
 
+/**
+ * 应用程序根模块
+ * 
+ * 负责组织和配置应用程序的所有模块
+ */
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,6 +45,12 @@ import { OrdersModule } from "./orders/orders.module";
     MedicinesModule,
     PaymentModule,
     OrdersModule, // Task 5A - 订单管理模块
+    PrescriptionsModule,
+    
+    // Task 5C - 业务编排服务
+    // 负责协调订单和支付流程，通过WebSocket实时通知前端状态变更
+    OrchestrationModule,
+    
     // HealthModule, // 临时禁用
   ],
   controllers: [AppController],

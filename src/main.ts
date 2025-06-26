@@ -29,17 +29,37 @@ async function bootstrap() {
   // 全局验证管道（使用预配置的增强版）
   app.useGlobalPipes(validationPipeConfig);
 
-  // CORS配置（基于环境）
+  // 增强的CORS配置（支持3000-3009端口）
   const corsOrigins =
     process.env.NODE_ENV === "production"
       ? process.env.CORS_ORIGINS?.split(",") || []
-      : ["http://localhost:3000", "http://localhost:3001"];
+      : [
+          "http://localhost:3000",
+          "http://localhost:3001",
+          "http://localhost:3002",
+          "http://localhost:3003",
+          "http://localhost:3004",
+          "http://localhost:3005",
+          "http://localhost:3006",
+          "http://localhost:3007",
+          "http://localhost:3008",
+          "http://localhost:3009"
+        ];
 
   app.enableCors({
     origin: corsOrigins,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "idempotency-key"],
+    allowedHeaders: [
+      "Content-Type", 
+      "Authorization", 
+      "idempotency-key",
+      "X-Requested-With",
+      "Accept",
+      "Origin"
+    ],
     credentials: true,
+    optionsSuccessStatus: 200, // 支持旧版浏览器
+    preflightContinue: false,
   });
 
   // 设置安全头
@@ -83,7 +103,7 @@ async function bootstrap() {
       },
       "idempotency",
     )
-    .addServer("http://localhost:3001", "Development Server")
+    .addServer("http://localhost:4000", "Development Server")
     .addServer("https://api.tcm-platform.com", "Production Server")
     .addTag("auth", "Authentication endpoints")
     .addTag("users", "User management")
@@ -101,7 +121,7 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT || 3001;
+  const port = process.env.PORT || 4000;
   await app.listen(port);
 
   logger.log(

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { FindMedicinesDto } from "./dto/find-medicines.dto";
 import { MedicineDto } from "./dto/medicine.dto";
@@ -19,7 +19,7 @@ export class MedicinesService {
     } = query;
 
     // 服务端验证 sortBy 字段
-    const allowedSortBy = ["name", "pinyinName", "category", "createdAt"];
+    const allowedSortBy = ["name", "pinyinName", "category", "createdAt", "updatedAt", "basePrice"];
     const safeSortBy = allowedSortBy.includes(sortBy) ? sortBy : "name";
 
     // 构建搜索条件
@@ -72,5 +72,56 @@ export class MedicinesService {
 
     // 使用transformer转换为v1.2格式
     return transformToMedicineResponseV12(data, total, page, limit, totalPages);
+  }
+
+  async getCategories() {
+    const categories = await this.prisma.medicine.groupBy({
+      by: ['category'],
+      where: {
+        status: 'active',
+      },
+      _count: {
+        category: true,
+      },
+      orderBy: {
+        _count: {
+          category: 'desc',
+        },
+      },
+    });
+
+    const formattedCategories = categories.map(item => ({
+      category: item.category,
+      count: item._count.category,
+    }));
+
+    return {
+      success: true,
+      data: formattedCategories,
+    };
+  }
+
+  async findOne(id: string) {
+    const medicine = await this.prisma.medicine.findFirst({
+      where: {
+        id: id,
+        status: 'active',
+      },
+    });
+
+    if (!medicine) {
+      throw new NotFoundException(`药品 ID ${id} 不存在或已下架`);
+    }
+
+    // 转换数据格式，特别是将Decimal转换为number
+    const formattedMedicine = {
+      ...medicine,
+      basePrice: medicine.basePrice.toNumber(),
+    };
+
+    return {
+      success: true,
+      data: formattedMedicine,
+    };
   }
 }

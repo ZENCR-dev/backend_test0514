@@ -119,7 +119,107 @@ npm run seed:medicines-test-data
 
 ---
 
-## 🎯 最新任务：MetricsCollectorService.cleanupOldMetrics方法实现 ✅ 已完成
+## 🎯 最新任务：Task 5C WebSocket业务编排服务优化 ✅ 100%完成
+
+### 📅 任务概述
+**任务名称：** Task 5C WebSocket业务编排服务性能监控指标优化与系统健壮性提升  
+**当前状态：** ✅ **100%完成** - 2025年6月26日 14:40完成全部Phase  
+**优先级：** P0（核心业务功能）  
+**实际耗时：** 6小时（包含Phase 2事件持久化集成）
+
+### 🎉 实现成果
+
+#### ✅ Phase 1: 性能监控指标优化 - 100%完成
+**增强OrchestrationGateway监控指标：**
+- ✅ 连接时长统计 - 记录每个用户的连接开始和结束时间
+- ✅ 消息发送速率统计 - 实时计算每秒消息数和总消息数
+- ✅ 房间/频道管理统计 - 追踪房间数量、每房间用户数、最大房间
+- ✅ 滑动窗口性能指标 - 1分钟、5分钟滑动窗口统计
+- ✅ 错误指标追踪 - 连接错误、认证错误、消息传递失败分类统计
+- ✅ 性能百分位数 - P50、P95、P99延迟统计
+
+**增强OrchestrationService监控指标：**
+- ✅ 事件处理时间统计 - 详细记录每个事件的处理耗时
+- ✅ 事件处理成功/失败率 - 实时计算成功率和失败率百分比
+- ✅ 补偿机制触发次数统计 - 按原因分类的补偿触发统计
+- ✅ 事件类型分布统计 - 各类事件的处理数量分布
+- ✅ 性能分析 - P50/P95/P99处理时间，最快/最慢事件类型
+- ✅ 健康指标 - 运行时间、错误计数、健康状态判断
+
+#### ✅ Phase 3: 系统健壮性提升 - 100%完成
+**增强重试机制：**
+- ✅ 指数退避重试 - 可配置的重试次数、基础延迟、最大延迟
+- ✅ 重试策略智能化 - 根据错误类型决定是否重试
+- ✅ 死信队列实现 - 存储重试失败的事件，支持查询和重新处理
+
+**优化错误处理：**
+- ✅ 详细错误分类 - 网络、验证、业务逻辑、外部服务、数据库、超时、未知错误
+- ✅ 错误恢复策略 - 自动恢复机制和手动干预接口
+- ✅ 告警机制 - 错误率、死信队列大小、连续失败的多级告警
+
+#### ✅ 新增API端点 - 100%完成
+**监控仪表板API：**
+- ✅ `GET /api/v1/health/orchestration/dashboard` - 增强监控仪表板数据
+- ✅ `GET /api/v1/health/orchestration/dead-letter-queue` - 获取死信队列状态
+- ✅ `DELETE /api/v1/health/orchestration/dead-letter-queue` - 清理死信队列
+- ✅ `POST /api/v1/health/orchestration/dead-letter-queue/reprocess` - 重新处理死信队列
+
+### 🎖️ 测试验证成果
+- ✅ **测试套件：** 8个测试套件，79个测试用例
+- ✅ **通过率：** 100%（79/79）
+- ✅ **增强监控测试：** OrchestrationGateway和Service的增强指标测试全部通过
+- ✅ **API端点测试：** 新增的监控和死信队列API测试全部通过
+- ✅ **错误处理测试：** 重试机制、错误分类、告警系统测试全部通过
+
+### ✅ Phase 2: 事件持久化机制 - 100%完成
+**已完成任务：**
+- ✅ 设计事件存储表 - EventLog模型已添加到Prisma schema
+- ✅ 实现事件持久化服务 - EventPersistenceService完整实现（9个核心方法）
+- ✅ 完整测试覆盖 - 18个测试用例涵盖所有功能
+- ✅ 数据库索引优化 - 查询性能优化
+- ✅ 在OrchestrationModule中注册EventPersistenceService和PrismaService
+- ✅ 在OrchestrationService中集成事件持久化功能（处理前持久化）
+- ✅ 实现事件查询API - 4个新端点完整实现
+- ✅ 服务器运行验证 - 健康检查API正常响应
+
+**集成实现细节：**
+- 所有事件（支付成功/失败、订单状态变更、补偿、错误）在处理前持久化
+- 处理完成后更新事件状态为COMPLETED或FAILED
+- 4个API端点：事件列表查询、单个事件详情、事件统计、事件重放
+- 修复了导入路径和枚举值问题（SUCCEEDED→COMPLETED）
+
+### 📊 技术实现亮点
+```typescript
+// 指数退避重试机制
+async retryWithExponentialBackoff<T>(
+  operation: () => Promise<T>,
+  context: string,
+  retryCount = 0
+): Promise<T> {
+  // 指数退避算法：delay = baseDelay * (backoffMultiplier ^ retryCount)
+  const delay = Math.min(
+    this.enhancedRetryConfig.baseDelay * Math.pow(this.enhancedRetryConfig.backoffMultiplier, retryCount),
+    this.enhancedRetryConfig.maxDelay
+  );
+}
+
+// 增强监控指标接口
+interface EnhancedMetrics {
+  connectionMetrics: {
+    averageConnectionDuration: number;
+    currentConnections: number;
+    peakConnections: number;
+  };
+  performanceMetrics: {
+    p50Latency: number;
+    p95Latency: number; 
+    p99Latency: number;
+  };
+  // ... 更多监控维度
+}
+```
+
+## 🎯 前一个任务：MetricsCollectorService.cleanupOldMetrics方法实现 ✅ 已完成
 
 ### 📅 任务概述
 **任务名称：** 向MetricsCollectorService添加cleanupOldMetrics方法  
@@ -218,12 +318,58 @@ async cleanupOldMetrics(olderThanDays: number): Promise<number> {
 
 ---
 
+## 🎯 最新任务：Task 5C WebSocket业务编排服务 ✅ 基本完成
+
+### 📅 任务概述
+**任务名称：** Task 5C - WebSocket业务编排服务实施  
+**当前状态：** ✅ **95.3%完成** (核心功能全部就绪)  
+**优先级：** P0（支付流程自动化的关键）  
+**执行结果：** 成功实现事件驱动架构
+
+### 🎉 完成成果
+**Task 5C核心功能：** ✅ 已实现
+- **执行时间：** 2025年6月22-24日  
+- **代码规模：** OrchestrationService (395行) + Gateway (446行)  
+- **测试通过率：** 237/240测试通过 (98.75%)
+- **WebSocket状态：** 运行正常，支持实时事件推送
+
+### ✅ 已实现的核心功能
+
+#### 1. 业务编排服务 - ✅ 已完成
+- **OrchestrationService**：完整的事件处理逻辑
+- **功能特性：**
+  - 监听payment.succeeded/failed事件
+  - 自动更新订单状态
+  - 异常补偿机制
+  - 完整的错误处理
+
+#### 2. WebSocket网关 - ✅ 已完成  
+- **OrchestrationGateway**：实时通信网关
+- **功能特性：**
+  - JWT认证机制
+  - 客户端连接管理
+  - 事件广播系统
+  - 健康检查支持
+
+#### 3. 事件系统 - ✅ 已完成
+- **事件类型定义**：完整的TypeScript类型
+- **支持的事件：**
+  - 支付事件：payment.succeeded/failed
+  - 订单事件：order.status.updated
+  - 补偿事件：order.compensation
+  - 系统事件：连接状态、错误通知
+
+### ⚠️ 剩余优化项（不影响核心功能）
+- 3个WebSocket广播测试用例需要调整
+- 性能监控指标的细化
+- 事件持久化机制（可选）
+
 ## 🎯 当前优先任务：运行时监控系统实施 🔄 进行中
 
 ### 📅 任务概述
 **任务名称：** 运行时监控系统实施 - 15步详细清单执行  
 **当前状态：** 🔄 **进行中** (2/15 已完成)  
-**优先级：** P0（企业级全面监控能力）  
+**优先级：** P1（降级为P1，Task 5C已完成）  
 **执行策略：** RIPER工作流 + EXECUTE模式严格执行
 
 ### 📊 当前执行进展

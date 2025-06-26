@@ -89,7 +89,8 @@ export interface IOrderQueryCriteria {
 export interface IUpdateOrderStatusRequest {
   status: OrderStatus;
   notes?: string;
-  version: number; // 乐观锁版本控制
+  version?: number; // 乐观锁版本控制
+  metadata?: Record<string, any>; // 添加元数据字段，用于存储支付相关信息
 }
 
 // Task 5A: 订单实体管理服务核心接口
