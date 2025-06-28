@@ -5,12 +5,12 @@ import { BadRequestException, ConflictException } from "@nestjs/common";
 import Stripe from "stripe";
 import { PaymentService } from "../services/payment.service";
 import { PrismaService } from "../../prisma/prisma.service";
-import { ClinicAccountService } from "../../clinic-account/services/clinic-account.service";
+import { PractitionerAccountService } from "../../practitioner-account/services/practitioner-account.service";
 import {
   CreatePaymentIntentRequest,
   PaymentIntentResponse,
   PaymentStatus,
-  ClinicAccountDeductionResponse,
+  PractitionerAccountDeductionResponse,
   RefundResponse,
 } from "../interfaces/payment-engine.interface";
 import {
@@ -34,7 +34,7 @@ import {
 describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
   let service: PaymentService;
   let prismaService: jest.Mocked<PrismaService>;
-  let clinicAccountService: jest.Mocked<ClinicAccountService>;
+  let practitionerAccountService: jest.Mocked<PractitionerAccountService>;
   let eventEmitter: jest.Mocked<EventEmitter2>;
   let mockStripe: any;
 
@@ -53,7 +53,7 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
     amount: new Decimal("25.50"),
     currency: "nzd",
     orderId: "order-123",
-    clinicId: "clinic-456",
+    practitionerId: "practitioner-456",
     metadata: {
       practitionerId: "practitioner-789",
       patientName: "John Doe",
@@ -70,8 +70,7 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
     created: Math.floor(Date.now() / 1000),
     metadata: {
       orderId: "order-123",
-      clinicId: "clinic-456",
-      practitionerId: "practitioner-789",
+      practitionerId: "practitioner-456",
       patientName: "John Doe",
     },
     automatic_payment_methods: { enabled: true },
@@ -121,7 +120,7 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
       $transaction: jest.fn(),
     };
 
-    const mockClinicAccountService = {
+    const mockPractitionerAccountService = {
       getBalance: jest.fn(),
       deductBalance: jest.fn(),
       refundBalance: jest.fn(),
@@ -154,8 +153,8 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
           useValue: mockPrismaService,
         },
         {
-          provide: ClinicAccountService,
-          useValue: mockClinicAccountService,
+          provide: PractitionerAccountService,
+          useValue: mockPractitionerAccountService,
         },
         {
           provide: EventEmitter2,
@@ -174,7 +173,7 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
 
     service = module.get<PaymentService>(PaymentService);
     prismaService = module.get(PrismaService);
-    clinicAccountService = module.get(ClinicAccountService);
+    practitionerAccountService = module.get(PractitionerAccountService);
     eventEmitter = module.get(EventEmitter2);
 
     // 注入Mock Stripe实例
@@ -221,7 +220,6 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
           currency: "nzd",
           metadata: {
             orderId: "order-123",
-            clinicId: "clinic-456",
             practitionerId: "practitioner-789",
             patientName: "John Doe",
           },
@@ -600,8 +598,8 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
  *
  * 测试范围：
  * 1. confirmPayment方法实现
- * 2. deductFromClinicAccount方法实现
- * 3. refundToClinicAccount方法实现
+ * 2. deductFromPractitionerAccount方法实现
+ * 3. refundToPractitionerAccount方法实现
  *
  * TDD开发流程：先写失败的测试，再实现功能，最后重构
  * 安全重点：并发控制、事务原子性、幂等性
@@ -609,7 +607,7 @@ describe("PaymentService - STRIPE-01 Payment Intent基础功能", () => {
 describe("PaymentService - Task 5B 核心方法补全", () => {
   let service: PaymentService;
   let prismaService: jest.Mocked<PrismaService>;
-  let clinicAccountService: jest.Mocked<ClinicAccountService>;
+  let practitionerAccountService: jest.Mocked<PractitionerAccountService>;
   let eventEmitter: jest.Mocked<EventEmitter2>;
   let mockStripe: any;
 
@@ -650,32 +648,34 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
     },
   };
 
-  // deductFromClinicAccount测试数据
+  // deductFromPractitionerAccount测试数据
   const mockDeductionRequest = {
-    clinicId: "clinic-456",
+    practitionerId: "practitioner-456",
     amount: new Decimal("25.50"),
     orderId: "order-123",
     description: "Order payment deduction",
     idempotencyKey: "deduct_order-123_1234567890",
   };
 
-  const mockClinicAccountResponse = {
-    id: "account-123",
-    clinicName: "Test Clinic",
-    clinicId: "clinic-456",
-    prepaidBalance: 474.5, // 500 - 25.50
-    creditLimit: 1000,
-    availableBalance: 1474.5, // prepaidBalance + creditLimit
-    status: "active" as any,
-    version: 2,
-    notes: "Test account",
+  const mockPractitionerAccountResponse = {
+    id: "trans-123",
     createdAt: new Date("2024-01-01T00:00:00.000Z"),
-    updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+    accountId: "account-123",
+    transactionType: "DEDUCTION" as any,
+    amount: new Decimal("25.50"),
+    balanceBefore: new Decimal("500.00"),
+    balanceAfter: new Decimal("474.50"),
+    creditBefore: new Decimal("1000.00"),
+    creditAfter: new Decimal("1000.00"),
+    referenceType: "ORDER" as any,
+    referenceId: "order-123",
+    description: "Order payment deduction",
+    createdBy: "practitioner-456",
   };
 
-  // refundToClinicAccount测试数据
+  // refundToPractitionerAccount测试数据
   const mockRefundRequest = {
-    clinicId: "clinic-456",
+    practitionerId: "practitioner-456",
     amount: new Decimal("25.50"),
     orderId: "order-123",
     reason: "Order cancelled",
@@ -688,7 +688,7 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       // 添加其他需要的Prisma方法
     };
 
-    const mockClinicAccountService = {
+    const mockPractitionerAccountService = {
       getBalance: jest.fn(),
       deductBalance: jest.fn(),
       refundBalance: jest.fn(),
@@ -721,8 +721,8 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
           useValue: mockPrismaService,
         },
         {
-          provide: ClinicAccountService,
-          useValue: mockClinicAccountService,
+          provide: PractitionerAccountService,
+          useValue: mockPractitionerAccountService,
         },
         {
           provide: EventEmitter2,
@@ -741,7 +741,7 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
 
     service = module.get<PaymentService>(PaymentService);
     prismaService = module.get(PrismaService);
-    clinicAccountService = module.get(ClinicAccountService);
+    practitionerAccountService = module.get(PractitionerAccountService);
     eventEmitter = module.get(EventEmitter2);
 
     // 注入Mock Stripe实例
@@ -879,39 +879,39 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
   });
 
   /**
-   * 1.3 deductFromClinicAccount()测试用例（90分钟）
+   * 1.3 deductFromPractitionerAccount()测试用例（90分钟）
    */
-  describe("deductFromClinicAccount", () => {
+  describe("deductFromPractitionerAccount", () => {
     describe("成功场景", () => {
       it("应该成功从诊所账户扣款", async () => {
         // Arrange
-        clinicAccountService.deductBalance.mockResolvedValue(
-          mockClinicAccountResponse,
+        practitionerAccountService.deductBalance.mockResolvedValue(
+          mockPractitionerAccountResponse,
         );
 
         // Act
         const result =
-          await service.deductFromClinicAccount(mockDeductionRequest);
+          await service.deductFromPractitionerAccount(mockDeductionRequest);
 
         // Assert
         expect(result).toEqual({
           transactionId: expect.any(String),
-          clinicId: "clinic-456",
+          practitionerId: "practitioner-456",
           amount: 25.5,
           remainingBalance: 474.5,
           orderId: "order-123",
           status: "success",
         });
 
-        expect(clinicAccountService.deductBalance).toHaveBeenCalledWith(
-          "clinic-456",
-          25.5,
+        expect(practitionerAccountService.deductBalance).toHaveBeenCalledWith(
+          "practitioner-456",
+          new Decimal("25.5"),
           "order-123",
           "Order payment deduction",
         );
 
         expect(eventEmitter.emit).toHaveBeenCalledWith("account.deducted", {
-          clinicId: "clinic-456",
+          practitionerId: "practitioner-456",
           amount: 25.5,
           orderId: "order-123",
           transactionId: expect.any(String),
@@ -923,20 +923,20 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       it("应该处理余额不足的情况", async () => {
         // Arrange
         const insufficientFundsError = new BadRequestException("余额不足");
-        clinicAccountService.deductBalance.mockRejectedValue(
+        practitionerAccountService.deductBalance.mockRejectedValue(
           insufficientFundsError,
         );
 
         // Act
         const result =
-          await service.deductFromClinicAccount(mockDeductionRequest);
+          await service.deductFromPractitionerAccount(mockDeductionRequest);
 
         // Assert
         expect(result.status).toBe("insufficient_funds");
         expect(eventEmitter.emit).toHaveBeenCalledWith(
           "account.deduction.failed",
           {
-            clinicId: "clinic-456",
+            practitionerId: "practitioner-456",
             amount: 25.5,
             orderId: "order-123",
             reason: "insufficient_funds",
@@ -947,8 +947,8 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       it("应该验证必填参数", async () => {
         // Act & Assert
         await expect(
-          service.deductFromClinicAccount({
-            clinicId: "",
+          service.deductFromPractitionerAccount({
+            practitionerId: "",
             amount: new Decimal("0"),
             orderId: "order-123",
             description: "test",
@@ -960,7 +960,7 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       it("应该验证金额必须大于0", async () => {
         // Act & Assert
         await expect(
-          service.deductFromClinicAccount({
+          service.deductFromPractitionerAccount({
             ...mockDeductionRequest,
             amount: new Decimal("-10"),
           }),
@@ -971,9 +971,9 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
     describe("幂等性测试", () => {
       it("应该处理重复的扣款请求", async () => {
         // Arrange
-        const existingTransaction: ClinicAccountDeductionResponse = {
+        const existingTransaction: PractitionerAccountDeductionResponse = {
           transactionId: "trans-123",
-          clinicId: "clinic-456",
+          practitionerId: "practitioner-456",
           amount: 25.5,
           remainingBalance: 474.5,
           orderId: "order-123",
@@ -984,16 +984,16 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
         // 注意：checkDuplicateDeduction方法将在Task 5B实现时添加
         // 目前先跳过这个测试，因为方法尚未实现
         jest
-          .spyOn(service, "deductFromClinicAccount")
+          .spyOn(service, "deductFromPractitionerAccount")
           .mockResolvedValue(existingTransaction);
 
         // Act
         const result =
-          await service.deductFromClinicAccount(mockDeductionRequest);
+          await service.deductFromPractitionerAccount(mockDeductionRequest);
 
         // Assert
         expect(result.transactionId).toBe("trans-123");
-        expect(clinicAccountService.deductBalance).not.toHaveBeenCalled();
+        expect(practitionerAccountService.deductBalance).not.toHaveBeenCalled();
       });
     });
 
@@ -1003,17 +1003,17 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
         const optimisticLockError = new ConflictException(
           "账户信息已被其他操作更新，请刷新后重试",
         );
-        clinicAccountService.deductBalance
+        practitionerAccountService.deductBalance
           .mockRejectedValueOnce(optimisticLockError)
-          .mockResolvedValueOnce(mockClinicAccountResponse);
+          .mockResolvedValueOnce(mockPractitionerAccountResponse);
 
         // Act
         const result =
-          await service.deductFromClinicAccount(mockDeductionRequest);
+          await service.deductFromPractitionerAccount(mockDeductionRequest);
 
         // Assert
         expect(result.status).toBe("success");
-        expect(clinicAccountService.deductBalance).toHaveBeenCalledTimes(2);
+        expect(practitionerAccountService.deductBalance).toHaveBeenCalledTimes(2);
       });
 
       it("应该在多次重试后失败", async () => {
@@ -1021,40 +1021,50 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
         const optimisticLockError = new ConflictException(
           "账户信息已被其他操作更新，请刷新后重试",
         );
-        clinicAccountService.deductBalance.mockRejectedValue(
+        practitionerAccountService.deductBalance.mockRejectedValue(
           optimisticLockError,
         );
 
         // Act
         const result =
-          await service.deductFromClinicAccount(mockDeductionRequest);
+          await service.deductFromPractitionerAccount(mockDeductionRequest);
 
         // Assert
         expect(result.status).toBe("failed");
-        expect(clinicAccountService.deductBalance).toHaveBeenCalledTimes(3); // 默认重试3次
+        expect(practitionerAccountService.deductBalance).toHaveBeenCalledTimes(3); // 默认重试3次
       });
     });
   });
 
   /**
-   * 1.4 refundToClinicAccount()测试用例（30分钟）
+   * 1.4 refundToPractitionerAccount()测试用例（30分钟）
    */
-  describe("refundToClinicAccount", () => {
+  describe("refundToPractitionerAccount", () => {
     describe("成功场景", () => {
       it("应该成功退款到诊所账户", async () => {
         // Arrange
         const refundedAccountResponse = {
-          ...mockClinicAccountResponse,
-          prepaidBalance: 525.5, // 500 + 25.50
-          availableBalance: 1525.5, // prepaidBalance + creditLimit
+          id: "refund-trans-123",
+          createdAt: new Date("2024-01-01T00:00:00.000Z"),
+          accountId: "account-123",
+          transactionType: "REFUND" as any,
+          amount: new Decimal("25.50"),
+          balanceBefore: new Decimal("474.50"),
+          balanceAfter: new Decimal("500.00"),
+          creditBefore: new Decimal("1000.00"),
+          creditAfter: new Decimal("1000.00"),
+          referenceType: "ORDER" as any,
+          referenceId: "order-123",
+          description: "Order cancelled",
+          createdBy: "practitioner-456",
         };
-        clinicAccountService.refundBalance.mockResolvedValue(
+        practitionerAccountService.refundBalance.mockResolvedValue(
           refundedAccountResponse,
         );
 
         // Act
-        const result = await service.refundToClinicAccount(
-          "clinic-456",
+        const result = await service.refundToPractitionerAccount(
+          "practitioner-456",
           new Decimal("25.50"),
           "order-123",
           "Order cancelled",
@@ -1069,15 +1079,15 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
           refundedAt: expect.any(Date),
         });
 
-        expect(clinicAccountService.refundBalance).toHaveBeenCalledWith(
-          "clinic-456",
-          25.5,
+        expect(practitionerAccountService.refundBalance).toHaveBeenCalledWith(
+          "practitioner-456",
+          new Decimal("25.5"),
           "order-123",
           "Order cancelled",
         );
 
         expect(eventEmitter.emit).toHaveBeenCalledWith("account.refunded", {
-          clinicId: "clinic-456",
+          practitionerId: "practitioner-456",
           amount: 25.5,
           orderId: "order-123",
           refundId: expect.any(String),
@@ -1089,8 +1099,8 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       it("应该验证金额必须大于0", async () => {
         // Act & Assert
         await expect(
-          service.refundToClinicAccount(
-            "clinic-456",
+          service.refundToPractitionerAccount(
+            "practitioner-456",
             new Decimal("0"),
             "order-123",
           ),
@@ -1100,7 +1110,7 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       it("应该验证必填参数", async () => {
         // Act & Assert
         await expect(
-          service.refundToClinicAccount("", new Decimal("25.50"), ""),
+          service.refundToPractitionerAccount("", new Decimal("25.50"), ""),
         ).rejects.toThrow(BadRequestException);
       });
     });
@@ -1117,27 +1127,27 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
         };
 
         // 注意：checkDuplicateRefund方法将在Task 5B实现时添加
-        // 目前先mock refundToClinicAccount方法本身
+        // 目前先mock refundToPractitionerAccount方法本身
         jest
-          .spyOn(service, "refundToClinicAccount")
+          .spyOn(service, "refundToPractitionerAccount")
           .mockResolvedValue(existingRefund);
 
         // Act
-        const result = await service.refundToClinicAccount(
-          "clinic-456",
+        const result = await service.refundToPractitionerAccount(
+          "practitioner-456",
           new Decimal("25.50"),
           "order-123",
         );
 
         // Assert
         expect(result).toEqual(existingRefund);
-        expect(clinicAccountService.refundBalance).not.toHaveBeenCalled();
+        expect(practitionerAccountService.refundBalance).not.toHaveBeenCalled();
       });
     });
   });
 
   /**
-   * 并发压力测试（重点测试deductFromClinicAccount的并发安全性）
+   * 并发压力测试（重点测试deductFromPractitionerAccount的并发安全性）
    */
   describe("并发压力测试", () => {
     it("应该处理100个并发扣款请求而无数据不一致", async () => {
@@ -1146,8 +1156,8 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       const promises: Promise<any>[] = [];
 
       // Mock成功响应
-      clinicAccountService.deductBalance.mockResolvedValue(
-        mockClinicAccountResponse,
+      practitionerAccountService.deductBalance.mockResolvedValue(
+        mockPractitionerAccountResponse,
       );
 
       // Act
@@ -1157,7 +1167,7 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
           orderId: `order-${i}`,
           idempotencyKey: `deduct_order-${i}_${Date.now()}`,
         };
-        promises.push(service.deductFromClinicAccount(request));
+        promises.push(service.deductFromPractitionerAccount(request));
       }
 
       const results = await Promise.all(promises);
@@ -1169,7 +1179,7 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
       });
 
       // 验证所有请求都被处理
-      expect(clinicAccountService.deductBalance).toHaveBeenCalledTimes(
+      expect(practitionerAccountService.deductBalance).toHaveBeenCalledTimes(
         concurrentRequests,
       );
     });

@@ -28,15 +28,15 @@ import { PaymentService } from "../services/payment.service";
 import {
   CreatePaymentIntentDto,
   ConfirmPaymentDto,
-  ClinicAccountDeductionDto,
+  PractitionerAccountDeductionDto,
   RefundRequestDto,
   PaymentStatusQueryDto,
-  ClinicAccountBalanceQueryDto,
+  PractitionerAccountBalanceQueryDto,
   PaymentIntentResponseDto,
   PaymentConfirmationResponseDto,
-  ClinicAccountDeductionResponseDto,
+  PractitionerAccountDeductionResponseDto,
   RefundResponseDto,
-  ClinicAccountBalanceResponseDto,
+  PractitionerAccountBalanceResponseDto,
 } from "../dto/payment.dto";
 import { Decimal } from "@prisma/client/runtime/library";
 
@@ -93,7 +93,7 @@ export class PaymentController {
       amount: new Decimal(createPaymentIntentDto.amount / 100),
       currency: createPaymentIntentDto.currency,
       orderId: createPaymentIntentDto.orderId,
-      clinicId: createPaymentIntentDto.clinicId,
+      practitionerId: createPaymentIntentDto.practitionerId,
       metadata: createPaymentIntentDto.metadata,
     });
 
@@ -197,30 +197,30 @@ export class PaymentController {
   }
 
   /**
-   * 诊所账户扣款
+   * 医师账户扣款
    */
-  @Post("clinic-account/deduct")
+  @Post("practitioner-account/deduct")
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: "诊所账户扣款",
-    description: "从诊所账户余额中扣除指定金额",
+    summary: "医师账户扣款",
+    description: "从医师账户余额中扣除指定金额",
   })
   @ApiResponse({
     status: 200,
     description: "扣款成功",
-    type: ClinicAccountDeductionResponseDto,
+    type: PractitionerAccountDeductionResponseDto,
   })
   @ApiResponse({
     status: 400,
     description: "余额不足或扣款失败",
   })
-  async deductFromClinicAccount(
-    @Body() deductionDto: ClinicAccountDeductionDto,
-  ): Promise<ClinicAccountDeductionResponseDto> {
-    this.logger.log(`Deducting from clinic account: ${deductionDto.clinicId}`);
+  async deductFromPractitionerAccount(
+    @Body() deductionDto: PractitionerAccountDeductionDto,
+  ): Promise<PractitionerAccountDeductionResponseDto> {
+    this.logger.log(`Deducting from practitioner account: ${deductionDto.practitionerId}`);
 
-    return await this.paymentService.deductFromClinicAccount({
-      clinicId: deductionDto.clinicId,
+    return await this.paymentService.deductFromPractitionerAccount({
+      practitionerId: deductionDto.practitionerId,
       amount: new Decimal(deductionDto.amount / 100),
       orderId: deductionDto.orderId,
       description: deductionDto.description,
@@ -229,33 +229,33 @@ export class PaymentController {
   }
 
   /**
-   * 查询诊所账户余额
+   * 查询医师账户余额
    */
-  @Get("clinic-account/:clinicId/balance")
+  @Get("practitioner-account/:practitionerId/balance")
   @ApiOperation({
-    summary: "查询诊所账户余额",
-    description: "获取指定诊所的账户余额信息",
+    summary: "查询医师账户余额",
+    description: "获取指定医师的账户余额信息",
   })
   @ApiParam({
-    name: "clinicId",
-    description: "诊所ID",
-    example: "clinic_123456789",
+    name: "practitionerId",
+    description: "医师ID",
+    example: "practitioner_123456789",
   })
   @ApiResponse({
     status: 200,
     description: "余额查询成功",
-    type: ClinicAccountBalanceResponseDto,
+    type: PractitionerAccountBalanceResponseDto,
   })
   @ApiResponse({
     status: 404,
-    description: "诊所账户不存在",
+    description: "医师账户不存在",
   })
-  async getClinicAccountBalance(
-    @Param("clinicId") clinicId: string,
-  ): Promise<ClinicAccountBalanceResponseDto> {
-    this.logger.log(`Getting clinic account balance: ${clinicId}`);
+  async getPractitionerAccountBalance(
+    @Param("practitionerId") practitionerId: string,
+  ): Promise<PractitionerAccountBalanceResponseDto> {
+    this.logger.log(`Getting practitioner account balance: ${practitionerId}`);
 
-    return await this.paymentService.getClinicAccountBalance(clinicId);
+    return await this.paymentService.getPractitionerAccountBalance(practitionerId);
   }
 
   /**
@@ -292,7 +292,7 @@ export class PaymentController {
         reason: refundDto.reason,
       });
     } else if (refundDto.transactionId) {
-      return await this.paymentService.processClinicAccountRefund({
+      return await this.paymentService.processPractitionerAccountRefund({
         transactionId: refundDto.transactionId,
         orderId: refundDto.orderId,
         amount: refundDto.amount

@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Logger } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
-import { ClinicAccountService } from "../../clinic-account/services/clinic-account.service";
+import { PractitionerAccountService } from "../../practitioner-account/services/practitioner-account.service";
 import { PaymentService } from "./payment.service";
 import { WebhookEventData } from "../interfaces/payment-engine.interface";
 import {
@@ -14,7 +14,7 @@ describe("PaymentService - 内存幂等性机制", () => {
   let service: PaymentService;
   let eventEmitter: EventEmitter2;
   let mockPrismaService: Partial<PrismaService>;
-  let mockClinicAccountService: Partial<ClinicAccountService>;
+  let mockPractitionerAccountService: Partial<PractitionerAccountService>;
 
   const mockStripeConfig = {
     secretKey: "sk_test_mock_key",
@@ -30,7 +30,7 @@ describe("PaymentService - 内存幂等性机制", () => {
   beforeEach(async () => {
     // Mock services
     mockPrismaService = {};
-    mockClinicAccountService = {};
+    mockPractitionerAccountService = {};
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -40,8 +40,8 @@ describe("PaymentService - 内存幂等性机制", () => {
           useValue: mockPrismaService,
         },
         {
-          provide: ClinicAccountService,
-          useValue: mockClinicAccountService,
+          provide: PractitionerAccountService,
+          useValue: mockPractitionerAccountService,
         },
         {
           provide: EventEmitter2,
@@ -82,7 +82,7 @@ describe("PaymentService - 内存幂等性机制", () => {
           currency: "usd",
           metadata: {
             orderId: "order_123",
-            clinicId: "clinic_456",
+            practitionerId: "clinic_456",
           },
         },
       },
@@ -98,7 +98,7 @@ describe("PaymentService - 内存幂等性机制", () => {
         paymentIntentId: "pi_test_123",
         amount: 2000,
         currency: "usd",
-        clinicId: "clinic_456",
+        practitionerId: "clinic_456",
       });
     });
 
@@ -145,7 +145,7 @@ describe("PaymentService - 内存幂等性机制", () => {
             id: "pi_test_failed",
             metadata: {
               orderId: "order_456",
-              clinicId: "clinic_789",
+              practitionerId: "clinic_789",
             },
             last_payment_error: {
               message: "Card declined",
@@ -160,7 +160,7 @@ describe("PaymentService - 内存幂等性机制", () => {
         orderId: "order_456",
         paymentIntentId: "pi_test_failed",
         failureReason: "Card declined",
-        clinicId: "clinic_789",
+        practitionerId: "clinic_789",
       });
     });
 
@@ -174,7 +174,7 @@ describe("PaymentService - 内存幂等性机制", () => {
             id: "pi_test_canceled",
             metadata: {
               orderId: "order_789",
-              clinicId: "clinic_123",
+              practitionerId: "clinic_123",
             },
           },
         },
@@ -185,7 +185,7 @@ describe("PaymentService - 内存幂等性机制", () => {
       expect(eventEmitter.emit).toHaveBeenCalledWith("payment.canceled", {
         orderId: "order_789",
         paymentIntentId: "pi_test_canceled",
-        clinicId: "clinic_123",
+        practitionerId: "clinic_123",
       });
     });
 
@@ -275,7 +275,7 @@ describe("PaymentService - 内存幂等性机制", () => {
             currency: "usd",
             metadata: {
               orderId: "order_cleanup_123",
-              clinicId: "clinic_cleanup_456",
+              practitionerId: "clinic_cleanup_456",
             },
           },
         },

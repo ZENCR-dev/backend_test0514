@@ -7,7 +7,7 @@ import { validate } from "./config/env.validation";
 import { AuthModule } from "./auth/auth.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { UserModule } from "./user/user.module";
-import { ClinicAccountModule } from "./clinic-account/clinic-account.module";
+import { PractitionerAccountModule } from "./practitioner-account/practitioner-account.module";
 import { IdempotencyMiddleware } from "./common/middleware/idempotency.middleware";
 import { MedicinesModule } from "./medicines/medicines.module";
 import { PaymentModule } from "./payment/payment.module";
@@ -41,7 +41,7 @@ import { OrchestrationModule } from "./orchestration/orchestration.module";
     PrismaModule,
     AuthModule,
     UserModule,
-    ClinicAccountModule,
+    PractitionerAccountModule,
     MedicinesModule,
     PaymentModule,
     OrdersModule, // Task 5A - 订单管理模块

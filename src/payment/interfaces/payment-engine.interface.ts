@@ -5,7 +5,7 @@ import { Decimal } from "@prisma/client/runtime/library";
  */
 export enum PaymentMethod {
   STRIPE_CARD = "stripe_card",
-  CLINIC_ACCOUNT = "clinic_account",
+  PRACTITIONER_ACCOUNT = "practitioner_account",
 }
 
 /**
@@ -32,7 +32,7 @@ export interface CreatePaymentIntentRequest {
   amount: Decimal;
   currency: string;
   orderId: string;
-  clinicId: string;
+  practitionerId: string;
   metadata?: Record<string, string>;
 }
 
@@ -71,10 +71,10 @@ export interface PaymentConfirmationResponse {
 }
 
 /**
- * 诊所账户扣款请求
+ * 医师账户扣款请求
  */
-export interface ClinicAccountDeductionRequest {
-  clinicId: string;
+export interface PractitionerAccountDeductionRequest {
+  practitionerId: string;
   amount: Decimal;
   orderId: string;
   description: string;
@@ -82,11 +82,11 @@ export interface ClinicAccountDeductionRequest {
 }
 
 /**
- * 诊所账户扣款响应
+ * 医师账户扣款响应
  */
-export interface ClinicAccountDeductionResponse {
+export interface PractitionerAccountDeductionResponse {
   transactionId: string;
-  clinicId: string;
+  practitionerId: string;
   amount: number;
   remainingBalance: number;
   orderId: string;
@@ -231,26 +231,26 @@ export interface IPaymentEngine {
   cancelPaymentIntent(paymentIntentId: string): Promise<void>;
 
   /**
-   * 诊所账户管理
+   * 医师账户管理
    */
-  deductFromClinicAccount(
-    request: ClinicAccountDeductionRequest,
-  ): Promise<ClinicAccountDeductionResponse>;
-  refundToClinicAccount(
-    clinicId: string,
+  deductFromPractitionerAccount(
+    request: PractitionerAccountDeductionRequest,
+  ): Promise<PractitionerAccountDeductionResponse>;
+  refundToPractitionerAccount(
+    practitionerId: string,
     amount: Decimal,
     orderId: string,
     reason?: string,
   ): Promise<RefundResponse>;
-  getClinicAccountBalance(
-    clinicId: string,
+  getPractitionerAccountBalance(
+    practitionerId: string,
   ): Promise<{ balance: number; currency: string }>;
 
   /**
    * 退款处理
    */
   processStripeRefund(request: RefundRequest): Promise<RefundResponse>;
-  processClinicAccountRefund(request: RefundRequest): Promise<RefundResponse>;
+  processPractitionerAccountRefund(request: RefundRequest): Promise<RefundResponse>;
 
   /**
    * Webhook事件处理

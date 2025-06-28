@@ -13,15 +13,15 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Decimal } from "@prisma/client/runtime/library";
 import Stripe from "stripe";
 import { PrismaService } from "../../prisma/prisma.service";
-import { ClinicAccountService } from "../../clinic-account/services/clinic-account.service";
+import { PractitionerAccountService } from "../../practitioner-account/services/practitioner-account.service";
 import {
   IPaymentEngine,
   CreatePaymentIntentRequest,
   PaymentIntentResponse,
   ConfirmPaymentRequest,
   PaymentConfirmationResponse,
-  ClinicAccountDeductionRequest,
-  ClinicAccountDeductionResponse,
+  PractitionerAccountDeductionRequest,
+  PractitionerAccountDeductionResponse,
   RefundRequest,
   RefundResponse,
   WebhookEventData,
@@ -32,7 +32,7 @@ import {
   PaymentIntentCreationException,
   PaymentConfirmationException,
   InsufficientFundsException,
-  ClinicAccountDeductionException,
+  PractitionerAccountDeductionException,
   DuplicatePaymentException,
   PaymentIntentNotFoundException,
   RefundProcessingException,
@@ -73,7 +73,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly clinicAccountService: ClinicAccountService,
+    private readonly practitionerAccountService: PractitionerAccountService,
     private readonly eventEmitter: EventEmitter2,
     @Inject("STRIPE_CONFIG") private readonly stripeConfig: any,
     @Inject("PAYMENT_CONFIG") private readonly paymentConfig: any,
@@ -223,7 +223,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         currency: request.currency,
         metadata: {
           orderId: request.orderId,
-          clinicId: request.clinicId,
+          practitionerId: request.practitionerId,
           ...request.metadata,
         },
         automatic_payment_methods: {
@@ -556,13 +556,13 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   /**
    * 从诊所账户扣款
    */
-  async deductFromClinicAccount(
-    request: ClinicAccountDeductionRequest,
-  ): Promise<ClinicAccountDeductionResponse> {
+  async deductFromPractitionerAccount(
+    request: PractitionerAccountDeductionRequest,
+  ): Promise<PractitionerAccountDeductionResponse> {
     try {
       // 输入验证
-      if (!request.clinicId) {
-        throw new BadRequestException("Clinic ID is required");
+      if (!request.practitionerId) {
+        throw new BadRequestException("Practitioner ID is required");
       }
       if (!request.amount || request.amount.lte(0)) {
         throw new BadRequestException("Amount must be greater than 0");
@@ -575,7 +575,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
       }
 
       this.logger.log(
-        `Deducting ${request.amount} from clinic account: ${request.clinicId}`,
+        `Deducting ${request.amount} from practitioner account: ${request.practitionerId}`,
       );
 
       // 幂等性检查
@@ -598,20 +598,20 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
       this.processingEvents.add(request.idempotencyKey);
 
       try {
-        // 调用ClinicAccountService进行扣款
-        const accountResult = await this.clinicAccountService.deductBalance(
-          request.clinicId,
-          parseFloat(request.amount.toString()),
+        // 调用PractitionerAccountService进行扣款
+        const accountResult = await this.practitionerAccountService.deductBalance(
+          request.practitionerId,
+          request.amount,
           request.orderId,
           request.description || `Order payment: ${request.orderId}`,
         );
 
         // 构建响应
-        const response: ClinicAccountDeductionResponse = {
-          transactionId: `deduct_${Date.now()}_${request.clinicId}`,
-          clinicId: request.clinicId,
+        const response: PractitionerAccountDeductionResponse = {
+          transactionId: `deduct_${Date.now()}_${request.practitionerId}`,
+          practitionerId: request.practitionerId,
           amount: request.amount.toNumber(),
-          remainingBalance: accountResult.prepaidBalance, // 使用prepaidBalance而不是availableBalance
+          remainingBalance: accountResult.balanceAfter.toNumber(), // Use balanceAfter from AccountTransaction
           orderId: request.orderId,
           status: "success",
         };
@@ -621,14 +621,14 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
 
         // 发射扣款成功事件
         this.eventEmitter.emit("account.deducted", {
-          clinicId: request.clinicId,
+          practitionerId: request.practitionerId,
           amount: request.amount.toNumber(),
           orderId: request.orderId,
           transactionId: response.transactionId,
         });
 
         this.logger.log(
-          `Successfully deducted ${request.amount} from clinic ${request.clinicId}`,
+          `Successfully deducted ${request.amount} from practitioner ${request.practitionerId}`,
         );
 
         return response;
@@ -639,9 +639,9 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
           (error.message.includes("余额不足") ||
             error.message.includes("insufficient"))
         ) {
-          const failureResponse: ClinicAccountDeductionResponse = {
-            transactionId: `deduct_${Date.now()}_${request.clinicId}`,
-            clinicId: request.clinicId,
+          const failureResponse: PractitionerAccountDeductionResponse = {
+            transactionId: `deduct_${Date.now()}_${request.practitionerId}`,
+            practitionerId: request.practitionerId,
             amount: request.amount.toNumber(),
             remainingBalance: 0, // 余额不足时设为0
             orderId: request.orderId,
@@ -650,7 +650,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
 
           // 发射扣款失败事件
           this.eventEmitter.emit("account.deduction.failed", {
-            clinicId: request.clinicId,
+            practitionerId: request.practitionerId,
             amount: request.amount.toNumber(),
             orderId: request.orderId,
             reason: "insufficient_funds",
@@ -677,26 +677,26 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
               ); // 延迟重试
 
               const accountResult =
-                await this.clinicAccountService.deductBalance(
-                  request.clinicId,
-                  request.amount.toNumber(),
+                await this.practitionerAccountService.deductBalance(
+                  request.practitionerId,
+                  request.amount,
                   request.orderId,
                   request.description ||
                     `Order payment deduction: ${request.orderId}`,
                 );
 
-              const response: ClinicAccountDeductionResponse = {
-                transactionId: `deduct_${Date.now()}_${request.clinicId}`,
-                clinicId: request.clinicId,
+              const response: PractitionerAccountDeductionResponse = {
+                transactionId: `deduct_${Date.now()}_${request.practitionerId}`,
+                practitionerId: request.practitionerId,
                 amount: request.amount.toNumber(),
-                remainingBalance: accountResult.prepaidBalance,
+                remainingBalance: accountResult.balanceAfter.toNumber(),
                 orderId: request.orderId,
                 status: "success",
               };
 
               // 发射扣款成功事件
               this.eventEmitter.emit("account.deducted", {
-                clinicId: request.clinicId,
+                practitionerId: request.practitionerId,
                 amount: request.amount.toNumber(),
                 orderId: request.orderId,
                 transactionId: response.transactionId,
@@ -706,9 +706,9 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
             } catch (retryError) {
               if (retryCount >= maxRetries) {
                 // 重试次数用尽，返回失败状态
-                const failureResponse: ClinicAccountDeductionResponse = {
-                  transactionId: `deduct_${Date.now()}_${request.clinicId}`,
-                  clinicId: request.clinicId,
+                const failureResponse: PractitionerAccountDeductionResponse = {
+                  transactionId: `deduct_${Date.now()}_${request.practitionerId}`,
+                  practitionerId: request.practitionerId,
                   amount: request.amount.toNumber(),
                   remainingBalance: 0,
                   orderId: request.orderId,
@@ -728,7 +728,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
       }
     } catch (error) {
       this.logger.error(
-        `Failed to deduct from clinic account ${request.clinicId}:`,
+        `Failed to deduct from practitioner account ${request.practitionerId}:`,
         error,
       );
 
@@ -741,24 +741,24 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
       }
 
       throw new BadRequestException(
-        `Failed to deduct from clinic account: ${error.message}`,
+        `Failed to deduct from practitioner account: ${error.message}`,
       );
     }
   }
 
   /**
-   * 退款到诊所账户
+   * 退款到医师个人账户
    */
-  async refundToClinicAccount(
-    clinicId: string,
+  async refundToPractitionerAccount(
+    practitionerId: string,
     amount: Decimal,
     orderId: string,
     reason?: string,
   ): Promise<RefundResponse> {
     try {
       // 输入验证
-      if (!clinicId) {
-        throw new BadRequestException("Clinic ID is required");
+      if (!practitionerId) {
+        throw new BadRequestException("Practitioner ID is required");
       }
       if (!amount || amount.lte(0)) {
         throw new BadRequestException("Amount must be greater than 0");
@@ -768,11 +768,11 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
       }
 
       this.logger.log(
-        `Processing refund to clinic account: ${clinicId}, amount: ${amount}`,
+        `Processing refund to practitioner account: ${practitionerId}, amount: ${amount}`,
       );
 
       // 生成唯一的事务ID用于重复退款检测
-      const transactionId = `refund_${Date.now()}_${clinicId}_${orderId}`;
+      const transactionId = `refund_${Date.now()}_${practitionerId}_${orderId}`;
 
       // 检查重复退款
       const existingRefund = await this.checkDuplicateRefund(
@@ -785,10 +785,10 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         return existingRefund;
       }
 
-      // 调用ClinicAccountService进行退款
-      const accountResult = await this.clinicAccountService.refundBalance(
-        clinicId,
-        parseFloat(amount.toString()),
+      // 调用PractitionerAccountService进行退款
+      const accountResult = await this.practitionerAccountService.refundBalance(
+        practitionerId,
+        amount,
         orderId,
         reason || `Refund for order: ${orderId}`,
       );
@@ -804,20 +804,20 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
 
       // 发射退款成功事件
       this.eventEmitter.emit("account.refunded", {
-        clinicId: clinicId,
+        practitionerId: practitionerId,
         amount: amount.toNumber(),
         orderId: orderId,
         refundId: transactionId,
       });
 
       this.logger.log(
-        `Successfully refunded ${amount} to clinic ${clinicId} for order ${orderId}`,
+        `Successfully refunded ${amount} to practitioner ${practitionerId} for order ${orderId}`,
       );
 
       return refundResponse;
     } catch (error) {
       this.logger.error(
-        `Failed to refund to clinic account ${clinicId}:`,
+        `Failed to refund to practitioner account ${practitionerId}:`,
         error,
       );
 
@@ -832,35 +832,44 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   }
 
   /**
-   * 获取诊所账户余额
+   * 获取医师个人账户余额
    */
-  async getClinicAccountBalance(
-    clinicId: string,
-  ): Promise<{ balance: number; currency: string }> {
+  async getPractitionerAccountBalance(
+    practitionerId: string,
+  ): Promise<{ 
+    balance: number; 
+    availableCredit: number;
+    creditLimit: number;
+    usedCredit: number;
+    currency: string;
+  }> {
     try {
-      this.logger.log(`Getting clinic account balance for clinic: ${clinicId}`);
+      this.logger.log(`Getting practitioner account balance for practitioner: ${practitionerId}`);
 
-      // 委托给ClinicAccountService获取余额
-      const balanceInfo = await this.clinicAccountService.getBalance(clinicId);
+      // 委托给PractitionerAccountService获取余额
+      const balanceInfo = await this.practitionerAccountService.getBalance(practitionerId);
 
       return {
-        balance: balanceInfo.availableBalance, // 使用availableBalance字段
-        currency: "USD", // 默认货币
+        balance: balanceInfo.balance.toNumber(),
+        availableCredit: balanceInfo.availableCredit.toNumber(),
+        creditLimit: balanceInfo.creditLimit.toNumber(),
+        usedCredit: balanceInfo.usedCredit.toNumber(),
+        currency: "NZD", // Default currency for New Zealand
       };
     } catch (error) {
       this.logger.error(
-        `Failed to get clinic account balance for clinic ${clinicId}:`,
+        `Failed to get practitioner account balance for practitioner ${practitionerId}:`,
         error,
       );
 
-      if (error.message?.includes("诊所账户不存在")) {
+      if (error.message?.includes("Account not found")) {
         throw new NotFoundException(
-          `Clinic account not found for clinic: ${clinicId}`,
+          `Practitioner account not found for practitioner: ${practitionerId}`,
         );
       }
 
       throw new InternalServerErrorException(
-        "Failed to retrieve clinic account balance",
+        "Failed to retrieve practitioner account balance",
       );
     }
   }
@@ -1001,40 +1010,40 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   /**
    * 处理诊所账户退款
    */
-  async processClinicAccountRefund(
+  async processPractitionerAccountRefund(
     request: RefundRequest,
   ): Promise<RefundResponse> {
     try {
       this.logger.log(
-        `Processing clinic account refund for order: ${request.orderId}`,
+        `Processing practitioner account refund for order: ${request.orderId}`,
       );
 
       // 1. 验证退款请求参数
       if (!request.transactionId) {
         throw new BadRequestException(
-          "Transaction ID is required for clinic account refund",
+          "Transaction ID is required for practitioner account refund",
         );
       }
 
       if (!request.amount || request.amount.lte(0)) {
         throw new BadRequestException(
-          "Valid refund amount is required for clinic account refund",
+          "Valid refund amount is required for practitioner account refund",
         );
       }
 
-      // 2. 从事务ID中提取诊所ID (假设事务ID包含诊所信息)
-      // 这里需要根据实际业务逻辑调整，可能需要查询数据库获取诊所ID
-      let clinicId: string;
+      // 2. 从事务ID中提取医师ID (假设事务ID包含医师信息)
+      // 这里需要根据实际业务逻辑调整，可能需要查询数据库获取医师ID
+      let practitionerId: string;
 
       try {
-        // 查询原始扣款事务获取诊所ID
+        // 查询原始扣款事务获取医师ID
         // 这里使用Prisma查询account_transactions表
         const originalTransaction =
           await this.prisma.accountTransaction.findUnique({
             where: { id: request.transactionId },
             include: {
               account: {
-                select: { clinicId: true },
+                select: { practitionerId: true },
               },
             },
           });
@@ -1051,7 +1060,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
           );
         }
 
-        clinicId = originalTransaction.account.clinicId;
+        practitionerId = originalTransaction.account.practitionerId;
       } catch (error) {
         this.logger.error(
           `Failed to find transaction ${request.transactionId}:`,
@@ -1065,7 +1074,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
       // 3. 生成幂等性键
       const idempotencyKey = this.generateIdempotencyKey(
         request.orderId,
-        "clinic_refund",
+        "practitioner_refund",
       );
 
       // 4. 检查是否已处理过相同的退款请求
@@ -1082,50 +1091,50 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         return existingRefund;
       }
 
-      // 5. 调用ClinicAccountService进行退款
-      const refundResult = await this.clinicAccountService.refundBalance(
-        clinicId,
-        request.amount.toNumber(),
+      // 5. 调用PractitionerAccountService进行退款
+      const refundResult = await this.practitionerAccountService.refundBalance(
+        practitionerId,
+        request.amount,
         request.transactionId,
         request.reason || `Refund for order ${request.orderId}`,
       );
 
-      this.logger.log(`Clinic account refund processed for clinic ${clinicId}`);
+      this.logger.log(`Practitioner account refund processed for practitioner ${practitionerId}`);
 
       // 6. 构造响应对象
       const refundResponse: RefundResponse = {
         id: `ref_${idempotencyKey}`, // 生成退款ID
         amount: request.amount.toNumber(), // 转换为number类型
-        status: "succeeded" as const, // 诊所账户退款通常是即时的，使用const断言
+        status: "succeeded" as const, // 医师账户退款通常是即时的，使用const断言
         orderId: request.orderId,
         refundedAt: new Date(),
       };
 
       // 7. 发射退款事件
-      this.eventEmitter.emit("payment.clinic_refund.created", {
+      this.eventEmitter.emit("payment.practitioner_refund.created", {
         refundId: refundResponse.id,
         orderId: request.orderId,
         transactionId: request.transactionId,
-        clinicId,
+        practitionerId,
         amount: refundResponse.amount,
-        newBalance: refundResult.availableBalance, // 使用availableBalance字段
+        newBalance: refundResult.balanceAfter.toNumber(), // 使用balanceAfter字段
       });
 
       this.logger.log(
-        `Clinic account refund processed successfully: ${refundResponse.id}`,
+        `Practitioner account refund processed successfully: ${refundResponse.id}`,
       );
       return refundResponse;
     } catch (error) {
       this.logger.error(
-        `Failed to process clinic account refund for order ${request.orderId}:`,
+        `Failed to process practitioner account refund for order ${request.orderId}:`,
         error,
       );
 
       // 处理特定的业务错误
       if (error.message?.includes("乐观锁")) {
         throw new ConflictException("Account update conflict, please retry");
-      } else if (error.message?.includes("Account does not exist")) {
-        throw new NotFoundException("Clinic account not found");
+      } else if (error.message?.includes("Account not found")) {
+        throw new NotFoundException("Practitioner account not found");
       } else if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException ||
@@ -1137,7 +1146,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
 
       // 重新抛出未知错误
       throw new InternalServerErrorException(
-        "Failed to process clinic account refund",
+        "Failed to process practitioner account refund",
       );
     }
   }
@@ -1250,7 +1259,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
       paymentIntentId: paymentIntent.id,
       amount: paymentIntent.amount,
       currency: paymentIntent.currency,
-      clinicId: paymentIntent.metadata?.clinicId,
+      practitionerId: paymentIntent.metadata?.practitionerId,
     });
 
     return {
@@ -1281,7 +1290,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
       paymentIntentId: paymentIntent.id,
       failureReason:
         paymentIntent.last_payment_error?.message || "Unknown error",
-      clinicId: paymentIntent.metadata?.clinicId,
+      practitionerId: paymentIntent.metadata?.practitionerId,
     });
 
     return {
@@ -1312,7 +1321,7 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
     this.eventEmitter.emit("payment.canceled", {
       orderId,
       paymentIntentId: paymentIntent.id,
-      clinicId: paymentIntent.metadata?.clinicId,
+      practitionerId: paymentIntent.metadata?.practitionerId,
     });
 
     return {

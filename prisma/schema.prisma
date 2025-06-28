@@ -29,6 +29,7 @@ model User {
   profile             UserProfile?
   referredByUser      User?                @relation("Referrals", fields: [referredBy], references: [id])
   referrals           User[]               @relation("Referrals")
+  practitionerAccount PractitionerAccount?
 
   @@index([role])
   @@index([status])
@@ -62,16 +63,16 @@ model Clinic {
   metadata      Json?          @map("metadata")
   createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  account       ClinicAccount?
+  
   owner         User           @relation("ClinicOwner", fields: [ownerId], references: [id])
   orders        Order[]
 
   @@map("clinics")
 }
 
-model ClinicAccount {
+model PractitionerAccount {
   id              String               @id @default(cuid()) @map("id")
-  clinicId        String               @unique @map("clinic_id")
+  practitionerId  String               @unique @map("practitioner_id")
   balance         Decimal              @default(0) @map("balance") @db.Decimal(12, 2)
   creditLimit     Decimal              @default(0) @map("credit_limit") @db.Decimal(12, 2)
   usedCredit      Decimal              @default(0) @map("used_credit") @db.Decimal(12, 2)
@@ -81,10 +82,10 @@ model ClinicAccount {
   createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
   transactions    AccountTransaction[]
-  clinic          Clinic               @relation(fields: [clinicId], references: [id])
+  practitioner    User                 @relation(fields: [practitionerId], references: [id])
 
   @@index([status])
-  @@map("clinic_accounts")
+  @@map("practitioner_accounts")
 }
 
 model AccountTransaction {
@@ -101,7 +102,7 @@ model AccountTransaction {
   description     String?         @map("description")
   createdBy       String?         @map("created_by")
   createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  account         ClinicAccount   @relation(fields: [accountId], references: [id])
+  account         PractitionerAccount   @relation(fields: [accountId], references: [id])
   creator         User?           @relation("CreatedBy", fields: [createdBy], references: [id])
 
   @@index([accountId])

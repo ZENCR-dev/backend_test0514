@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { EventEmitter2, EventEmitterModule } from "@nestjs/event-emitter";
 import { PaymentService } from "../services/payment.service";
 import { PrismaService } from "../../prisma/prisma.service";
-import { ClinicAccountService } from "../../clinic-account/services/clinic-account.service";
+import { PractitionerAccountService } from "../../practitioner-account/services/practitioner-account.service";
 import { WebhookEventData } from "../interfaces/payment-engine.interface";
 
 /**
@@ -40,7 +40,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
           useValue: {},
         },
         {
-          provide: ClinicAccountService,
+          provide: PractitionerAccountService,
           useValue: {},
         },
         {
@@ -83,7 +83,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
             currency: "usd",
             metadata: {
               orderId: "order_123",
-              clinicId: "clinic_456",
+              practitionerId: "practitioner_456",
             },
           },
         },
@@ -113,7 +113,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
             currency: "usd",
             metadata: {
               orderId: "order_multi",
-              clinicId: "clinic_multi",
+              practitionerId: "practitioner_multi",
             },
           },
         },
@@ -158,7 +158,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
             currency: "usd",
             metadata: {
               orderId: "order_concurrent",
-              clinicId: "clinic_concurrent",
+              practitionerId: "practitioner_concurrent",
             },
           },
         },
@@ -200,7 +200,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
             currency: "usd",
             metadata: {
               orderId: "order_success",
-              clinicId: "clinic_success",
+              practitionerId: "practitioner_success",
             },
           },
         },
@@ -213,7 +213,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
         paymentIntentId: "pi_success_123",
         amount: 3000,
         currency: "usd",
-        clinicId: "clinic_success",
+                    practitionerId: "practitioner_success",
       });
     });
 
@@ -229,7 +229,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
             id: "pi_failed_123",
             metadata: {
               orderId: "order_failed",
-              clinicId: "clinic_failed",
+              practitionerId: "practitioner_failed",
             },
             last_payment_error: {
               message: "Insufficient funds",
@@ -244,7 +244,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
         orderId: "order_failed",
         paymentIntentId: "pi_failed_123",
         failureReason: "Insufficient funds",
-        clinicId: "clinic_failed",
+                    practitionerId: "practitioner_failed",
       });
     });
 
@@ -260,7 +260,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
             id: "pi_canceled_123",
             metadata: {
               orderId: "order_canceled",
-              clinicId: "clinic_canceled",
+              practitionerId: "practitioner_canceled",
             },
           },
         },
@@ -271,7 +271,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
       expect(eventSpy).toHaveBeenCalledWith("payment.canceled", {
         orderId: "order_canceled",
         paymentIntentId: "pi_canceled_123",
-        clinicId: "clinic_canceled",
+                    practitionerId: "practitioner_canceled",
       });
     });
   });
@@ -347,7 +347,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
               currency: "usd",
               metadata: {
                 orderId: `order_stress_${i}`,
-                clinicId: "clinic_stress",
+                practitionerId: "practitioner_stress",
               },
             },
           },

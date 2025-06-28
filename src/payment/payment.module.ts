@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { PaymentService } from "./services/payment.service";
 import { PaymentController } from "./controllers/payment.controller";
 import { PrismaModule } from "../prisma/prisma.module";
-import { ClinicAccountModule } from "../clinic-account/clinic-account.module";
+import { PractitionerAccountModule } from "../practitioner-account/practitioner-account.module";
 
 /**
  * 支付模块配置
@@ -25,8 +25,8 @@ import { ClinicAccountModule } from "../clinic-account/clinic-account.module";
     // 数据库模块
     PrismaModule,
 
-    // 诊所账户模块
-    ClinicAccountModule,
+    // 医师个人账户模块
+    PractitionerAccountModule,
   ],
 
   controllers: [PaymentController],

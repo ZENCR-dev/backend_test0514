@@ -52,12 +52,12 @@ export class CreatePaymentIntentDto {
   orderId: string;
 
   @ApiProperty({
-    description: "诊所ID",
-    example: "clinic_123456789",
+    description: "医师ID",
+    example: "practitioner_123456789",
   })
   @IsString()
   @IsUUID()
-  clinicId: string;
+  practitionerId: string;
 
   @ApiPropertyOptional({
     description: "支付元数据",
@@ -99,14 +99,14 @@ export class ConfirmPaymentDto {
 /**
  * 诊所账户扣款DTO
  */
-export class ClinicAccountDeductionDto {
+export class PractitionerAccountDeductionDto {
   @ApiProperty({
-    description: "诊所ID",
-    example: "clinic_123456789",
+    description: "医师ID",
+    example: "practitioner_123456789",
   })
   @IsString()
   @IsUUID()
-  clinicId: string;
+  practitionerId: string;
 
   @ApiProperty({
     description: "扣款金额（以分为单位）",
@@ -210,14 +210,14 @@ export class PaymentStatusQueryDto {
 /**
  * 诊所账户余额查询DTO
  */
-export class ClinicAccountBalanceQueryDto {
+export class PractitionerAccountBalanceQueryDto {
   @ApiProperty({
-    description: "诊所ID",
-    example: "clinic_123456789",
+    description: "医师ID",
+    example: "practitioner_123456789",
   })
   @IsString()
   @IsUUID()
-  clinicId: string;
+  practitionerId: string;
 }
 
 /**
@@ -347,7 +347,7 @@ export class PaymentConfirmationResponseDto {
 /**
  * 诊所账户扣款响应DTO
  */
-export class ClinicAccountDeductionResponseDto {
+export class PractitionerAccountDeductionResponseDto {
   @ApiProperty({
     description: "交易ID",
     example: "txn_1234567890abcdef",
@@ -355,10 +355,10 @@ export class ClinicAccountDeductionResponseDto {
   transactionId: string;
 
   @ApiProperty({
-    description: "诊所ID",
-    example: "clinic_123456789",
+    description: "医师ID",
+    example: "practitioner_123456789",
   })
-  clinicId: string;
+  practitionerId: string;
 
   @ApiProperty({
     description: "扣款金额",
@@ -425,7 +425,7 @@ export class RefundResponseDto {
 /**
  * 诊所账户余额响应DTO
  */
-export class ClinicAccountBalanceResponseDto {
+export class PractitionerAccountBalanceResponseDto {
   @ApiProperty({
     description: "账户余额",
     example: 50000,

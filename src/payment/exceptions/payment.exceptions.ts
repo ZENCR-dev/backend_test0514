@@ -65,33 +65,33 @@ export class PaymentConfirmationException extends PaymentException {
 }
 
 /**
- * 诊所账户余额不足异常
+ * 医师账户余额不足异常
  */
 export class InsufficientFundsException extends PaymentException {
   constructor(
-    clinicId: string,
+    practitionerId: string,
     requestedAmount: number,
     availableBalance: number,
   ) {
     super(
-      `Insufficient funds in clinic account ${clinicId}. Requested: ${requestedAmount}, Available: ${availableBalance}`,
+      `Insufficient funds in practitioner account ${practitionerId}. Requested: ${requestedAmount}, Available: ${availableBalance}`,
       HttpStatus.BAD_REQUEST,
       "INSUFFICIENT_FUNDS",
-      { clinicId, requestedAmount, availableBalance },
+      { practitionerId, requestedAmount, availableBalance },
     );
   }
 }
 
 /**
- * 诊所账户扣款失败异常
+ * 医师账户扣款失败异常
  */
-export class ClinicAccountDeductionException extends PaymentException {
-  constructor(clinicId: string, amount: number, reason: string) {
+export class PractitionerAccountDeductionException extends PaymentException {
+  constructor(practitionerId: string, amount: number, reason: string) {
     super(
-      `Failed to deduct ${amount} from clinic account ${clinicId}: ${reason}`,
+      `Failed to deduct ${amount} from practitioner account ${practitionerId}: ${reason}`,
       HttpStatus.BAD_REQUEST,
-      "CLINIC_ACCOUNT_DEDUCTION_FAILED",
-      { clinicId, amount, reason },
+      "PRACTITIONER_ACCOUNT_DEDUCTION_FAILED",
+      { practitionerId, amount, reason },
     );
   }
 }
@@ -199,29 +199,29 @@ export class InvalidPaymentAmountException extends PaymentException {
 }
 
 /**
- * 诊所账户不存在异常
+ * 医师账户不存在异常
  */
-export class ClinicAccountNotFoundException extends PaymentException {
-  constructor(clinicId: string) {
+export class PractitionerAccountNotFoundException extends PaymentException {
+  constructor(practitionerId: string) {
     super(
-      `Clinic account not found: ${clinicId}`,
+      `Practitioner account not found: ${practitionerId}`,
       HttpStatus.NOT_FOUND,
-      "CLINIC_ACCOUNT_NOT_FOUND",
-      { clinicId },
+      "PRACTITIONER_ACCOUNT_NOT_FOUND",
+      { practitionerId },
     );
   }
 }
 
 /**
- * 诊所账户状态无效异常
+ * 医师账户状态无效异常
  */
-export class InvalidClinicAccountStatusException extends PaymentException {
-  constructor(clinicId: string, currentStatus: string, operation: string) {
+export class InvalidPractitionerAccountStatusException extends PaymentException {
+  constructor(practitionerId: string, currentStatus: string, operation: string) {
     super(
-      `Cannot perform ${operation} on clinic account ${clinicId} with status ${currentStatus}`,
+      `Cannot perform ${operation} on practitioner account ${practitionerId} with status ${currentStatus}`,
       HttpStatus.BAD_REQUEST,
-      "INVALID_CLINIC_ACCOUNT_STATUS",
-      { clinicId, currentStatus, operation },
+      "INVALID_PRACTITIONER_ACCOUNT_STATUS",
+      { practitionerId, currentStatus, operation },
     );
   }
 }
