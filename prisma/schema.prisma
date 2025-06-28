@@ -21,7 +21,6 @@ model User {
   refreshToken        String?              @map("refresh_token") @db.VarChar(64)
   refreshTokenExp     DateTime?            @map("refresh_token_exp") @db.Timestamptz(6)
   accountTransactions AccountTransaction[] @relation("CreatedBy")
-  ownedClinics        Clinic[]             @relation("ClinicOwner")
   fulfillmentReviews  FulfillmentProof[]   @relation("Reviewer")
   patientOrders       Order[]              @relation("PatientOrders")
   practitionerOrders  Order[]              @relation("PractitionerOrders")
@@ -52,23 +51,7 @@ model UserProfile {
   @@map("user_profiles")
 }
 
-model Clinic {
-  id            String         @id @default(cuid()) @map("id")
-  name          String         @map("name") @db.VarChar(255)
-  address       Json           @map("address")
-  contact       Json?          @map("contact")
-  licenseNumber String?        @map("license_number") @db.VarChar(100)
-  ownerId       String         @map("owner_id")
-  status        String         @default("active") @map("status") @db.VarChar(20)
-  metadata      Json?          @map("metadata")
-  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  
-  owner         User           @relation("ClinicOwner", fields: [ownerId], references: [id])
-  orders        Order[]
 
-  @@map("clinics")
-}
 
 model PractitionerAccount {
   id              String               @id @default(cuid()) @map("id")
@@ -182,7 +165,6 @@ model Order {
   platformOrderId    String             @unique @map("platform_order_id") @db.VarChar(50)
   practitionerId     String             @map("practitioner_id")
   patientId          String?            @map("patient_id")
-  clinicId           String             @map("clinic_id")
   patientInfo        Json               @map("patient_info")
   status             OrderStatus        @default(DRAFT) @map("status")
   totalAmount        Decimal            @map("total_amount") @db.Decimal(10, 2)
@@ -202,7 +184,6 @@ model Order {
   fulfillmentProofs  FulfillmentProof[]
   items              OrderItem[]
   assignedPharmacy   Pharmacy?          @relation("AssignedPharmacy", fields: [assignedPharmacyId], references: [id])
-  clinic             Clinic             @relation(fields: [clinicId], references: [id])
   patient            User?              @relation("PatientOrders", fields: [patientId], references: [id])
   practitioner       User               @relation("PractitionerOrders", fields: [practitionerId], references: [id])
   payments           Payment[]
@@ -210,10 +191,8 @@ model Order {
 
   @@index([status])
   @@index([practitionerId])
-  @@index([clinicId])
   @@index([createdAt(sort: Desc)])
   @@index([practitionerId, status])
-  @@index([clinicId, status])
   @@index([status, createdAt(sort: Desc)])
   @@map("orders")
 }

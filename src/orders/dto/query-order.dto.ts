@@ -18,11 +18,6 @@ export class QueryOrderDto {
   @IsString()
   practitionerId?: string;
 
-  @ApiPropertyOptional({ description: "诊所ID", example: "cm123456789" })
-  @IsOptional()
-  @IsString()
-  clinicId?: string;
-
   @ApiPropertyOptional({
     description: "订单状态",
     enum: OrderStatus,

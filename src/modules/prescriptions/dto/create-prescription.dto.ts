@@ -79,11 +79,6 @@ export class PrescriptionMedicineDto {
 }
 
 export class CreatePrescriptionDto {
-  @ApiProperty({ description: "诊所ID" })
-  @IsString()
-  @IsNotEmpty()
-  clinicId: string;
-
   @ApiProperty({ description: "患者信息", type: PatientInfoDto })
   @ValidateNested()
   @Type(() => PatientInfoDto)
