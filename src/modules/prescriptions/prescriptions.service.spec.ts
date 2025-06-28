@@ -95,7 +95,6 @@ describe("PrescriptionsService", () => {
 
   describe("create", () => {
     const mockPrescriptionData: CreatePrescriptionDto = {
-      clinicId: "clinic-123",
       patientInfo: {
         name: "张三",
         age: 35,
@@ -121,7 +120,6 @@ describe("PrescriptionsService", () => {
 
       expect(mockRepository.create).toHaveBeenCalledWith({
         doctorId: "doctor-123",
-        clinicId: mockPrescriptionData.clinicId,
         patientInfo: mockPrescriptionData.patientInfo,
         medicines: mockPrescriptionData.medicines,
         notes: mockPrescriptionData.notes,

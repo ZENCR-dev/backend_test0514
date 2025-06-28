@@ -599,12 +599,13 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
 
       try {
         // 调用PractitionerAccountService进行扣款
-        const accountResult = await this.practitionerAccountService.deductBalance(
-          request.practitionerId,
-          request.amount,
-          request.orderId,
-          request.description || `Order payment: ${request.orderId}`,
-        );
+        const accountResult =
+          await this.practitionerAccountService.deductBalance(
+            request.practitionerId,
+            request.amount,
+            request.orderId,
+            request.description || `Order payment: ${request.orderId}`,
+          );
 
         // 构建响应
         const response: PractitionerAccountDeductionResponse = {
@@ -834,20 +835,21 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
   /**
    * 获取医师个人账户余额
    */
-  async getPractitionerAccountBalance(
-    practitionerId: string,
-  ): Promise<{ 
-    balance: number; 
+  async getPractitionerAccountBalance(practitionerId: string): Promise<{
+    balance: number;
     availableCredit: number;
     creditLimit: number;
     usedCredit: number;
     currency: string;
   }> {
     try {
-      this.logger.log(`Getting practitioner account balance for practitioner: ${practitionerId}`);
+      this.logger.log(
+        `Getting practitioner account balance for practitioner: ${practitionerId}`,
+      );
 
       // 委托给PractitionerAccountService获取余额
-      const balanceInfo = await this.practitionerAccountService.getBalance(practitionerId);
+      const balanceInfo =
+        await this.practitionerAccountService.getBalance(practitionerId);
 
       return {
         balance: balanceInfo.balance.toNumber(),
@@ -1099,7 +1101,9 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
         request.reason || `Refund for order ${request.orderId}`,
       );
 
-      this.logger.log(`Practitioner account refund processed for practitioner ${practitionerId}`);
+      this.logger.log(
+        `Practitioner account refund processed for practitioner ${practitionerId}`,
+      );
 
       // 6. 构造响应对象
       const refundResponse: RefundResponse = {

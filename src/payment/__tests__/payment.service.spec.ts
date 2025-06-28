@@ -1013,7 +1013,9 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
 
         // Assert
         expect(result.status).toBe("success");
-        expect(practitionerAccountService.deductBalance).toHaveBeenCalledTimes(2);
+        expect(practitionerAccountService.deductBalance).toHaveBeenCalledTimes(
+          2,
+        );
       });
 
       it("应该在多次重试后失败", async () => {
@@ -1031,7 +1033,9 @@ describe("PaymentService - Task 5B 核心方法补全", () => {
 
         // Assert
         expect(result.status).toBe("failed");
-        expect(practitionerAccountService.deductBalance).toHaveBeenCalledTimes(3); // 默认重试3次
+        expect(practitionerAccountService.deductBalance).toHaveBeenCalledTimes(
+          3,
+        ); // 默认重试3次
       });
     });
   });

@@ -22,7 +22,6 @@ export class PrescriptionsService {
       // 创建处方数据
       const prescriptionData = {
         doctorId,
-        clinicId: createPrescriptionDto.clinicId,
         patientInfo: createPrescriptionDto.patientInfo,
         medicines: createPrescriptionDto.medicines,
         notes: createPrescriptionDto.notes,

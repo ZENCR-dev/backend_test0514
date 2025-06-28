@@ -250,7 +250,9 @@ export interface IPaymentEngine {
    * 退款处理
    */
   processStripeRefund(request: RefundRequest): Promise<RefundResponse>;
-  processPractitionerAccountRefund(request: RefundRequest): Promise<RefundResponse>;
+  processPractitionerAccountRefund(
+    request: RefundRequest,
+  ): Promise<RefundResponse>;
 
   /**
    * Webhook事件处理

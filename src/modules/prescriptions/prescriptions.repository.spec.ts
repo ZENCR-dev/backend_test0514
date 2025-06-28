@@ -61,6 +61,7 @@ describe("PrescriptionsRepository", () => {
     totalAmount: 105,
     paymentStatus: "pending",
     notes: "感冒症状",
+    qrCodeData: "QR_CODE_DATA_123",
     createdAt: new Date(),
     updatedAt: new Date(),
     items: [
@@ -140,12 +141,11 @@ describe("PrescriptionsRepository", () => {
         id: mockOrder.id,
         prescriptionId: mockOrder.platformOrderId,
         doctorId: mockOrder.practitionerId,
-        clinicId: mockOrder.clinicId,
         patientInfo: mockOrder.patientInfo,
         status: mockOrder.status,
         totalAmount: mockOrder.totalAmount,
         notes: mockOrder.notes,
-        qrCodeData: null, // 添加缺失的属性
+        qrCodeData: mockOrder.qrCodeData,
         medicines: mockOrder.items.map((item) => ({
           medicineId: item.medicineId,
           medicineName: item.medicine.name,
@@ -158,7 +158,6 @@ describe("PrescriptionsRepository", () => {
           unit: item.medicine.unit,
         })),
         practitioner: mockOrder.practitioner,
-        clinic: mockOrder.clinic,
         createdAt: mockOrder.createdAt,
         updatedAt: mockOrder.updatedAt,
       });
@@ -185,7 +184,6 @@ describe("PrescriptionsRepository", () => {
       expect(mockPrisma.order.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           practitionerId: mockCreateData.doctorId,
-          clinicId: mockCreateData.clinicId,
           patientInfo: mockCreateData.patientInfo,
           status: "DRAFT",
           totalAmount: 105, // 10.5 * 10

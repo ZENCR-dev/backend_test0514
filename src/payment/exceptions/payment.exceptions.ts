@@ -216,7 +216,11 @@ export class PractitionerAccountNotFoundException extends PaymentException {
  * 医师账户状态无效异常
  */
 export class InvalidPractitionerAccountStatusException extends PaymentException {
-  constructor(practitionerId: string, currentStatus: string, operation: string) {
+  constructor(
+    practitionerId: string,
+    currentStatus: string,
+    operation: string,
+  ) {
     super(
       `Cannot perform ${operation} on practitioner account ${practitionerId} with status ${currentStatus}`,
       HttpStatus.BAD_REQUEST,

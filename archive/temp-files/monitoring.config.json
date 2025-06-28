@@ -1,0 +1,29 @@
+{
+  "enabled": true,
+  "metrics": {
+    "api_response_time": true,
+    "database_query_time": true,
+    "memory_usage": true,
+    "cpu_usage": true,
+    "request_count": true,
+    "error_rate": true
+  },
+  "thresholds": {
+    "api_response_time_ms": 500,
+    "database_query_time_ms": 200,
+    "memory_usage_mb": 512,
+    "cpu_usage_percent": 80,
+    "error_rate_percent": 5
+  },
+  "reporting": {
+    "interval_seconds": 60,
+    "log_file": "logs/performance.log",
+    "console_output": true
+  },
+  "day3_special": {
+    "medicines_api_monitoring": true,
+    "prescription_api_monitoring": true,
+    "search_performance_tracking": true,
+    "concurrent_request_monitoring": true
+  }
+}

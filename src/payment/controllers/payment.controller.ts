@@ -217,7 +217,9 @@ export class PaymentController {
   async deductFromPractitionerAccount(
     @Body() deductionDto: PractitionerAccountDeductionDto,
   ): Promise<PractitionerAccountDeductionResponseDto> {
-    this.logger.log(`Deducting from practitioner account: ${deductionDto.practitionerId}`);
+    this.logger.log(
+      `Deducting from practitioner account: ${deductionDto.practitionerId}`,
+    );
 
     return await this.paymentService.deductFromPractitionerAccount({
       practitionerId: deductionDto.practitionerId,
@@ -255,7 +257,9 @@ export class PaymentController {
   ): Promise<PractitionerAccountBalanceResponseDto> {
     this.logger.log(`Getting practitioner account balance: ${practitionerId}`);
 
-    return await this.paymentService.getPractitionerAccountBalance(practitionerId);
+    return await this.paymentService.getPractitionerAccountBalance(
+      practitionerId,
+    );
   }
 
   /**

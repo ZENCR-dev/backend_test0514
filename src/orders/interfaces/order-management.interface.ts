@@ -20,7 +20,6 @@ export interface IOrder {
   platformOrderId: string;
   practitionerId: string;
   patientId?: string;
-  clinicId: string;
   patientInfo: any;
   status: OrderStatus;
   totalAmount: number;
@@ -53,7 +52,6 @@ export interface IPaginatedOrders {
 export interface ICreateOrderRequest {
   practitionerId: string;
   patientId?: string;
-  clinicId: string;
   patientInfo: any;
   totalAmount: number;
   items: IOrderItemRequest[];
@@ -73,7 +71,6 @@ export interface IOrderItemRequest {
 // 订单查询条件接口
 export interface IOrderQueryCriteria {
   practitionerId?: string;
-  clinicId?: string;
   status?: OrderStatus;
   patientId?: string;
   assignedPharmacyId?: string;

@@ -73,7 +73,6 @@ describe("OrderService", () => {
   describe("createOrder", () => {
     const mockCreateOrderRequest: ICreateOrderRequest = {
       practitionerId: "practitioner-1",
-      clinicId: "clinic-1",
       patientInfo: { name: "张三", phone: "021-12345678" },
       totalAmount: 125.5,
       items: [
@@ -101,8 +100,8 @@ describe("OrderService", () => {
 
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: "practitioner-1",
+        role: "practitioner",
       });
-      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: "clinic-1" });
       mockPrismaService.medicine.findUnique.mockResolvedValue({
         id: "medicine-1",
         basePrice: 12.55,
@@ -127,25 +126,12 @@ describe("OrderService", () => {
       );
     });
 
-    it("should throw BadRequestException for invalid clinic", async () => {
-      // Arrange
-      mockPrismaService.user.findUnique.mockResolvedValue({
-        id: "practitioner-1",
-      });
-      mockPrismaService.clinic.findUnique.mockResolvedValue(null);
-
-      // Act & Assert
-      await expect(service.createOrder(mockCreateOrderRequest)).rejects.toThrow(
-        BadRequestException,
-      );
-    });
-
     it("should throw ConflictException for duplicate idempotency key", async () => {
       // Arrange
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: "practitioner-1",
+        role: "practitioner",
       });
-      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: "clinic-1" });
       mockPrismaService.order.findUnique.mockResolvedValue({
         id: "existing-order",
       });
@@ -333,7 +319,6 @@ describe("OrderService", () => {
       // Arrange
       const mockOrderData: ICreateOrderRequest = {
         practitionerId: "practitioner-1",
-        clinicId: "clinic-1",
         patientInfo: { name: "张三" },
         totalAmount: 125.5,
         items: [
@@ -348,7 +333,6 @@ describe("OrderService", () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: "practitioner-1",
       });
-      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: "clinic-1" });
       mockPrismaService.medicine.findUnique.mockResolvedValue({
         id: "medicine-1",
       });
@@ -364,7 +348,6 @@ describe("OrderService", () => {
       // Arrange
       const mockOrderData: ICreateOrderRequest = {
         practitionerId: "practitioner-1",
-        clinicId: "clinic-1",
         patientInfo: { name: "张三" },
         totalAmount: 100.0, // 错误的总金额
         items: [
@@ -379,7 +362,6 @@ describe("OrderService", () => {
       mockPrismaService.user.findUnique.mockResolvedValue({
         id: "practitioner-1",
       });
-      mockPrismaService.clinic.findUnique.mockResolvedValue({ id: "clinic-1" });
       mockPrismaService.medicine.findUnique.mockResolvedValue({
         id: "medicine-1",
       });

@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
-import { PrismaModule } from '../prisma/prisma.module';
-import { PractitionerAccountService } from './services/practitioner-account.service';
-import { PractitionerAccountController } from './practitioner-account.controller';
+import { Module } from "@nestjs/common";
+import { PrismaModule } from "../prisma/prisma.module";
+import { PractitionerAccountService } from "./services/practitioner-account.service";
+import { PractitionerAccountController } from "./practitioner-account.controller";
 
 @Module({
   imports: [PrismaModule],
@@ -9,4 +9,4 @@ import { PractitionerAccountController } from './practitioner-account.controller
   controllers: [PractitionerAccountController],
   exports: [PractitionerAccountService],
 })
-export class PractitionerAccountModule {}  
+export class PractitionerAccountModule {}

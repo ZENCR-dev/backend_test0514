@@ -105,7 +105,6 @@ export class OrderService implements IOrderManagement {
           platformOrderId,
           practitionerId: createOrderDto.practitionerId,
           patientId: createOrderDto.patientId,
-          clinicId: createOrderDto.clinicId,
           patientInfo: createOrderDto.patientInfo,
           totalAmount,
           status: OrderStatus.DRAFT, // 初始状态为草稿
@@ -363,22 +362,25 @@ export class OrderService implements IOrderManagement {
       `Querying orders with criteria: ${JSON.stringify(criteria)}`,
     );
 
-    // 1. 构建查询条件 - 支持多维度过滤
+    // 1. 构建查询条件
     const where: any = {};
 
     if (criteria.practitionerId) {
       where.practitionerId = criteria.practitionerId;
     }
 
-    if (criteria.clinicId) {
-      where.clinicId = criteria.clinicId;
-    }
-
     if (criteria.status) {
       where.status = criteria.status;
     }
 
-    // 时间范围查询 - 支持开始和结束时间
+    if (criteria.patientId) {
+      where.patientId = criteria.patientId;
+    }
+
+    if (criteria.assignedPharmacyId) {
+      where.assignedPharmacyId = criteria.assignedPharmacyId;
+    }
+
     if (criteria.startDate || criteria.endDate) {
       where.createdAt = {};
       if (criteria.startDate) {
@@ -536,15 +538,6 @@ export class OrderService implements IOrderManagement {
         return false;
       }
 
-      // 2. 验证诊所存在性
-      const clinic = await this.prisma.clinic.findUnique({
-        where: { id: orderData.clinicId },
-      });
-      if (!clinic) {
-        this.logger.warn(`Clinic not found: ${orderData.clinicId}`);
-        return false;
-      }
-
       // 3. 验证药品存在性并计算总金额
       let calculatedTotal = 0;
       for (const item of orderData.items) {
@@ -669,13 +662,10 @@ export class OrderService implements IOrderManagement {
       );
     }
 
-    // 验证诊所存在性
-    const clinic = await this.prisma.clinic.findUnique({
-      where: { id: createOrderDto.clinicId },
-    });
-    if (!clinic) {
+    // 验证医师角色
+    if (practitioner.role !== "practitioner") {
       throw new BadRequestException(
-        `Clinic not found: ${createOrderDto.clinicId}`,
+        `User is not a practitioner: ${createOrderDto.practitionerId}`,
       );
     }
 
@@ -904,3 +894,4 @@ export class OrderService implements IOrderManagement {
     }
   }
 }
+

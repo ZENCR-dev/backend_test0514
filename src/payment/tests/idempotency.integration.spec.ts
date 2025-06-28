@@ -213,7 +213,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
         paymentIntentId: "pi_success_123",
         amount: 3000,
         currency: "usd",
-                    practitionerId: "practitioner_success",
+        practitionerId: "practitioner_success",
       });
     });
 
@@ -244,7 +244,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
         orderId: "order_failed",
         paymentIntentId: "pi_failed_123",
         failureReason: "Insufficient funds",
-                    practitionerId: "practitioner_failed",
+        practitionerId: "practitioner_failed",
       });
     });
 
@@ -271,7 +271,7 @@ describe("PaymentService - 内存幂等性机制集成测试", () => {
       expect(eventSpy).toHaveBeenCalledWith("payment.canceled", {
         orderId: "order_canceled",
         paymentIntentId: "pi_canceled_123",
-                    practitionerId: "practitioner_canceled",
+        practitionerId: "practitioner_canceled",
       });
     });
   });

@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-06-20T01:32:59.040Z",
+  "totalCalls": 2,
+  "latestCall": {
+    "time": "2025/6/20 13:32:59",
+    "method": "GET",
+    "url": "/api/v1/medicines?limit=1",
+    "userAgent": "curl/8.12.1",
+    "origin": "Unknown",
+    "referer": "Unknown"
+  },
+  "allCalls": [
+    {
+      "time": "2025/6/20 13:32:42",
+      "method": "GET",
+      "url": "/api/v1/medicines?limit=2",
+      "userAgent": "curl/8.12.1",
+      "origin": "Unknown",
+      "referer": "Unknown"
+    },
+    {
+      "time": "2025/6/20 13:32:59",
+      "method": "GET",
+      "url": "/api/v1/medicines?limit=1",
+      "userAgent": "curl/8.12.1",
+      "origin": "Unknown",
+      "referer": "Unknown"
+    }
+  ]
+}

@@ -1,3 +1,0 @@
-Node.js is working
-Current directory: D:\develop\backend_test0514
-Node version: v22.14.0

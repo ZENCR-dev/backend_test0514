@@ -30,14 +30,9 @@ describe("OrderController", () => {
   let controller: OrderController;
   let mockOrderService: jest.Mocked<OrderService>;
 
-  const createMockUser = (
-    role: string,
-    id: string = "user-123",
-    clinicId: string = "clinic-123",
-  ) => ({
+  const createMockUser = (role: string, id: string = "user-123") => ({
     id,
     role,
-    clinicId,
     email: `${role}@test.com`,
   });
 
@@ -65,7 +60,6 @@ describe("OrderController", () => {
     platformOrderId: "ORD20250619001",
     practitionerId: "doctor-123",
     patientId: "patient-123",
-    clinicId: "clinic-123",
     patientInfo: { name: "Test Patient", age: 30 },
     status: OrderStatus.DRAFT,
     totalAmount: 100,
@@ -197,7 +191,6 @@ describe("OrderController", () => {
       const req = createMockRequest(user);
       const createDto: CreateOrderDto = {
         practitionerId: "doctor-123",
-        clinicId: "clinic-123",
         patientId: "patient-123",
         patientInfo: { name: "New Patient" },
         items: [{ medicineId: "med-123", quantity: 1, unitPrice: 10 }],
@@ -215,7 +208,6 @@ describe("OrderController", () => {
       expect(mockOrderService.createOrder).toHaveBeenCalledWith({
         ...createDto,
         practitionerId: user.id,
-        clinicId: user.clinicId,
       });
     });
   });

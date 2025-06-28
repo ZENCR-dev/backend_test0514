@@ -12,13 +12,13 @@ import { PractitionerAccount, AccountTransaction } from "@prisma/client";
 
 /**
  * 医师个人账户服务
- * 
+ *
  * 职责范围：
  * - 医师个人账户的创建和管理
  * - 账户余额的扣款和退款操作
  * - 交易记录的生成和查询
  * - 并发控制和乐观锁机制
- * 
+ *
  * 技术要求：
  * - 使用Prisma事务确保数据一致性
  * - 实现乐观锁版本控制防止并发冲突
@@ -37,7 +37,7 @@ export class PractitionerAccountService {
    */
   async createAccount(practitionerId: string): Promise<PractitionerAccount> {
     this.logger.log(`Creating account for practitioner ${practitionerId}`);
-    
+
     try {
       // 输入验证
       if (!practitionerId) {
@@ -50,7 +50,9 @@ export class PractitionerAccountService {
       });
 
       if (existingAccount) {
-        this.logger.warn(`Account already exists for practitioner ${practitionerId}`);
+        this.logger.warn(
+          `Account already exists for practitioner ${practitionerId}`,
+        );
         return existingAccount;
       }
 
@@ -67,17 +69,22 @@ export class PractitionerAccountService {
         },
       });
 
-      this.logger.log(`Successfully created account for practitioner ${practitionerId}`);
+      this.logger.log(
+        `Successfully created account for practitioner ${practitionerId}`,
+      );
       return newAccount;
     } catch (error) {
-      this.logger.error(`Failed to create account for practitioner ${practitionerId}:`, error);
-      
+      this.logger.error(
+        `Failed to create account for practitioner ${practitionerId}:`,
+        error,
+      );
+
       if (error instanceof BadRequestException) {
         throw error;
       }
-      
+
       throw new InternalServerErrorException(
-        `Failed to create practitioner account: ${error.message}`
+        `Failed to create practitioner account: ${error.message}`,
       );
     }
   }
@@ -94,10 +101,12 @@ export class PractitionerAccountService {
     practitionerId: string,
     amount: Decimal,
     orderId: string,
-    reason?: string
+    reason?: string,
   ): Promise<AccountTransaction> {
-    this.logger.log(`Deducting ${amount} from practitioner ${practitionerId} for order ${orderId}`);
-    
+    this.logger.log(
+      `Deducting ${amount} from practitioner ${practitionerId} for order ${orderId}`,
+    );
+
     try {
       // 输入验证
       if (!practitionerId) {
@@ -116,110 +125,122 @@ export class PractitionerAccountService {
       while (retryCount < MAX_RETRIES) {
         try {
           // 使用事务确保原子性
-          const result = await this.prisma.$transaction(async (tx) => {
-            // 获取账户信息（包含版本号用于乐观锁）
-            const account = await tx.practitionerAccount.findUnique({
-              where: { practitionerId },
-            });
+          const result = await this.prisma.$transaction(
+            async (tx) => {
+              // 获取账户信息（包含版本号用于乐观锁）
+              const account = await tx.practitionerAccount.findUnique({
+                where: { practitionerId },
+              });
 
-            if (!account) {
-              throw new NotFoundException(`Practitioner account not found: ${practitionerId}`);
-            }
+              if (!account) {
+                throw new NotFoundException(
+                  `Practitioner account not found: ${practitionerId}`,
+                );
+              }
 
-            // 计算当前可用额度
-            const currentAvailableCredit = account.creditLimit.sub(account.usedCredit);
-            const totalAvailable = account.balance.add(currentAvailableCredit);
-            
-            if (totalAvailable.lt(amount)) {
-              throw new BadRequestException(
-                `余额不足。当前余额: ${account.balance}, 可用额度: ${currentAvailableCredit}, 需要: ${amount}`
+              // 计算当前可用额度
+              const currentAvailableCredit = account.creditLimit.sub(
+                account.usedCredit,
               );
-            }
+              const totalAvailable = account.balance.add(
+                currentAvailableCredit,
+              );
 
-            // 计算扣款后的余额和信用
-            let newBalance = account.balance;
-            let newUsedCredit = account.usedCredit;
-            let newAvailableCredit = currentAvailableCredit;
+              if (totalAvailable.lt(amount)) {
+                throw new BadRequestException(
+                  `余额不足。当前余额: ${account.balance}, 可用额度: ${currentAvailableCredit}, 需要: ${amount}`,
+                );
+              }
 
-            if (account.balance.gte(amount)) {
-              // 余额充足，直接从余额扣除
-              newBalance = account.balance.sub(amount);
-            } else {
-              // 余额不足，先用完余额，再使用额度
-              const remainingAmount = amount.sub(account.balance);
-              newBalance = new Decimal(0);
-              newUsedCredit = account.usedCredit.add(remainingAmount);
-              newAvailableCredit = account.creditLimit.sub(newUsedCredit);
-            }
+              // 计算扣款后的余额和信用
+              let newBalance = account.balance;
+              let newUsedCredit = account.usedCredit;
+              let newAvailableCredit = currentAvailableCredit;
 
-            // 使用乐观锁更新账户（检查版本号）
-            const updatedAccount = await tx.practitionerAccount.update({
-              where: {
-                practitionerId,
-                version: account.version, // 乐观锁：只有版本匹配才能更新
-              },
-              data: {
-                balance: newBalance,
-                usedCredit: newUsedCredit,
-                availableCredit: newAvailableCredit,
-                version: { increment: 1 }, // 增加版本号
-              },
-            });
+              if (account.balance.gte(amount)) {
+                // 余额充足，直接从余额扣除
+                newBalance = account.balance.sub(amount);
+              } else {
+                // 余额不足，先用完余额，再使用额度
+                const remainingAmount = amount.sub(account.balance);
+                newBalance = new Decimal(0);
+                newUsedCredit = account.usedCredit.add(remainingAmount);
+                newAvailableCredit = account.creditLimit.sub(newUsedCredit);
+              }
 
-            // 创建交易记录
-            const transaction = await tx.accountTransaction.create({
-              data: {
-                accountId: account.id,
-                transactionType: "DEBIT",
-                amount: amount,
-                balanceBefore: account.balance,
-                balanceAfter: newBalance,
-                creditBefore: account.usedCredit,
-                creditAfter: newUsedCredit,
-                referenceType: "ORDER",
-                referenceId: orderId,
-                description: reason || `Order payment deduction: ${orderId}`,
-                createdBy: practitionerId,
-              },
-            });
+              // 使用乐观锁更新账户（检查版本号）
+              const updatedAccount = await tx.practitionerAccount.update({
+                where: {
+                  practitionerId,
+                  version: account.version, // 乐观锁：只有版本匹配才能更新
+                },
+                data: {
+                  balance: newBalance,
+                  usedCredit: newUsedCredit,
+                  availableCredit: newAvailableCredit,
+                  version: { increment: 1 }, // 增加版本号
+                },
+              });
 
-            this.logger.log(
-              `Successfully deducted ${amount} from practitioner ${practitionerId}. ` +
-              `New balance: ${newBalance}, New available credit: ${newAvailableCredit}`
-            );
+              // 创建交易记录
+              const transaction = await tx.accountTransaction.create({
+                data: {
+                  accountId: account.id,
+                  transactionType: "DEBIT",
+                  amount: amount,
+                  balanceBefore: account.balance,
+                  balanceAfter: newBalance,
+                  creditBefore: account.usedCredit,
+                  creditAfter: newUsedCredit,
+                  referenceType: "ORDER",
+                  referenceId: orderId,
+                  description: reason || `Order payment deduction: ${orderId}`,
+                  createdBy: practitionerId,
+                },
+              });
 
-            return transaction;
-          }, {
-            maxWait: 5000,
-            timeout: 10000,
-          });
+              this.logger.log(
+                `Successfully deducted ${amount} from practitioner ${practitionerId}. ` +
+                  `New balance: ${newBalance}, New available credit: ${newAvailableCredit}`,
+              );
+
+              return transaction;
+            },
+            {
+              maxWait: 5000,
+              timeout: 10000,
+            },
+          );
 
           return result;
         } catch (error) {
           // 处理乐观锁冲突
-          if (error.code === 'P2025' || error.code === 'P2034') {
+          if (error.code === "P2025" || error.code === "P2034") {
             retryCount++;
             if (retryCount >= MAX_RETRIES) {
               throw new ConflictException(
-                `Account update conflict after ${MAX_RETRIES} retries. Please try again.`
+                `Account update conflict after ${MAX_RETRIES} retries. Please try again.`,
               );
             }
-            
+
             // 指数退避重试
             const delay = Math.pow(2, retryCount) * 100;
-            await new Promise(resolve => setTimeout(resolve, delay));
+            await new Promise((resolve) => setTimeout(resolve, delay));
             this.logger.warn(
-              `Optimistic lock conflict for practitioner ${practitionerId}, retrying (${retryCount}/${MAX_RETRIES})`
+              `Optimistic lock conflict for practitioner ${practitionerId}, retrying (${retryCount}/${MAX_RETRIES})`,
             );
             continue;
           }
-          
+
           throw error;
         }
       }
     } catch (error) {
-      this.logger.error(`Failed to deduct balance for practitioner ${practitionerId}:`, error);
-      
+      this.logger.error(
+        `Failed to deduct balance for practitioner ${practitionerId}:`,
+        error,
+      );
+
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException ||
@@ -227,9 +248,9 @@ export class PractitionerAccountService {
       ) {
         throw error;
       }
-      
+
       throw new InternalServerErrorException(
-        `Failed to deduct balance: ${error.message}`
+        `Failed to deduct balance: ${error.message}`,
       );
     }
   }
@@ -246,10 +267,12 @@ export class PractitionerAccountService {
     practitionerId: string,
     amount: Decimal,
     orderId: string,
-    reason?: string
+    reason?: string,
   ): Promise<AccountTransaction> {
-    this.logger.log(`Refunding ${amount} to practitioner ${practitionerId} for order ${orderId}`);
-    
+    this.logger.log(
+      `Refunding ${amount} to practitioner ${practitionerId} for order ${orderId}`,
+    );
+
     try {
       // 输入验证
       if (!practitionerId) {
@@ -268,87 +291,95 @@ export class PractitionerAccountService {
       while (retryCount < MAX_RETRIES) {
         try {
           // 使用事务确保原子性
-          const result = await this.prisma.$transaction(async (tx) => {
-            // 获取账户信息（包含版本号用于乐观锁）
-            const account = await tx.practitionerAccount.findUnique({
-              where: { practitionerId },
-            });
+          const result = await this.prisma.$transaction(
+            async (tx) => {
+              // 获取账户信息（包含版本号用于乐观锁）
+              const account = await tx.practitionerAccount.findUnique({
+                where: { practitionerId },
+              });
 
-            if (!account) {
-              throw new NotFoundException(`Practitioner account not found: ${practitionerId}`);
-            }
+              if (!account) {
+                throw new NotFoundException(
+                  `Practitioner account not found: ${practitionerId}`,
+                );
+              }
 
-            // 计算退款后的余额（退款直接加到余额中）
-            const newBalance = account.balance.add(amount);
-            const newUsedCredit = account.usedCredit; // 已使用额度保持不变
-            const newAvailableCredit = account.creditLimit.sub(newUsedCredit);
+              // 计算退款后的余额（退款直接加到余额中）
+              const newBalance = account.balance.add(amount);
+              const newUsedCredit = account.usedCredit; // 已使用额度保持不变
+              const newAvailableCredit = account.creditLimit.sub(newUsedCredit);
 
-            // 使用乐观锁更新账户（检查版本号）
-            const updatedAccount = await tx.practitionerAccount.update({
-              where: {
-                practitionerId,
-                version: account.version, // 乐观锁：只有版本匹配才能更新
-              },
-              data: {
-                balance: newBalance,
-                version: { increment: 1 }, // 增加版本号
-              },
-            });
+              // 使用乐观锁更新账户（检查版本号）
+              const updatedAccount = await tx.practitionerAccount.update({
+                where: {
+                  practitionerId,
+                  version: account.version, // 乐观锁：只有版本匹配才能更新
+                },
+                data: {
+                  balance: newBalance,
+                  version: { increment: 1 }, // 增加版本号
+                },
+              });
 
-            // 创建交易记录
-            const transaction = await tx.accountTransaction.create({
-              data: {
-                accountId: account.id,
-                transactionType: "CREDIT",
-                amount: amount,
-                balanceBefore: account.balance,
-                balanceAfter: newBalance,
-                creditBefore: account.usedCredit,
-                creditAfter: newUsedCredit,
-                referenceType: "ORDER",
-                referenceId: orderId,
-                description: reason || `Order refund: ${orderId}`,
-                createdBy: practitionerId,
-              },
-            });
+              // 创建交易记录
+              const transaction = await tx.accountTransaction.create({
+                data: {
+                  accountId: account.id,
+                  transactionType: "CREDIT",
+                  amount: amount,
+                  balanceBefore: account.balance,
+                  balanceAfter: newBalance,
+                  creditBefore: account.usedCredit,
+                  creditAfter: newUsedCredit,
+                  referenceType: "ORDER",
+                  referenceId: orderId,
+                  description: reason || `Order refund: ${orderId}`,
+                  createdBy: practitionerId,
+                },
+              });
 
-            this.logger.log(
-              `Successfully refunded ${amount} to practitioner ${practitionerId}. ` +
-              `New balance: ${newBalance}`
-            );
+              this.logger.log(
+                `Successfully refunded ${amount} to practitioner ${practitionerId}. ` +
+                  `New balance: ${newBalance}`,
+              );
 
-            return transaction;
-          }, {
-            maxWait: 5000,
-            timeout: 10000,
-          });
+              return transaction;
+            },
+            {
+              maxWait: 5000,
+              timeout: 10000,
+            },
+          );
 
           return result;
         } catch (error) {
           // 处理乐观锁冲突
-          if (error.code === 'P2025' || error.code === 'P2034') {
+          if (error.code === "P2025" || error.code === "P2034") {
             retryCount++;
             if (retryCount >= MAX_RETRIES) {
               throw new ConflictException(
-                `Account update conflict after ${MAX_RETRIES} retries. Please try again.`
+                `Account update conflict after ${MAX_RETRIES} retries. Please try again.`,
               );
             }
-            
+
             // 指数退避重试
             const delay = Math.pow(2, retryCount) * 100;
-            await new Promise(resolve => setTimeout(resolve, delay));
+            await new Promise((resolve) => setTimeout(resolve, delay));
             this.logger.warn(
-              `Optimistic lock conflict for practitioner ${practitionerId}, retrying (${retryCount}/${MAX_RETRIES})`
+              `Optimistic lock conflict for practitioner ${practitionerId}, retrying (${retryCount}/${MAX_RETRIES})`,
             );
             continue;
           }
-          
+
           throw error;
         }
       }
     } catch (error) {
-      this.logger.error(`Failed to refund balance for practitioner ${practitionerId}:`, error);
-      
+      this.logger.error(
+        `Failed to refund balance for practitioner ${practitionerId}:`,
+        error,
+      );
+
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException ||
@@ -356,9 +387,9 @@ export class PractitionerAccountService {
       ) {
         throw error;
       }
-      
+
       throw new InternalServerErrorException(
-        `Failed to refund balance: ${error.message}`
+        `Failed to refund balance: ${error.message}`,
       );
     }
   }
@@ -368,14 +399,14 @@ export class PractitionerAccountService {
    * @param practitionerId 医师ID
    * @returns 账户余额信息
    */
-  async getBalance(practitionerId: string): Promise<{ 
-    balance: Decimal; 
-    availableCredit: Decimal; 
+  async getBalance(practitionerId: string): Promise<{
+    balance: Decimal;
+    availableCredit: Decimal;
     creditLimit: Decimal;
     usedCredit: Decimal;
   }> {
     this.logger.log(`Getting balance for practitioner ${practitionerId}`);
-    
+
     try {
       // 输入验证
       if (!practitionerId) {
@@ -394,12 +425,14 @@ export class PractitionerAccountService {
       });
 
       if (!account) {
-        throw new NotFoundException(`Practitioner account not found: ${practitionerId}`);
+        throw new NotFoundException(
+          `Practitioner account not found: ${practitionerId}`,
+        );
       }
 
       this.logger.debug(
         `Retrieved balance for practitioner ${practitionerId}: ` +
-        `balance=${account.balance}, availableCredit=${account.availableCredit}, creditLimit=${account.creditLimit}`
+          `balance=${account.balance}, availableCredit=${account.availableCredit}, creditLimit=${account.creditLimit}`,
       );
 
       return {
@@ -409,17 +442,20 @@ export class PractitionerAccountService {
         usedCredit: account.usedCredit,
       };
     } catch (error) {
-      this.logger.error(`Failed to get balance for practitioner ${practitionerId}:`, error);
-      
+      this.logger.error(
+        `Failed to get balance for practitioner ${practitionerId}:`,
+        error,
+      );
+
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException
       ) {
         throw error;
       }
-      
+
       throw new InternalServerErrorException(
-        `Failed to get balance: ${error.message}`
+        `Failed to get balance: ${error.message}`,
       );
     }
   }
@@ -434,10 +470,12 @@ export class PractitionerAccountService {
   async getTransactionHistory(
     practitionerId: string,
     limit: number = 50,
-    offset: number = 0
+    offset: number = 0,
   ): Promise<AccountTransaction[]> {
-    this.logger.log(`Getting transaction history for practitioner ${practitionerId}`);
-    
+    this.logger.log(
+      `Getting transaction history for practitioner ${practitionerId}`,
+    );
+
     try {
       // 输入验证
       if (!practitionerId) {
@@ -453,7 +491,9 @@ export class PractitionerAccountService {
       // 首先检查账户是否存在
       const accountExists = await this.accountExists(practitionerId);
       if (!accountExists) {
-        throw new NotFoundException(`Practitioner account not found: ${practitionerId}`);
+        throw new NotFoundException(
+          `Practitioner account not found: ${practitionerId}`,
+        );
       }
 
       // 查询交易历史
@@ -464,29 +504,32 @@ export class PractitionerAccountService {
           },
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
         take: limit,
         skip: offset,
       });
 
       this.logger.debug(
-        `Retrieved ${transactions.length} transactions for practitioner ${practitionerId}`
+        `Retrieved ${transactions.length} transactions for practitioner ${practitionerId}`,
       );
 
       return transactions;
     } catch (error) {
-      this.logger.error(`Failed to get transaction history for practitioner ${practitionerId}:`, error);
-      
+      this.logger.error(
+        `Failed to get transaction history for practitioner ${practitionerId}:`,
+        error,
+      );
+
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException
       ) {
         throw error;
       }
-      
+
       throw new InternalServerErrorException(
-        `Failed to get transaction history: ${error.message}`
+        `Failed to get transaction history: ${error.message}`,
       );
     }
   }
@@ -497,8 +540,10 @@ export class PractitionerAccountService {
    * @returns 账户是否存在
    */
   async accountExists(practitionerId: string): Promise<boolean> {
-    this.logger.debug(`Checking if account exists for practitioner ${practitionerId}`);
-    
+    this.logger.debug(
+      `Checking if account exists for practitioner ${practitionerId}`,
+    );
+
     try {
       if (!practitionerId) {
         return false;
@@ -511,7 +556,10 @@ export class PractitionerAccountService {
 
       return !!account;
     } catch (error) {
-      this.logger.error(`Failed to check account existence for practitioner ${practitionerId}:`, error);
+      this.logger.error(
+        `Failed to check account existence for practitioner ${practitionerId}:`,
+        error,
+      );
       return false;
     }
   }
@@ -521,9 +569,13 @@ export class PractitionerAccountService {
    * @param practitionerId 医师ID
    * @returns 完整的账户信息
    */
-  async getAccountWithVersion(practitionerId: string): Promise<PractitionerAccount> {
-    this.logger.debug(`Getting account with version for practitioner ${practitionerId}`);
-    
+  async getAccountWithVersion(
+    practitionerId: string,
+  ): Promise<PractitionerAccount> {
+    this.logger.debug(
+      `Getting account with version for practitioner ${practitionerId}`,
+    );
+
     try {
       // 输入验证
       if (!practitionerId) {
@@ -535,22 +587,27 @@ export class PractitionerAccountService {
       });
 
       if (!account) {
-        throw new NotFoundException(`Practitioner account not found: ${practitionerId}`);
+        throw new NotFoundException(
+          `Practitioner account not found: ${practitionerId}`,
+        );
       }
 
       return account;
     } catch (error) {
-      this.logger.error(`Failed to get account with version for practitioner ${practitionerId}:`, error);
-      
+      this.logger.error(
+        `Failed to get account with version for practitioner ${practitionerId}:`,
+        error,
+      );
+
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException
       ) {
         throw error;
       }
-      
+
       throw new InternalServerErrorException(
-        `Failed to get account with version: ${error.message}`
+        `Failed to get account with version: ${error.message}`,
       );
     }
   }

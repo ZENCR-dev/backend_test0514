@@ -14,7 +14,6 @@ import {
 
 interface CreatePrescriptionData {
   doctorId: string;
-  clinicId: string;
   patientInfo: {
     name: string;
     age?: number;
@@ -88,7 +87,6 @@ export class PrescriptionsRepository {
       data: {
         platformOrderId: `${PRESCRIPTION_ID_PREFIX}-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
         practitionerId: data.doctorId,
-        clinicId: data.clinicId,
         patientInfo: data.patientInfo,
         status: PRESCRIPTION_STATUS.DRAFT,
         totalAmount: totalAmount,
@@ -137,13 +135,6 @@ export class PrescriptionsRepository {
             },
           },
         },
-        clinic: {
-          select: {
-            id: true,
-            name: true,
-            licenseNumber: true,
-          },
-        },
       },
     });
 
@@ -170,12 +161,6 @@ export class PrescriptionsRepository {
                   unit: true,
                 },
               },
-            },
-          },
-          clinic: {
-            select: {
-              id: true,
-              name: true,
             },
           },
         },
@@ -216,13 +201,6 @@ export class PrescriptionsRepository {
                 licenseNumber: true,
               },
             },
-          },
-        },
-        clinic: {
-          select: {
-            id: true,
-            name: true,
-            licenseNumber: true,
           },
         },
       },
@@ -356,7 +334,6 @@ export class PrescriptionsRepository {
       id: order.id,
       prescriptionId: order.platformOrderId,
       doctorId: order.practitionerId,
-      clinicId: order.clinicId,
       patientInfo: order.patientInfo,
       status: order.status,
       totalAmount: order.totalAmount,
@@ -376,7 +353,6 @@ export class PrescriptionsRepository {
           unit: item.medicine?.unit || item.medicineSnapshot?.unit,
         })) || [],
       practitioner: order.practitioner,
-      clinic: order.clinic,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
     };

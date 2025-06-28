@@ -54,8 +54,6 @@ export class CreateOrderDto {
   @IsString()
   patientId?: string;
 
-
-
   @ApiProperty({
     description: "患者信息",
     example: {

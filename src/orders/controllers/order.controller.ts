@@ -197,7 +197,6 @@ export class OrderController {
     try {
       if (req.user.role !== "admin") {
         createDto.practitionerId = req.user.id;
-        createDto.clinicId = req.user.clinicId;
       }
       const newOrder = await this.orderService.createOrder(createDto);
       return {
