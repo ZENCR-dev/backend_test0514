@@ -1,0 +1,1102 @@
+[
+  {
+    "name": "高丽参片",
+    "chineseName": "高丽参片",
+    "englishName": "Panax Ginseng",
+    "pinyinName": "gaolishenpian",
+    "sku": "GLSP",
+    "description": "高丽参片 (Panax Ginseng)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.36956,
+    "metadata": {
+      "importIndex": 1,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "高丽参片",
+        "englishName": "Panax Ginseng",
+        "pricePerGram": 0.36956
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "龙齿",
+    "chineseName": "龙齿",
+    "englishName": "Os Draconis",
+    "pinyinName": "longchi",
+    "sku": "LC",
+    "description": "龙齿 (Os Draconis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.32174,
+    "metadata": {
+      "importIndex": 2,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "龙齿",
+        "englishName": "Os Draconis",
+        "pricePerGram": 0.32174
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "红参片",
+    "chineseName": "红参片",
+    "englishName": "Panax Ginseng",
+    "pinyinName": "hongcanpian",
+    "sku": "HCP",
+    "description": "红参片 (Panax Ginseng)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.28696,
+    "metadata": {
+      "importIndex": 3,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "红参片",
+        "englishName": "Panax Ginseng",
+        "pricePerGram": 0.28696
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "胡黄连",
+    "chineseName": "胡黄连",
+    "englishName": "Rhizoma Picrorhizae",
+    "pinyinName": "huhuanglian",
+    "sku": "HHL",
+    "description": "胡黄连 (Rhizoma Picrorhizae)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.26086,
+    "metadata": {
+      "importIndex": 4,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "胡黄连",
+        "englishName": "Rhizoma Picrorhizae",
+        "pricePerGram": 0.26086
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "黄连",
+    "chineseName": "黄连",
+    "englishName": "Rhizoma Coptidis",
+    "pinyinName": "huanglian",
+    "sku": "HL",
+    "description": "黄连 (Rhizoma Coptidis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.1913,
+    "metadata": {
+      "importIndex": 5,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "黄连",
+        "englishName": "Rhizoma Coptidis",
+        "pricePerGram": 0.1913
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "虎乳菌",
+    "chineseName": "虎乳菌",
+    "englishName": "Hu Ru Jun",
+    "pinyinName": "hurujun",
+    "sku": "HRJ",
+    "description": "虎乳菌 (Hu Ru Jun)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.29565,
+    "metadata": {
+      "importIndex": 6,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "虎乳菌",
+        "englishName": "Hu Ru Jun",
+        "pricePerGram": 0.29565
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "莲须",
+    "chineseName": "莲须",
+    "englishName": "Stamen Nelumbinis",
+    "pinyinName": "lianxu",
+    "sku": "LX",
+    "description": "莲须 (Stamen Nelumbinis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.17392,
+    "metadata": {
+      "importIndex": 7,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "莲须",
+        "englishName": "Stamen Nelumbinis",
+        "pricePerGram": 0.17392
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "蝉蜕",
+    "chineseName": "蝉蜕",
+    "englishName": "Periostracum Cicadae",
+    "pinyinName": "chantui",
+    "sku": "CT",
+    "description": "蝉蜕 (Periostracum Cicadae)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.1913,
+    "metadata": {
+      "importIndex": 8,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "蝉蜕",
+        "englishName": "Periostracum Cicadae",
+        "pricePerGram": 0.1913
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "通草圆片",
+    "chineseName": "通草圆片",
+    "englishName": "Medulla Tetrapanacis",
+    "pinyinName": "tongcaoyuanpian",
+    "sku": "TCYP",
+    "description": "通草圆片 (Medulla Tetrapanacis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.17392,
+    "metadata": {
+      "importIndex": 9,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "通草圆片",
+        "englishName": "Medulla Tetrapanacis",
+        "pricePerGram": 0.17392
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "白参须",
+    "chineseName": "白参须",
+    "englishName": "Panax Ginseng",
+    "pinyinName": "baicanxu",
+    "sku": "BCX",
+    "description": "白参须 (Panax Ginseng)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.20652,
+    "metadata": {
+      "importIndex": 10,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "白参须",
+        "englishName": "Panax Ginseng",
+        "pricePerGram": 0.20652
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "桂花",
+    "chineseName": "桂花",
+    "englishName": "Osmanthus fragrans",
+    "pinyinName": "guihua",
+    "sku": "GH",
+    "description": "桂花 (Osmanthus fragrans)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.212,
+    "metadata": {
+      "importIndex": 11,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "桂花",
+        "englishName": "Osmanthus fragrans",
+        "pricePerGram": 0.212
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "川贝",
+    "chineseName": "川贝",
+    "englishName": "Bulbus Fritillariae Cirrhosae",
+    "pinyinName": "chuanbei",
+    "sku": "CB",
+    "description": "川贝 (Bulbus Fritillariae Cirrhosae)",
+    "category": "止咳药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.16086,
+    "metadata": {
+      "importIndex": 12,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "川贝",
+        "englishName": "Bulbus Fritillariae Cirrhosae",
+        "pricePerGram": 0.16086
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "猫爪草",
+    "chineseName": "猫爪草",
+    "englishName": "Radix Ranunculi Ternati",
+    "pinyinName": "maozhuacao",
+    "sku": "MZC",
+    "description": "猫爪草 (Radix Ranunculi Ternati)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.17392,
+    "metadata": {
+      "importIndex": 13,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "猫爪草",
+        "englishName": "Radix Ranunculi Ternati",
+        "pricePerGram": 0.17392
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "参芪四宝茶",
+    "chineseName": "参芪四宝茶",
+    "englishName": "Si Bao Herbal Tea",
+    "pinyinName": "canqisibaocha",
+    "sku": "CQSBC",
+    "description": "参芪四宝茶 (Si Bao Herbal Tea)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.128,
+    "metadata": {
+      "importIndex": 14,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "参芪四宝茶",
+        "englishName": "Si Bao Herbal Tea",
+        "pricePerGram": 0.128
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "白鲜皮",
+    "chineseName": "白鲜皮",
+    "englishName": "Cortex Dictamni",
+    "pinyinName": "baixianpi",
+    "sku": "BXP",
+    "description": "白鲜皮 (Cortex Dictamni)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.15218,
+    "metadata": {
+      "importIndex": 15,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "白鲜皮",
+        "englishName": "Cortex Dictamni",
+        "pricePerGram": 0.15218
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "天麻",
+    "chineseName": "天麻",
+    "englishName": "Rhizoma Gastrodiae",
+    "pinyinName": "tianma",
+    "sku": "TM",
+    "description": "天麻 (Rhizoma Gastrodiae)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.17391,
+    "metadata": {
+      "importIndex": 16,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "天麻",
+        "englishName": "Rhizoma Gastrodiae",
+        "pricePerGram": 0.17391
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "三七粉",
+    "chineseName": "三七粉",
+    "englishName": "Radix Notoginseng Powder",
+    "pinyinName": "sanqifen",
+    "sku": "SQF",
+    "description": "三七粉 (Radix Notoginseng Powder)",
+    "category": "活血药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.13912,
+    "metadata": {
+      "importIndex": 17,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "三七粉",
+        "englishName": "Radix Notoginseng Powder",
+        "pricePerGram": 0.13912
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "龙胆草",
+    "chineseName": "龙胆草",
+    "englishName": "Radix Gentianae",
+    "pinyinName": "longdancao",
+    "sku": "LDC",
+    "description": "龙胆草 (Radix Gentianae)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.16086,
+    "metadata": {
+      "importIndex": 18,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "龙胆草",
+        "englishName": "Radix Gentianae",
+        "pricePerGram": 0.16086
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "炙远志",
+    "chineseName": "炙远志",
+    "englishName": "Radix Polygalae",
+    "pinyinName": "zhiyuanzhi",
+    "sku": "ZYZ",
+    "description": "炙远志 (Radix Polygalae)",
+    "category": "安神药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.14348,
+    "metadata": {
+      "importIndex": 19,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "炙远志",
+        "englishName": "Radix Polygalae",
+        "pricePerGram": 0.14348
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "连翘",
+    "chineseName": "连翘",
+    "englishName": "Fructus Forsythiae",
+    "pinyinName": "lianqiao",
+    "sku": "LQ",
+    "description": "连翘 (Fructus Forsythiae)",
+    "category": "清热药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.08956,
+    "metadata": {
+      "importIndex": 20,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "连翘",
+        "englishName": "Fructus Forsythiae",
+        "pricePerGram": 0.08956
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "蕤仁肉",
+    "chineseName": "蕤仁肉",
+    "englishName": "Nux Prinsepiae",
+    "pinyinName": "ruirenrou",
+    "sku": "RRR",
+    "description": "蕤仁肉 (Nux Prinsepiae)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.13478,
+    "metadata": {
+      "importIndex": 21,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "蕤仁肉",
+        "englishName": "Nux Prinsepiae",
+        "pricePerGram": 0.13478
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "细辛",
+    "chineseName": "细辛",
+    "englishName": "Herba Asari",
+    "pinyinName": "xixin",
+    "sku": "XX",
+    "description": "细辛 (Herba Asari)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.13912,
+    "metadata": {
+      "importIndex": 22,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "细辛",
+        "englishName": "Herba Asari",
+        "pricePerGram": 0.13912
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "海金沙",
+    "chineseName": "海金沙",
+    "englishName": "Spora Lygodii",
+    "pinyinName": "haijinsha",
+    "sku": "HJS",
+    "description": "海金沙 (Spora Lygodii)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.12,
+    "metadata": {
+      "importIndex": 23,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "海金沙",
+        "englishName": "Spora Lygodii",
+        "pricePerGram": 0.12
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "延胡索",
+    "chineseName": "延胡索",
+    "englishName": "Rhizoma Corydalis",
+    "pinyinName": "yanhusuo",
+    "sku": "YHS",
+    "description": "延胡索 (Rhizoma Corydalis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.10434,
+    "metadata": {
+      "importIndex": 24,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "延胡索",
+        "englishName": "Rhizoma Corydalis",
+        "pricePerGram": 0.10434
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "远志",
+    "chineseName": "远志",
+    "englishName": "Radix Polygalae",
+    "pinyinName": "yuanzhi",
+    "sku": "YZ",
+    "description": "远志 (Radix Polygalae)",
+    "category": "安神药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.1287,
+    "metadata": {
+      "importIndex": 25,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "远志",
+        "englishName": "Radix Polygalae",
+        "pricePerGram": 0.1287
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "炒酸枣仁",
+    "chineseName": "炒酸枣仁",
+    "englishName": "Semen Ziziphi Spinosae",
+    "pinyinName": "chaosuanzaoren",
+    "sku": "CSZR",
+    "description": "炒酸枣仁 (Semen Ziziphi Spinosae)",
+    "category": "安神药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.0826,
+    "metadata": {
+      "importIndex": 26,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "炒酸枣仁",
+        "englishName": "Semen Ziziphi Spinosae",
+        "pricePerGram": 0.0826
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "北柴胡",
+    "chineseName": "北柴胡",
+    "englishName": "Radix Bupleuri",
+    "pinyinName": "beichaihu",
+    "sku": "BCH",
+    "description": "北柴胡 (Radix Bupleuri)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.13914,
+    "metadata": {
+      "importIndex": 27,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "北柴胡",
+        "englishName": "Radix Bupleuri",
+        "pricePerGram": 0.13914
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "灯芯草",
+    "chineseName": "灯芯草",
+    "englishName": "Medulla Junci",
+    "pinyinName": "dengxincao",
+    "sku": "DXC",
+    "description": "灯芯草 (Medulla Junci)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.084342857,
+    "metadata": {
+      "importIndex": 28,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "灯芯草",
+        "englishName": "Medulla Junci",
+        "pricePerGram": 0.084342857
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "当归全片",
+    "chineseName": "当归全片",
+    "englishName": "Radix Angelicae Sinensis",
+    "pinyinName": "dangguiquanpian",
+    "sku": "DGQP",
+    "description": "当归全片 (Radix Angelicae Sinensis)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.130433333,
+    "metadata": {
+      "importIndex": 29,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "当归全片",
+        "englishName": "Radix Angelicae Sinensis",
+        "pricePerGram": 0.130433333
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "炒白术",
+    "chineseName": "炒白术",
+    "englishName": "Rhizoma Atractylodis Macrocephalae",
+    "pinyinName": "chaobaizhu",
+    "sku": "CBZ",
+    "description": "炒白术 (Rhizoma Atractylodis Macrocephalae)",
+    "category": "化痰药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.13044,
+    "metadata": {
+      "importIndex": 30,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "炒白术",
+        "englishName": "Rhizoma Atractylodis Macrocephalae",
+        "pricePerGram": 0.13044
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "胖大海",
+    "chineseName": "胖大海",
+    "englishName": "Semen Sterculiae Lychnophorae",
+    "pinyinName": "pangdahai",
+    "sku": "PDH",
+    "description": "胖大海 (Semen Sterculiae Lychnophorae)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.12174,
+    "metadata": {
+      "importIndex": 31,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "胖大海",
+        "englishName": "Semen Sterculiae Lychnophorae",
+        "pricePerGram": 0.12174
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "羌活",
+    "chineseName": "羌活",
+    "englishName": "Rhizoma et Radix Notopterygii",
+    "pinyinName": "qianghuo",
+    "sku": "QH",
+    "description": "羌活 (Rhizoma et Radix Notopterygii)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.1087,
+    "metadata": {
+      "importIndex": 32,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "羌活",
+        "englishName": "Rhizoma et Radix Notopterygii",
+        "pricePerGram": 0.1087
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "酸枣仁",
+    "chineseName": "酸枣仁",
+    "englishName": "Semen Ziziphi Spinosae",
+    "pinyinName": "suanzaoren",
+    "sku": "SZR",
+    "description": "酸枣仁 (Semen Ziziphi Spinosae)",
+    "category": "安神药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.0826,
+    "metadata": {
+      "importIndex": 33,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "酸枣仁",
+        "englishName": "Semen Ziziphi Spinosae",
+        "pricePerGram": 0.0826
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "浙贝母",
+    "chineseName": "浙贝母",
+    "englishName": "Bulbus Fritillariae Thunbergii",
+    "pinyinName": "zhebeimu",
+    "sku": "ZBM",
+    "description": "浙贝母 (Bulbus Fritillariae Thunbergii)",
+    "category": "止咳药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.1026,
+    "metadata": {
+      "importIndex": 34,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "浙贝母",
+        "englishName": "Bulbus Fritillariae Thunbergii",
+        "pricePerGram": 0.1026
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "胖大海",
+    "chineseName": "胖大海",
+    "englishName": "Semen Sterculiae Lychnophorae",
+    "pinyinName": "pangdahai",
+    "sku": "pangdahai",
+    "description": "胖大海 (Semen Sterculiae Lychnophorae)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.1322,
+    "metadata": {
+      "importIndex": 35,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "胖大海",
+        "englishName": "Semen Sterculiae Lychnophorae",
+        "pricePerGram": 0.1322
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "红花特级",
+    "chineseName": "红花特级",
+    "englishName": "Flos Carthami",
+    "pinyinName": "honghuateji",
+    "sku": "HHTJ",
+    "description": "红花特级 (Flos Carthami)",
+    "category": "活血药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.10956,
+    "metadata": {
+      "importIndex": 36,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "红花特级",
+        "englishName": "Flos Carthami",
+        "pricePerGram": 0.10956
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "田七片",
+    "chineseName": "田七片",
+    "englishName": "Radix Notoginseng",
+    "pinyinName": "tianqipian",
+    "sku": "TQP",
+    "description": "田七片 (Radix Notoginseng)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.13044,
+    "metadata": {
+      "importIndex": 37,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "田七片",
+        "englishName": "Radix Notoginseng",
+        "pricePerGram": 0.13044
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "雪莲子",
+    "chineseName": "雪莲子",
+    "englishName": "Gleditsia sinensis Lam.",
+    "pinyinName": "xuelianzi",
+    "sku": "XLZ",
+    "description": "雪莲子 (Gleditsia sinensis Lam.)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.1148,
+    "metadata": {
+      "importIndex": 38,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "雪莲子",
+        "englishName": "Gleditsia sinensis Lam.",
+        "pricePerGram": 0.1148
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "白蔹",
+    "chineseName": "白蔹",
+    "englishName": "Radix Ampelopsis",
+    "pinyinName": "bailian",
+    "sku": "BL",
+    "description": "白蔹 (Radix Ampelopsis)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.0826,
+    "metadata": {
+      "importIndex": 39,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "白蔹",
+        "englishName": "Radix Ampelopsis",
+        "pricePerGram": 0.0826
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "法半夏",
+    "chineseName": "法半夏",
+    "englishName": "Rhizoma Pinelliae",
+    "pinyinName": "fabanxia",
+    "sku": "FBX",
+    "description": "法半夏 (Rhizoma Pinelliae)",
+    "category": "化痰药",
+    "unit": "g",
+    "requiresPrescription": true,
+    "basePrice": 0.11304,
+    "metadata": {
+      "importIndex": 40,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "法半夏",
+        "englishName": "Rhizoma Pinelliae",
+        "pricePerGram": 0.11304
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "覆盆子",
+    "chineseName": "覆盆子",
+    "englishName": "Fructus Rubi",
+    "pinyinName": "fupenzi",
+    "sku": "FPZ",
+    "description": "覆盆子 (Fructus Rubi)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.09566,
+    "metadata": {
+      "importIndex": 41,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "覆盆子",
+        "englishName": "Fructus Rubi",
+        "pricePerGram": 0.09566
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "姜半夏",
+    "chineseName": "姜半夏",
+    "englishName": "Rhizoma Pinelliae (ginger cured)",
+    "pinyinName": "jiangbanxia",
+    "sku": "JBX",
+    "description": "姜半夏 (Rhizoma Pinelliae (ginger cured))",
+    "category": "化痰药",
+    "unit": "g",
+    "requiresPrescription": true,
+    "basePrice": 0.11304,
+    "metadata": {
+      "importIndex": 42,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "姜半夏",
+        "englishName": "Rhizoma Pinelliae (ginger cured)",
+        "pricePerGram": 0.11304
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "蜜紫菀",
+    "chineseName": "蜜紫菀",
+    "englishName": "Radix Asteris",
+    "pinyinName": "miziwan",
+    "sku": "MZW",
+    "description": "蜜紫菀 (Radix Asteris)",
+    "category": "止咳药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.09566,
+    "metadata": {
+      "importIndex": 43,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "蜜紫菀",
+        "englishName": "Radix Asteris",
+        "pricePerGram": 0.09566
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "清半夏",
+    "chineseName": "清半夏",
+    "englishName": "Pinellia ternata (tuber prepared)",
+    "pinyinName": "qingbanxia",
+    "sku": "QBX",
+    "description": "清半夏 (Pinellia ternata (tuber prepared))",
+    "category": "化痰药",
+    "unit": "g",
+    "requiresPrescription": true,
+    "basePrice": 0.09566,
+    "metadata": {
+      "importIndex": 44,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "清半夏",
+        "englishName": "Pinellia ternata (tuber prepared)",
+        "pricePerGram": 0.09566
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "银柴胡",
+    "chineseName": "银柴胡",
+    "englishName": "Radix Stellariae",
+    "pinyinName": "yinchaihu",
+    "sku": "YCH",
+    "description": "银柴胡 (Radix Stellariae)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.11304,
+    "metadata": {
+      "importIndex": 45,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "银柴胡",
+        "englishName": "Radix Stellariae",
+        "pricePerGram": 0.11304
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "猪苓",
+    "chineseName": "猪苓",
+    "englishName": "Polyporus",
+    "pinyinName": "zhuling",
+    "sku": "ZL",
+    "description": "猪苓 (Polyporus)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.09478,
+    "metadata": {
+      "importIndex": 46,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "猪苓",
+        "englishName": "Polyporus",
+        "pricePerGram": 0.09478
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "紫菀",
+    "chineseName": "紫菀",
+    "englishName": "Radix Asteris",
+    "pinyinName": "ziwan",
+    "sku": "ZW",
+    "description": "紫菀 (Radix Asteris)",
+    "category": "止咳药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.09566,
+    "metadata": {
+      "importIndex": 47,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "紫菀",
+        "englishName": "Radix Asteris",
+        "pricePerGram": 0.09566
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "刺五加皮",
+    "chineseName": "刺五加皮",
+    "englishName": "Radix seu Caulis Acanthopanacis Senticosi",
+    "pinyinName": "ciwujiapi",
+    "sku": "CWJP",
+    "description": "刺五加皮 (Radix seu Caulis Acanthopanacis Senticosi)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.1026,
+    "metadata": {
+      "importIndex": 48,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "刺五加皮",
+        "englishName": "Radix seu Caulis Acanthopanacis Senticosi",
+        "pricePerGram": 0.1026
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "扁豆衣",
+    "chineseName": "扁豆衣",
+    "englishName": "Seed-coat of Semen Lablab Album",
+    "pinyinName": "biandouyi",
+    "sku": "BDY",
+    "description": "扁豆衣 (Seed-coat of Semen Lablab Album)",
+    "category": "其他中药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.09566,
+    "metadata": {
+      "importIndex": 49,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "扁豆衣",
+        "englishName": "Seed-coat of Semen Lablab Album",
+        "pricePerGram": 0.09566
+      }
+    },
+    "status": "active"
+  },
+  {
+    "name": "党参五级",
+    "chineseName": "党参五级",
+    "englishName": "Radix Codonopsis",
+    "pinyinName": "dangshenwuji",
+    "sku": "DSWJ",
+    "description": "党参五级 (Radix Codonopsis)",
+    "category": "补益药",
+    "unit": "g",
+    "requiresPrescription": false,
+    "basePrice": 0.11478,
+    "metadata": {
+      "importIndex": 50,
+      "processedAt": "2025-06-12T11:05:54.769Z",
+      "originalData": {
+        "chineseName": "党参五级",
+        "englishName": "Radix Codonopsis",
+        "pricePerGram": 0.11478
+      }
+    },
+    "status": "active"
+  }
+]

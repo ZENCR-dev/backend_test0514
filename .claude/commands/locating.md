@@ -1,0 +1,1 @@
+检查 .claude/CLAUDE.md 和 .claude/PRPs/INITIAL.md 获取当前任务进度和任务树，根据代码库实际进展定位到真实任务树位置，获取下一个待开发任务，并且研究制定todos

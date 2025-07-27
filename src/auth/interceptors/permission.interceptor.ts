@@ -11,8 +11,8 @@ import { Reflector } from "@nestjs/core";
 import { PermissionService } from "../services/permission.service";
 import {
   PERMISSION_METADATA_KEY,
-  REQUIRE_OWNERSHIP_KEY,
-  REQUIRE_CLINIC_MEMBERSHIP_KEY,
+  // REQUIRE_OWNERSHIP_KEY,        // Currently unused
+  // REQUIRE_CLINIC_MEMBERSHIP_KEY, // Currently unused
 } from "../decorators/permissions.decorator";
 import { Action, Resource } from "../interfaces/permission.interface";
 
@@ -48,16 +48,15 @@ export class PermissionInterceptor implements NestInterceptor {
             return;
           }
 
-          const requiresOwnership = this.reflector.getAllAndOverride<boolean>(
-            REQUIRE_OWNERSHIP_KEY,
-            [context.getHandler(), context.getClass()],
-          );
-
-          const requiresClinicMembership =
-            this.reflector.getAllAndOverride<boolean>(
-              REQUIRE_CLINIC_MEMBERSHIP_KEY,
-              [context.getHandler(), context.getClass()],
-            );
+          // Note: Permission metadata available but not used for logging
+          // const requiresOwnership = this.reflector.getAllAndOverride<boolean>(
+          //   REQUIRE_OWNERSHIP_KEY,
+          //   [context.getHandler(), context.getClass()],
+          // );
+          // const requiresClinicMembership = this.reflector.getAllAndOverride<boolean>(
+          //   REQUIRE_CLINIC_MEMBERSHIP_KEY,
+          //   [context.getHandler(), context.getClass()],
+          // );
 
           // Extract resource information
           const resourceId = request.params?.id || request.query?.id;

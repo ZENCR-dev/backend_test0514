@@ -4,26 +4,35 @@ import {
   ForbiddenException,
 } from "@nestjs/common";
 import { CreatePrescriptionDto } from "./dto/create-prescription.dto";
-import { PrescriptionsRepository } from "./prescriptions.repository";
+import { PrescriptionsNewRepository } from "./prescriptions-new.repository";
 import { QRCodeService } from "./services/qr-code.service";
 
 @Injectable()
 export class PrescriptionsService {
   constructor(
-    private readonly prescriptionsRepository: PrescriptionsRepository,
+    private readonly prescriptionsRepository: PrescriptionsNewRepository,
     private readonly qrCodeService: QRCodeService,
   ) {}
 
   async create(createPrescriptionDto: CreatePrescriptionDto, doctorId: string) {
     try {
+      // 验证输入参数
+      if (!doctorId) {
+        throw new Error("医师ID不能为空");
+      }
+
+      if (!createPrescriptionDto.copies || createPrescriptionDto.copies <= 0) {
+        throw new Error("帖数必须大于0");
+      }
+
       // 验证药品存在性和可用性
       await this.validateMedicines(createPrescriptionDto.medicines);
 
-      // 创建处方数据
+      // 创建处方数据 - 隐私合规版本，无患者信息
       const prescriptionData = {
         doctorId,
-        patientInfo: createPrescriptionDto.patientInfo,
         medicines: createPrescriptionDto.medicines,
+        copies: createPrescriptionDto.copies, // Direct mapping: copies → copies
         notes: createPrescriptionDto.notes,
       };
 
@@ -67,6 +76,11 @@ export class PrescriptionsService {
 
   async findOne(id: string, doctorId: string) {
     try {
+      // 验证输入参数
+      if (!id || id.trim() === "" || !doctorId || doctorId.trim() === "") {
+        throw new Error("处方ID和医师ID不能为空");
+      }
+
       const prescription = await this.prescriptionsRepository.findById(id);
 
       if (!prescription) {
@@ -100,7 +114,8 @@ export class PrescriptionsService {
   ) {
     try {
       // 验证处方存在和权限
-      const existingPrescription = await this.findOne(id, doctorId);
+      // const existingPrescription = await this.findOne(id, doctorId);
+      await this.findOne(id, doctorId);
 
       // 如果更新药品信息，需要重新验证
       if (updatePrescriptionDto.medicines) {
@@ -110,15 +125,21 @@ export class PrescriptionsService {
       // 构建更新数据
       const updateData: any = {};
 
-      if (updatePrescriptionDto.patientInfo) {
-        updateData.patientInfo = updatePrescriptionDto.patientInfo;
-      }
-
       if (updatePrescriptionDto.medicines) {
         updateData.medicines = updatePrescriptionDto.medicines;
       }
 
-      if (updatePrescriptionDto.notes !== undefined) {
+      if (
+        updatePrescriptionDto.copies !== undefined &&
+        updatePrescriptionDto.copies !== null
+      ) {
+        updateData.copies = updatePrescriptionDto.copies; // Direct mapping: copies → copies
+      }
+
+      if (
+        updatePrescriptionDto.notes !== undefined &&
+        updatePrescriptionDto.notes !== null
+      ) {
         updateData.notes = updatePrescriptionDto.notes;
       }
 
@@ -283,16 +304,12 @@ export class PrescriptionsService {
     }
 
     for (const medicine of medicines) {
-      if (
-        !medicine.medicineId ||
-        !medicine.quantity ||
-        !medicine.dosageInstructions
-      ) {
-        throw new Error("药品信息不完整：缺少药品ID、数量或用药说明");
+      if (!medicine.medicineId || medicine.weight == null || !medicine.notes) {
+        throw new Error("药品信息不完整：缺少药品ID、克重或用药说明");
       }
 
-      if (medicine.quantity <= 0) {
-        throw new Error("药品数量必须大于0");
+      if (medicine.weight <= 0) {
+        throw new Error("药品克重必须大于0");
       }
     }
 

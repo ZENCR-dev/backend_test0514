@@ -138,7 +138,8 @@ describe("OrchestrationService - Enhanced Metrics", () => {
       try {
         await service.handlePaymentSucceeded(successEvent);
       } catch (error) {
-        // 预期失败
+        // Expected error - continue test
+        expect(error.message).toBe("Update failed");
       }
 
       const metrics = service.getEnhancedMetrics();
@@ -164,7 +165,8 @@ describe("OrchestrationService - Enhanced Metrics", () => {
       try {
         await service.handlePaymentFailed(failedEvent);
       } catch (error) {
-        // 预期失败
+        // Expected error - continue test
+        expect(error.message).toBe("Update failed");
       }
 
       const metrics = service.getEnhancedMetrics();

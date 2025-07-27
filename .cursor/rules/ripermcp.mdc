@@ -136,8 +136,8 @@ alwaysApply: true
 - **3001-3009**: 备用前端端口（当3000被占用时自动分配）
 
 #### 后端服务端口范围：4000-4009
-- **4000**: 主后端API服务器（默认）
-- **4001**: WebSocket/Socket.IO服务（当前项目使用）
+- **4000**: 主后端API服务器（默认，当前项目使用）
+- **4001**: 备用端口
 - **4002-4009**: 备用后端端口（微服务、测试等）
 
 ### CORS配置要求
@@ -180,15 +180,15 @@ WebSocket服务同样需要配置CORS支持前端端口范围：
 
 #### 前端环境变量 (.env.local)
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:4001/api/v1
-NEXT_PUBLIC_WS_URL=http://localhost:4001
+NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
+NEXT_PUBLIC_WS_URL=http://localhost:4000
 NEXT_PUBLIC_WS_PATH=/ws/orchestration
 ```
 
 #### 后端环境变量 (.env)
 ```bash
 # 后端服务端口
-PORT=4001
+PORT=4000
 
 # 前端允许的源（生产环境使用）
 CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3002
@@ -200,11 +200,11 @@ CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3002
    ```bash
    # Windows
    netstat -ano | findstr :3000
-   netstat -ano | findstr :4001
+   netstat -ano | findstr :4000
    
    # Mac/Linux
    lsof -i :3000
-   lsof -i :4001
+   lsof -i :4000
    ```
 
 2. **释放端口**：
@@ -227,8 +227,8 @@ CORS_ORIGINS=http://localhost:3000,http://localhost:3001,http://localhost:3002
 - **严格遵守端口范围**：任何偏离此规范的端口使用都需要明确的理由和文档说明
 - **文档同步**：所有涉及端口的文档、示例代码、配置文件都必须遵循此规范
 - **跨域处理**：后端必须正确配置CORS以支持前端端口范围的访问
-- **历史遗留**：修改现有文件时，必须将旧端口配置（如3001）更新为新端口（如4001）
-- **WebSocket特别说明**：WebSocket连接必须使用4001端口，而非旧的3001端口
+- **历史遗留**：修改现有文件时，必须将旧端口配置（如4001）更新为标准端口（如4000）
+- **WebSocket特别说明**：WebSocket连接必须使用4000端口，与API服务器保持一致
 
 ---
 

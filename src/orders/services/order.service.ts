@@ -105,7 +105,7 @@ export class OrderService implements IOrderManagement {
           platformOrderId,
           practitionerId: createOrderDto.practitionerId,
           patientId: createOrderDto.patientId,
-          patientInfo: createOrderDto.patientInfo,
+          copies: 1,
           totalAmount,
           status: OrderStatus.DRAFT, // 初始状态为草稿
           notes: createOrderDto.notes,
@@ -894,4 +894,3 @@ export class OrderService implements IOrderManagement {
     }
   }
 }
-

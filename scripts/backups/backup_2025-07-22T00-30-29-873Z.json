@@ -1,0 +1,17 @@
+{
+  "timestamp": "2025-07-22T00:30:29.896Z",
+  "tables": {
+    "users": [],
+    "medicines": [],
+    "pharmacies": [],
+    "prescriptions": [],
+    "orders": [],
+    "systemConfigs": [],
+    "pharmacyInventory": [],
+    "pharmacyAccounts": [],
+    "pharmacyPriceLists": [],
+    "fulfillmentProofs": [],
+    "purchaseOrders": [],
+    "withdrawalRequests": []
+  }
+}

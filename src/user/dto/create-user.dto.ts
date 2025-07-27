@@ -8,7 +8,7 @@ import {
   IsObject,
   IsJSON,
 } from "class-validator";
-import { UserRole, UserStatus } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 
 export class CreateUserDto {
   @IsEmail()

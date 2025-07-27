@@ -16,10 +16,13 @@ async function bootstrap() {
     express.raw({ type: "application/json" }),
   );
 
+  // 设置全局路由前缀
+  app.setGlobalPrefix("api");
+
   // API版本控制配置
   app.enableVersioning({
     type: VersioningType.URI,
-    prefix: "api/v",
+    prefix: "v",
     defaultVersion: "1",
   });
 
@@ -122,7 +125,7 @@ async function bootstrap() {
   });
 
   const port = process.env.PORT || 4000;
-  await app.listen(port);
+  await app.listen(port, "0.0.0.0");
 
   logger.log(
     `🚀 TCM Prescription Platform API is running on: http://localhost:${port}`,

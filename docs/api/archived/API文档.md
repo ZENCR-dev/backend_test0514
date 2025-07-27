@@ -6,11 +6,11 @@
 
 ### 基本信息
 
-- **基础URL**: `http://localhost:4001`
+- **基础URL**: `http://localhost:4000`
 - **API版本**: v1
 - **API前缀**: `/api/v1`
 - **内容类型**: `application/json`
-- **Swagger文档**: `http://localhost:4001/api/docs`
+- **Swagger文档**: `http://localhost:4000/api/docs`
 
 ### 认证方式
 
@@ -281,29 +281,20 @@ GET /api/v1/medicines/medicine_id
 
 ```json
 {
-  "clinicId": "clinic_id",
-  "patientInfo": {
-    "name": "患者姓名",
-    "age": 35,
-    "gender": "female",
-    "phone": "021-123-4567",
-    "symptoms": "头痛、失眠",
-    "diagnosis": "肝郁气滞"
-  },
+  "prescriptionId": "TCM-2025-0001",
+  "doctorId": "doctor_id",
+  "amount": 7,
   "medicines": [
     {
       "medicineId": "medicine_id_1",
-      "quantity": 30,
-      "dosageInstructions": "水煎服，每日一剂"
+      "quantity": 30
     },
     {
       "medicineId": "medicine_id_2",
-      "quantity": 15,
-      "dosageInstructions": "研末，每次3克，每日两次",
-      "notes": "饭后服用"
+      "quantity": 15
     }
   ],
-  "notes": "忌辛辣刺激食物"
+  "notes": "水煎服，每日一剂，忌辛辣刺激食物"
 }
 ```
 
@@ -316,15 +307,7 @@ GET /api/v1/medicines/medicine_id
     "id": "prescription_id",
     "prescriptionId": "TCM-2025-0001",
     "doctorId": "doctor_id",
-    "clinicId": "clinic_id",
-    "patientInfo": {
-      "name": "患者姓名",
-      "age": 35,
-      "gender": "female",
-      "phone": "021-123-4567",
-      "symptoms": "头痛、失眠",
-      "diagnosis": "肝郁气滞"
-    },
+    "amount": 7,
     "medicines": [
       {
         "medicineId": "medicine_id_1",
@@ -333,7 +316,6 @@ GET /api/v1/medicines/medicine_id
         "quantity": 30,
         "unitPrice": 0.2,
         "totalPrice": 6.0,
-        "dosageInstructions": "水煎服，每日一剂",
         "unit": "克"
       },
       {
@@ -343,14 +325,12 @@ GET /api/v1/medicines/medicine_id
         "quantity": 15,
         "unitPrice": 0.15,
         "totalPrice": 2.25,
-        "dosageInstructions": "研末，每次3克，每日两次",
-        "notes": "饭后服用",
         "unit": "克"
       }
     ],
     "status": "created",
-    "totalAmount": 8.25,
-    "notes": "忌辛辣刺激食物",
+    "totalAmount": 57.75,
+    "notes": "水煎服，每日一剂，忌辛辣刺激食物",
     "qrCodeData": "data:image/png;base64,...",
     "createdAt": "2025-06-22T10:00:00.000Z",
     "updatedAt": "2025-06-22T10:00:00.000Z"
@@ -380,21 +360,17 @@ GET /api/v1/medicines/medicine_id
     {
       "id": "prescription_id_1",
       "prescriptionId": "TCM-2025-0001",
-      "patientInfo": {
-        "name": "患者1"
-      },
       "status": "created",
-      "totalAmount": 8.25,
+      "totalAmount": 57.75,
+      "amount": 7,
       "createdAt": "2025-06-22T10:00:00.000Z"
     },
     {
       "id": "prescription_id_2",
       "prescriptionId": "TCM-2025-0002",
-      "patientInfo": {
-        "name": "患者2"
-      },
       "status": "issued",
-      "totalAmount": 12.50,
+      "totalAmount": 84.50,
+      "amount": 10,
       "createdAt": "2025-06-21T10:00:00.000Z"
     }
     // 更多处方...

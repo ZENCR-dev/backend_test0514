@@ -1,0 +1,319 @@
+// 重构后的数据库模式 - 以Prescription为核心
+// 创建日期: 2025年7月12日
+// 基于用户业务需求重新设计
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin-arm64", "windows"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ==================== 核心处方实体 ====================
+
+model Prescription {
+  id               String                 @id @default(cuid()) @map("id")
+  prescriptionId   String                 @unique @map("prescription_id")  // 后端生成处方号
+  doctorId         String                 @map("doctor_id")                // 医师ID
+  copies           Int                    @map("copies")                   // 帖数（1-30范围）
+  grossWeight      Decimal                @map("gross_weight") @db.Decimal(10, 3)  // 总克重
+  netPrice         Decimal                @map("net_price") @db.Decimal(12, 2)     // 总价格（医师支付）
+  isHighValue      Boolean                @default(false) @map("is_high_value")    // 超过$500标记
+  highValueWarning String?                @map("high_value_warning")       // 高价值警告信息
+  status           PrescriptionStatus     @default(DRAFT) @map("status")
+  notes            String?                @map("notes")                    // 处方备注
+  qrCodeData       String?                @map("qr_code_data")             // QR码数据
+  version          Int                    @default(1) @map("version")      // 乐观锁版本
+  createdAt        DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // 关系
+  medicines      PrescriptionMedicine[]
+  practitioner   User                   @relation("PractitionerPrescriptions", fields: [doctorId], references: [id], onDelete: Cascade)
+  order          Order?                 // 一对一支付记录
+  purchaseOrders PurchaseOrder[]        // 一对多履约记录
+  auditLogs      PrescriptionAuditLog[] // 审计日志
+
+  // 业务约束
+  @@map("prescriptions")
+  @@index([doctorId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@index([prescriptionId])
+}
+
+model PrescriptionMedicine {
+  id                 String       @id @default(cuid()) @map("id")
+  prescriptionId     String       @map("prescription_id")
+  medicineId         String       @map("medicine_id")
+  quantity           Int          @map("quantity")                    // 用量
+  weight             Decimal      @map("weight") @db.Decimal(10, 3)  // 单味药克重
+  unitPrice          Decimal      @map("unit_price") @db.Decimal(10, 6)  // 单价
+  totalPrice         Decimal      @map("total_price") @db.Decimal(12, 2) // 小计
+  notes              String?      @map("notes")                       // 用药备注（不是dosageInstructions）
+  createdAt          DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  prescription       Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  medicine           Medicine     @relation("PrescriptionMedicines", fields: [medicineId], references: [id], onDelete: Cascade)
+
+  @@unique([prescriptionId, medicineId]) // 同一处方不能重复添加同种药
+  @@index([prescriptionId])
+  @@index([medicineId])
+  @@map("prescription_medicines")
+}
+
+// ==================== 简化的Order表（支付记录） ====================
+
+model Order {
+  id              String        @id @default(cuid()) @map("id")
+  prescriptionId  String        @unique @map("prescription_id")        // 一对一关联
+  platformOrderId String        @unique @map("platform_order_id")      // 平台订单号
+  paymentStatus   PaymentStatus @default(UNPAID) @map("payment_status") // 支付状态
+  paymentMethod   String?       @map("payment_method")                  // balance/stripe
+  practitionerId  String        @map("practitioner_id")                 // 冗余字段便于查询
+  totalAmount     Decimal       @map("total_amount") @db.Decimal(12, 2) // 冗余金额便于对账
+  platformFee     Decimal?      @map("platform_fee") @db.Decimal(12, 2) // 平台手续费
+  paidAt          DateTime?     @map("paid_at") @db.Timestamptz(6)
+  version         Int           @default(1) @map("version")             // 乐观锁
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  prescription    Prescription  @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  practitioner    User          @relation("PractitionerOrders", fields: [practitionerId], references: [id])
+  payments        Payment[]     // 详细支付记录
+
+  @@index([paymentStatus])
+  @@index([practitionerId])
+  @@index([createdAt(sort: Desc)])
+  @@map("orders")
+}
+
+// ==================== 药房价目表管理 ====================
+
+model PharmacyPriceList {
+  id            String            @id @default(cuid()) @map("id")
+  pharmacyId    String            @map("pharmacy_id")
+  version       Int               @map("version")                     // 版本号
+  effectiveDate DateTime          @map("effective_date") @db.Date     // 生效日期
+  status        PriceListStatus   @default(PENDING_APPROVAL) @map("status")
+  items         Json              @map("items")                       // 价格清单JSON
+  notes         String?           @map("notes")                       // 提交说明
+  approvedBy    String?           @map("approved_by")                 // 审核员ID
+  approvedAt    DateTime?         @map("approved_at") @db.Timestamptz(6)
+  rejectedReason String?          @map("rejected_reason")             // 拒绝原因
+  createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  pharmacy      Pharmacy          @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  approver      User?             @relation("PriceListApprover", fields: [approvedBy], references: [id])
+  auditLogs     PriceListAuditLog[] // 审计日志
+
+  @@unique([pharmacyId, version]) // 每个药房每个版本唯一
+  @@index([pharmacyId, status])
+  @@index([effectiveDate])
+  @@map("pharmacy_price_lists")
+}
+
+// ==================== 审计日志系统 ====================
+
+model PrescriptionAuditLog {
+  id             String          @id @default(cuid()) @map("id")
+  prescriptionId String          @map("prescription_id")
+  action         String          @map("action")                      // CREATE/UPDATE/PAY/FULFILL
+  oldValues      Json?           @map("old_values")                  // 变更前值
+  newValues      Json?           @map("new_values")                  // 变更后值
+  userId         String?         @map("user_id")                     // 操作用户
+  ipAddress      String?         @map("ip_address")                  // IP地址
+  userAgent      String?         @map("user_agent")                  // 用户代理
+  createdAt      DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  prescription   Prescription    @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  user           User?           @relation("PrescriptionAuditor", fields: [userId], references: [id])
+
+  @@index([prescriptionId])
+  @@index([action])
+  @@index([createdAt(sort: Desc)])
+  @@map("prescription_audit_logs")
+}
+
+model PriceListAuditLog {
+  id            String            @id @default(cuid()) @map("id")
+  priceListId   String            @map("price_list_id")
+  action        String            @map("action")                     // SUBMIT/APPROVE/REJECT/UPDATE
+  oldValues     Json?             @map("old_values")
+  newValues     Json?             @map("new_values")
+  userId        String?           @map("user_id")
+  reason        String?           @map("reason")                     // 操作原因
+  createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  priceList     PharmacyPriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  user          User?             @relation("PriceListAuditor", fields: [userId], references: [id])
+
+  @@index([priceListId])
+  @@index([action])
+  @@index([createdAt(sort: Desc)])
+  @@map("price_list_audit_logs")
+}
+
+// ==================== 枚举定义 ====================
+
+enum PrescriptionStatus {
+  DRAFT           // 草稿
+  PAID            // 已支付
+  FULFILLED       // 已履约
+  EXPIRED         // 已过期
+  CANCELLED       // 已取消
+}
+
+enum PaymentStatus {
+  UNPAID          // 未支付
+  PAID            // 已支付
+  FAILED          // 支付失败
+  REFUNDED        // 已退款
+}
+
+enum PriceListStatus {
+  PENDING_APPROVAL // 待审核
+  APPROVED         // 已审核通过
+  REJECTED         // 已拒绝
+  EXPIRED          // 已过期
+  ACTIVE           // 当前生效
+}
+
+// ==================== 现有表格引用（简化版） ====================
+
+model User {
+  id                     String                   @id @default(cuid()) @map("id")
+  email                  String                   @unique @map("email") @db.VarChar(255)
+  role                   UserRole                 @map("role")
+  status                 UserStatus               @default(pending) @map("status")
+  createdAt              DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // 处方相关关系
+  prescriptions          Prescription[]           @relation("PractitionerPrescriptions")
+  practitionerOrders     Order[]                  @relation("PractitionerOrders")
+  priceListApprovals     PharmacyPriceList[]      @relation("PriceListApprover")
+  prescriptionAudits     PrescriptionAuditLog[]   @relation("PrescriptionAuditor")
+  priceListAudits        PriceListAuditLog[]      @relation("PriceListAuditor")
+
+  // 其他现有关系保持不变...
+  practitionerAccount    PractitionerAccount?
+  profile                UserProfile?
+
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+model Medicine {
+  id                    String                 @id @default(cuid()) @map("id")
+  name                  String                 @map("name") @db.VarChar(255)
+  chineseName           String?                @map("chinese_name") @db.VarChar(255)
+  sku                   String                 @unique @map("sku") @db.VarChar(100)
+  basePrice             Decimal                @map("base_price") @db.Decimal(10, 6)  // 每克基础价格
+  unit                  String                 @map("unit") @db.VarChar(50)
+  status                String                 @default("active") @map("status") @db.VarChar(20)
+  createdAt             DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  prescriptionMedicines PrescriptionMedicine[] @relation("PrescriptionMedicines")
+
+  @@index([name])
+  @@index([status])
+  @@map("medicines")
+}
+
+model Pharmacy {
+  id                 String              @id @default(cuid()) @map("id")
+  name               String              @map("name") @db.VarChar(255)
+  operatorId         String              @unique @map("operator_id")
+  status             String              @default("active") @map("status") @db.VarChar(20)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  operator           User                @relation("PharmacyOperator", fields: [operatorId], references: [id])
+  priceLists         PharmacyPriceList[]
+  purchaseOrders     PurchaseOrder[]
+
+  @@map("pharmacies")
+}
+
+// 简化版本，保留核心字段
+model PurchaseOrder {
+  id                 String           @id @default(cuid()) @map("id")
+  poNumber           String           @unique @map("po_number")
+  pharmacyId         String           @map("pharmacy_id")
+  prescriptionId     String           @map("prescription_id")     // 关联处方而非订单
+  items              Json             @map("items")
+  totalAmount        Decimal          @map("total_amount") @db.Decimal(12, 2)
+  wholesaleCost      Decimal          @map("wholesale_cost") @db.Decimal(12, 2) // 药房成本
+  platformProfit     Decimal          @map("platform_profit") @db.Decimal(12, 2) // 平台利润
+  status             String           @default("pending_review") @map("status")
+  createdAt          DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  pharmacy           Pharmacy         @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  prescription       Prescription     @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+
+  @@map("purchase_orders")
+}
+
+model Payment {
+  id                    String        @id @default(cuid()) @map("id")
+  orderId               String        @map("order_id")
+  amount                Decimal       @map("amount") @db.Decimal(10, 2)
+  paymentMethod         String        @map("payment_method") @db.VarChar(50)
+  status                PaymentStatus @default(UNPAID) @map("status")
+  createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  order                 Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model PractitionerAccount {
+  id              String               @id @default(cuid()) @map("id")
+  practitionerId  String               @unique @map("practitioner_id")
+  balance         Decimal              @default(0) @map("balance") @db.Decimal(12, 2)
+  status          AccountStatus        @default(active) @map("status")
+  createdAt       DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  practitioner    User                 @relation(fields: [practitionerId], references: [id])
+
+  @@map("practitioner_accounts")
+}
+
+model UserProfile {
+  id            String   @id @default(cuid()) @map("id")
+  userId        String   @unique @map("user_id")
+  fullName      String   @map("full_name") @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+// ==================== 枚举定义 ====================
+
+enum UserRole {
+  practitioner
+  patient
+  pharmacy_operator
+  admin
+}
+
+enum UserStatus {
+  pending
+  approved
+  suspended
+}
+
+enum AccountStatus {
+  active
+  suspended
+  frozen
+}

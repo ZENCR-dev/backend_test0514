@@ -20,7 +20,6 @@ export interface IOrder {
   platformOrderId: string;
   practitionerId: string;
   patientId?: string;
-  patientInfo: any;
   status: OrderStatus;
   totalAmount: number;
   paymentStatus?: string;
@@ -52,7 +51,6 @@ export interface IPaginatedOrders {
 export interface ICreateOrderRequest {
   practitionerId: string;
   patientId?: string;
-  patientInfo: any;
   totalAmount: number;
   items: IOrderItemRequest[];
   notes?: string;

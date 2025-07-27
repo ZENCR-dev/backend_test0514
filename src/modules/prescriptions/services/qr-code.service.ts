@@ -3,9 +3,7 @@ import * as crypto from "crypto";
 
 export interface QRCodeData {
   prescriptionId: string;
-  patientName: string;
   doctorId: string;
-  clinicId: string;
   issuedAt: string;
   expiresAt: string;
   verifyCode: string;
@@ -30,9 +28,7 @@ export class QRCodeService {
 
     const qrData: Omit<QRCodeData, "signature"> = {
       prescriptionId: prescription.prescriptionId,
-      patientName: prescription.patientInfo.name,
       doctorId: prescription.doctorId,
-      clinicId: prescription.clinicId,
       issuedAt,
       expiresAt,
       verifyCode,
@@ -68,7 +64,7 @@ export class QRCodeService {
       }
 
       return { isValid: true };
-    } catch (error) {
+    } catch (_error) {
       return { isValid: false, error: "处方数据格式错误" };
     }
   }
@@ -98,7 +94,7 @@ export class QRCodeService {
 
       const jsonString = Buffer.from(encodedData, "base64url").toString();
       return JSON.parse(jsonString) as QRCodeData;
-    } catch (error) {
+    } catch (_error) {
       return null;
     }
   }

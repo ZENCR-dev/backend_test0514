@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PaymentService } from "./services/payment.service";
 import { PaymentController } from "./controllers/payment.controller";
@@ -25,8 +25,8 @@ import { PractitionerAccountModule } from "../practitioner-account/practitioner-
     // 数据库模块
     PrismaModule,
 
-    // 医师个人账户模块
-    PractitionerAccountModule,
+    // 医师个人账户模块 - 使用forwardRef解决循环依赖
+    forwardRef(() => PractitionerAccountModule),
   ],
 
   controllers: [PaymentController],

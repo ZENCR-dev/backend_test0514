@@ -60,7 +60,6 @@ describe("OrderController", () => {
     platformOrderId: "ORD20250619001",
     practitionerId: "doctor-123",
     patientId: "patient-123",
-    patientInfo: { name: "Test Patient", age: 30 },
     status: OrderStatus.DRAFT,
     totalAmount: 100,
     version: 1,
@@ -192,7 +191,6 @@ describe("OrderController", () => {
       const createDto: CreateOrderDto = {
         practitionerId: "doctor-123",
         patientId: "patient-123",
-        patientInfo: { name: "New Patient" },
         items: [{ medicineId: "med-123", quantity: 1, unitPrice: 10 }],
         totalAmount: 10,
         notes: "test note",

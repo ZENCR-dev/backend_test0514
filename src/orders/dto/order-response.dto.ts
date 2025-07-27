@@ -46,9 +46,6 @@ export class OrderResponseDto {
   @ApiPropertyOptional({ description: "患者ID", example: "cm123456789" })
   patientId?: string;
 
-  @ApiProperty({ description: "患者信息" })
-  patientInfo: any;
-
   @ApiProperty({
     description: "订单状态",
     enum: OrderStatus,

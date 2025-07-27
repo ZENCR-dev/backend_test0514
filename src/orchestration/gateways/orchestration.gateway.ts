@@ -223,14 +223,16 @@ export class OrchestrationGateway
       client.emit(ORCHESTRATION_EVENTS.CONNECTION_STATUS, connectionEvent);
 
       // 设置ping/pong保活
-      client.conn.on("heartbeat", () => {
-        if (user && this.connectedUsers.has(user.id)) {
-          const userInfo = this.connectedUsers.get(user.id);
-          if (userInfo) {
-            userInfo.lastActivity = new Date();
+      if (client.conn) {
+        client.conn.on("heartbeat", () => {
+          if (user && this.connectedUsers.has(user.id)) {
+            const userInfo = this.connectedUsers.get(user.id);
+            if (userInfo) {
+              userInfo.lastActivity = new Date();
+            }
           }
-        }
-      });
+        });
+      }
 
       // 记录指标
       this.recordMetrics();

@@ -16,7 +16,7 @@
 ### 使用的命令
 ```bash
 # 启动webhook监听（已在后台运行）
-.\stripe-cli\stripe.exe listen --forward-to localhost:3000/api/v1/payments/webhook --api-key YOUR_STRIPE_SECRET_KEY
+.\stripe-cli\stripe.exe listen --forward-to localhost:4000/api/v1/payments/webhook --api-key YOUR_STRIPE_SECRET_KEY
 
 # 测试webhook事件
 .\stripe-cli\stripe.exe trigger payment_intent.succeeded --api-key YOUR_STRIPE_SECRET_KEY
@@ -71,7 +71,7 @@ Get-Process -Name "stripe" -ErrorAction SilentlyContinue
 ### 检查应用端点
 ```bash
 # 测试webhook端点
-curl -X POST http://localhost:3000/api/v1/payments/webhook \
+curl -X POST http://localhost:4000/api/v1/payments/webhook \
   -H "Content-Type: application/json" \
   -d '{"test": "webhook"}'
 ```
@@ -81,13 +81,13 @@ curl -X POST http://localhost:3000/api/v1/payments/webhook \
 ### ✅ 已完成
 - Stripe CLI下载和配置
 - Webhook监听器启动
-- 本地端点映射：`localhost:3000/api/v1/payments/webhook`
+- 本地端点映射：`localhost:4000/api/v1/payments/webhook`
 - 测试事件触发成功
 
 ### 🔄 运行中的服务
-- **NestJS应用**：http://localhost:3000
+- **NestJS应用**：http://localhost:4000
 - **Stripe Webhook监听器**：转发到本地端点
-- **API文档**：http://localhost:3000/api/docs
+- **API文档**：http://localhost:4000/api/docs
 
 ## 🚀 下一步
 
@@ -111,7 +111,7 @@ curl -X POST http://localhost:3000/api/v1/payments/webhook \
 Get-Process -Name "stripe"
 
 # 重启监听器
-.\stripe-cli\stripe.exe listen --forward-to localhost:3000/api/v1/payments/webhook --api-key YOUR_STRIPE_SECRET_KEY
+.\stripe-cli\stripe.exe listen --forward-to localhost:4000/api/v1/payments/webhook --api-key YOUR_STRIPE_SECRET_KEY
 ```
 
 **问题3：签名验证失败**

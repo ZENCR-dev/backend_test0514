@@ -1,0 +1,1056 @@
+import { Test, TestingModule } from "@nestjs/testing";
+import { NotFoundException, ForbiddenException } from "@nestjs/common";
+import { PrescriptionsService } from "./prescriptions.service";
+import { PrescriptionsNewRepository } from "./prescriptions-new.repository";
+import { QRCodeService } from "./services/qr-code.service";
+import { CreatePrescriptionDto } from "./dto/create-prescription.dto";
+
+describe("PrescriptionsService", () => {
+  let service: PrescriptionsService;
+  let repository: PrescriptionsNewRepository;
+  let qrCodeService: QRCodeService;
+
+  const mockRepository = {
+    create: jest.fn(),
+    findById: jest.fn(),
+    findByDoctor: jest.fn(),
+    update: jest.fn(),
+    updateStatus: jest.fn(),
+    delete: jest.fn(),
+  };
+
+  const mockQRCodeService = {
+    updatePrescriptionQRCode: jest.fn(),
+    parseQRCodeString: jest.fn(),
+    verifyQRCodeData: jest.fn(),
+  };
+
+  // 标准的mock处方对象 - 隐私合规版本
+  const createMockPrescription = (overrides = {}) => ({
+    id: "prescription-123",
+    prescriptionId: "RX-2023-001",
+    doctorId: "doctor-123",
+    medicines: [
+      {
+        medicineId: "med-123",
+        weight: 15, // 克重
+        notes: "每日三次，饭后服用",
+      },
+    ],
+    copies: 7, // 帖数
+    status: "DRAFT",
+    totalAmount: 150.0,
+    notes: "注意休息",
+    qrCodeData: null,
+    practitioner: {
+      id: "doctor-123",
+      name: "李医生",
+    },
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  });
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        PrescriptionsService,
+        {
+          provide: PrescriptionsNewRepository,
+          useValue: mockRepository,
+        },
+        {
+          provide: QRCodeService,
+          useValue: mockQRCodeService,
+        },
+      ],
+    }).compile();
+
+    service = module.get<PrescriptionsService>(PrescriptionsService);
+    repository = module.get<PrescriptionsNewRepository>(
+      PrescriptionsNewRepository,
+    );
+    qrCodeService = module.get<QRCodeService>(QRCodeService);
+
+    // 重置所有 mock
+    jest.clearAllMocks();
+  });
+
+  it("should be defined", () => {
+    expect(service).toBeDefined();
+  });
+
+  describe("create", () => {
+    const mockPrescriptionData: CreatePrescriptionDto = {
+      medicines: [
+        {
+          medicineId: "med-123",
+          weight: 15, // 克重
+          notes: "每日三次，饭后服用",
+        },
+      ],
+      copies: 7, // 帖数
+      notes: "注意休息",
+    };
+
+    it("should create a prescription successfully", async () => {
+      const mockPrescription = createMockPrescription();
+      mockRepository.create.mockResolvedValue(mockPrescription);
+
+      const result = await service.create(mockPrescriptionData, "doctor-123");
+
+      expect(mockRepository.create).toHaveBeenCalledWith({
+        doctorId: "doctor-123",
+        medicines: mockPrescriptionData.medicines,
+        copies: mockPrescriptionData.copies,
+        notes: mockPrescriptionData.notes,
+      });
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(mockPrescription);
+    });
+
+    it("should throw error when medicine validation fails", async () => {
+      mockRepository.create.mockRejectedValue(new Error("无效的药品ID"));
+
+      await expect(
+        service.create(mockPrescriptionData, "doctor-123"),
+      ).rejects.toThrow("创建处方失败: 无效的药品ID");
+    });
+
+    it("should handle duplicate medicine error", async () => {
+      const duplicateData = {
+        ...mockPrescriptionData,
+        medicines: [
+          mockPrescriptionData.medicines[0],
+          mockPrescriptionData.medicines[0], // 重复药品
+        ],
+      };
+
+      mockRepository.create.mockRejectedValue(
+        new Error("药品列表中存在重复项"),
+      );
+
+      await expect(service.create(duplicateData, "doctor-123")).rejects.toThrow(
+        "创建处方失败: 药品列表中存在重复项",
+      );
+    });
+  });
+
+  describe("findOne", () => {
+    it("should return prescription for authorized doctor", async () => {
+      const mockPrescription = createMockPrescription();
+      mockRepository.findById.mockResolvedValue(mockPrescription);
+
+      const result = await service.findOne("prescription-123", "doctor-123");
+
+      expect(mockRepository.findById).toHaveBeenCalledWith("prescription-123");
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(mockPrescription);
+    });
+
+    it("should throw NotFoundException for non-existent prescription", async () => {
+      mockRepository.findById.mockResolvedValue(null);
+
+      await expect(
+        service.findOne("non-existent", "doctor-123"),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it("should throw ForbiddenException for unauthorized doctor", async () => {
+      const otherDoctorPrescription = createMockPrescription({
+        doctorId: "other-doctor",
+      });
+      mockRepository.findById.mockResolvedValue(otherDoctorPrescription);
+
+      await expect(
+        service.findOne("prescription-123", "doctor-123"),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("findAll", () => {
+    it("should return paginated prescriptions for doctor", async () => {
+      const mockPrescriptions = [createMockPrescription()];
+      const mockPaginatedResult = {
+        data: mockPrescriptions,
+        total: 1,
+      };
+      mockRepository.findByDoctor.mockResolvedValue(mockPaginatedResult);
+
+      const result = await service.findAll("doctor-123", {
+        page: 1,
+        limit: 20,
+      });
+
+      expect(mockRepository.findByDoctor).toHaveBeenCalledWith(
+        "doctor-123",
+        1,
+        20,
+      );
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(mockPrescriptions);
+      expect(result.pagination).toEqual({
+        page: 1,
+        limit: 20,
+        total: 1,
+        totalPages: 1,
+      });
+    });
+
+    it("should use default pagination when not provided", async () => {
+      const mockPaginatedResult = {
+        data: [createMockPrescription()],
+        total: 1,
+      };
+      mockRepository.findByDoctor.mockResolvedValue(mockPaginatedResult);
+
+      await service.findAll("doctor-123", {});
+
+      expect(mockRepository.findByDoctor).toHaveBeenCalledWith(
+        "doctor-123",
+        1,
+        20,
+      );
+    });
+  });
+
+  describe("update", () => {
+    it("should update prescription successfully", async () => {
+      const mockPrescription = createMockPrescription();
+      const updatedPrescription = createMockPrescription({
+        copies: 10,
+        notes: "更新的备注",
+      });
+
+      mockRepository.findById.mockResolvedValue(mockPrescription);
+      mockRepository.update.mockResolvedValue(updatedPrescription);
+
+      const updateData = {
+        copies: 10,
+        notes: "更新的备注",
+      };
+
+      const result = await service.update(
+        "prescription-123",
+        updateData,
+        "doctor-123",
+      );
+
+      expect(mockRepository.update).toHaveBeenCalledWith("prescription-123", {
+        copies: updateData.copies,
+        notes: updateData.notes,
+      });
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(updatedPrescription);
+    });
+
+    it("should throw ForbiddenException when updating other doctor's prescription", async () => {
+      const otherDoctorPrescription = createMockPrescription({
+        doctorId: "other-doctor",
+      });
+      mockRepository.findById.mockResolvedValue(otherDoctorPrescription);
+
+      await expect(
+        service.update("prescription-123", { notes: "更新备注" }, "doctor-123"),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("remove", () => {
+    it("should delete prescription successfully", async () => {
+      const mockPrescription = createMockPrescription();
+      mockRepository.findById.mockResolvedValue(mockPrescription);
+      mockRepository.delete.mockResolvedValue(undefined);
+
+      const result = await service.remove("prescription-123", "doctor-123");
+
+      expect(mockRepository.delete).toHaveBeenCalledWith("prescription-123");
+      expect(result.success).toBe(true);
+      expect(result.message).toBe("处方删除成功");
+    });
+
+    it("should throw NotFoundException for non-existent prescription", async () => {
+      mockRepository.findById.mockResolvedValue(null);
+
+      await expect(
+        service.remove("non-existent", "doctor-123"),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it("should throw ForbiddenException when deleting other doctor's prescription", async () => {
+      const otherDoctorPrescription = createMockPrescription({
+        doctorId: "other-doctor",
+      });
+      mockRepository.findById.mockResolvedValue(otherDoctorPrescription);
+
+      await expect(
+        service.remove("prescription-123", "doctor-123"),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe("issuePrescription", () => {
+    it("should issue prescription successfully", async () => {
+      const mockPrescription = createMockPrescription({ status: "DRAFT" });
+      const updatedPrescription = createMockPrescription({ status: "PAID" });
+      // const qrCodeData = { qrCodeString: "generated-qr-code" };
+
+      mockRepository.findById.mockResolvedValue(mockPrescription);
+      mockQRCodeService.updatePrescriptionQRCode.mockReturnValue({
+        ...mockPrescription,
+        qrCodeData: "qr-data",
+        qrCodeString: "generated-qr-code",
+      });
+      mockRepository.updateStatus.mockResolvedValue(updatedPrescription);
+      mockRepository.update.mockResolvedValue(updatedPrescription);
+
+      const result = await service.issuePrescription(
+        "prescription-123",
+        "doctor-123",
+      );
+
+      expect(mockRepository.updateStatus).toHaveBeenCalledWith(
+        "prescription-123",
+        "PAID",
+      );
+      expect(result.success).toBe(true);
+    });
+
+    it("should throw error for non-draft prescription", async () => {
+      const mockPrescription = createMockPrescription({ status: "PAID" });
+      mockRepository.findById.mockResolvedValue(mockPrescription);
+
+      await expect(
+        service.issuePrescription("prescription-123", "doctor-123"),
+      ).rejects.toThrow("开具处方失败: 只有草稿状态的处方才能开具");
+    });
+  });
+
+  describe("verifyPrescription", () => {
+    it("should verify prescription successfully", async () => {
+      const mockPrescription = createMockPrescription();
+      const mockQRData = {
+        prescriptionId: "prescription-123",
+        doctorId: "doctor-123",
+        issuedAt: "2023-01-01T00:00:00Z",
+        expiresAt: "2023-01-04T00:00:00Z",
+        verifyCode: "ABC123",
+      };
+
+      mockQRCodeService.parseQRCodeString.mockReturnValue(mockQRData);
+      mockQRCodeService.verifyQRCodeData.mockReturnValue({ isValid: true });
+      mockRepository.findById.mockResolvedValue(mockPrescription);
+
+      const result = await service.verifyPrescription("valid-qr-code");
+
+      expect(mockQRCodeService.parseQRCodeString).toHaveBeenCalledWith(
+        "valid-qr-code",
+      );
+      expect(result.success).toBe(true);
+      expect(result.data.prescription).toEqual(mockPrescription);
+      expect(result.data.verificationInfo.verifyCode).toBe("ABC123");
+    });
+
+    it("should handle invalid QR code", async () => {
+      mockQRCodeService.parseQRCodeString.mockReturnValue(null);
+
+      await expect(
+        service.verifyPrescription("invalid-qr-code"),
+      ).rejects.toThrow("处方验证失败: 无效的QR码格式");
+    });
+  });
+
+  // 边界条件测试套件
+  describe("边界条件测试", () => {
+    describe("create - 边界条件", () => {
+      it("should handle null medicines array", async () => {
+        const nullMedicinesData = {
+          medicines: null,
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(nullMedicinesData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 处方必须包含至少一种药品");
+      });
+
+      it("should handle undefined medicines array", async () => {
+        const undefinedMedicinesData = {
+          medicines: undefined,
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(undefinedMedicinesData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 处方必须包含至少一种药品");
+      });
+
+      it("should handle empty medicines array", async () => {
+        const emptyMedicinesData = {
+          medicines: [],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(emptyMedicinesData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 处方必须包含至少一种药品");
+      });
+
+      it("should handle medicine with null weight", async () => {
+        const nullWeightData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: null,
+              notes: "用药说明",
+            },
+          ],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(nullWeightData as any, "doctor-123"),
+        ).rejects.toThrow(
+          "创建处方失败: 药品信息不完整：缺少药品ID、克重或用药说明",
+        );
+      });
+
+      it("should handle medicine with zero weight", async () => {
+        const zeroWeightData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: 0,
+              notes: "用药说明",
+            },
+          ],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(zeroWeightData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 药品克重必须大于0");
+      });
+
+      it("should handle medicine with negative weight", async () => {
+        const negativeWeightData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: -5,
+              notes: "用药说明",
+            },
+          ],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(negativeWeightData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 药品克重必须大于0");
+      });
+
+      it("should handle null or undefined copies", async () => {
+        const nullCopiesData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: 15,
+              notes: "用药说明",
+            },
+          ],
+          copies: null,
+          notes: "测试备注",
+        };
+
+        // This should be handled by DTO validation, but test service behavior
+        await expect(
+          service.create(nullCopiesData as any, "doctor-123"),
+        ).rejects.toThrow();
+      });
+
+      it("should handle empty string notes", async () => {
+        const emptyNotesData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: 15,
+              notes: "",
+            },
+          ],
+          copies: 7,
+          notes: "",
+        };
+
+        await expect(
+          service.create(emptyNotesData as any, "doctor-123"),
+        ).rejects.toThrow(
+          "创建处方失败: 药品信息不完整：缺少药品ID、克重或用药说明",
+        );
+      });
+
+      it("should handle null doctorId", async () => {
+        const validData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: 15,
+              notes: "用药说明",
+            },
+          ],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(service.create(validData as any, null)).rejects.toThrow();
+      });
+    });
+
+    describe("findOne - 边界条件", () => {
+      it("should handle null prescription id", async () => {
+        await expect(service.findOne(null, "doctor-123")).rejects.toThrow();
+      });
+
+      it("should handle undefined prescription id", async () => {
+        await expect(
+          service.findOne(undefined, "doctor-123"),
+        ).rejects.toThrow();
+      });
+
+      it("should handle empty string prescription id", async () => {
+        await expect(service.findOne("", "doctor-123")).rejects.toThrow(
+          "获取处方详情失败: 处方ID和医师ID不能为空",
+        );
+      });
+
+      it("should handle null doctor id", async () => {
+        await expect(
+          service.findOne("prescription-123", null),
+        ).rejects.toThrow();
+      });
+    });
+
+    describe("update - 边界条件", () => {
+      it("should handle empty update data", async () => {
+        const mockPrescription = createMockPrescription();
+        mockRepository.findById.mockResolvedValue(mockPrescription);
+        mockRepository.update.mockResolvedValue(mockPrescription);
+
+        const result = await service.update(
+          "prescription-123",
+          {},
+          "doctor-123",
+        );
+
+        expect(result.success).toBe(true);
+        expect(mockRepository.update).toHaveBeenCalledWith(
+          "prescription-123",
+          {},
+        );
+      });
+
+      it("should handle update with null values", async () => {
+        const mockPrescription = createMockPrescription();
+        mockRepository.findById.mockResolvedValue(mockPrescription);
+        mockRepository.update.mockResolvedValue(mockPrescription);
+
+        const updateData = {
+          notes: null,
+          copies: null,
+        };
+
+        const result = await service.update(
+          "prescription-123",
+          updateData as any,
+          "doctor-123",
+        );
+
+        expect(result.success).toBe(true);
+        // Should not include null values in update
+        expect(mockRepository.update).toHaveBeenCalledWith(
+          "prescription-123",
+          {},
+        );
+      });
+    });
+
+    describe("verifyPrescription - 边界条件", () => {
+      it("should handle null QR code string", async () => {
+        await expect(service.verifyPrescription(null)).rejects.toThrow(
+          "处方验证失败:",
+        );
+      });
+
+      it("should handle undefined QR code string", async () => {
+        await expect(service.verifyPrescription(undefined)).rejects.toThrow(
+          "处方验证失败:",
+        );
+      });
+
+      it("should handle empty string QR code", async () => {
+        await expect(service.verifyPrescription("")).rejects.toThrow(
+          "处方验证失败:",
+        );
+      });
+
+      it("should handle very long QR code string", async () => {
+        const longQrCode = "a".repeat(10000);
+        mockQRCodeService.parseQRCodeString.mockReturnValue(null);
+
+        await expect(service.verifyPrescription(longQrCode)).rejects.toThrow(
+          "处方验证失败: 无效的QR码格式",
+        );
+      });
+    });
+  });
+
+  // Stage 3.2: 并发测试套件 (暂时跳过)
+  describe.skip("并发测试 (Stage 3.2)", () => {
+    // 为并发测试创建独立的服务实例和mock
+    let concurrentService: PrescriptionsService;
+    let concurrentRepository: any;
+    let concurrentQRCodeService: any;
+    let concurrentModule: TestingModule;
+
+    beforeAll(async () => {
+      // 为并发测试创建独立的模块
+      concurrentRepository = {
+        create: jest.fn(),
+        findById: jest.fn(),
+        findByDoctor: jest.fn(),
+        update: jest.fn(),
+        updateStatus: jest.fn(),
+        delete: jest.fn(),
+      };
+
+      concurrentQRCodeService = {
+        updatePrescriptionQRCode: jest.fn(),
+        parseQRCodeString: jest.fn(),
+        verifyQRCodeData: jest.fn(),
+      };
+
+      concurrentModule = await Test.createTestingModule({
+        providers: [
+          PrescriptionsService,
+          {
+            provide: PrescriptionsNewRepository,
+            useValue: concurrentRepository,
+          },
+          {
+            provide: QRCodeService,
+            useValue: concurrentQRCodeService,
+          },
+        ],
+      }).compile();
+
+      concurrentService =
+        concurrentModule.get<PrescriptionsService>(PrescriptionsService);
+    });
+
+    afterAll(async () => {
+      if (concurrentModule) {
+        await concurrentModule.close();
+      }
+    });
+
+    describe("创建处方 - 并发场景", () => {
+      it.concurrent(
+        "should handle multiple concurrent create requests",
+        async () => {
+          // 每个并发测试都重新设置mock以确保隔离
+          const localRepository = concurrentModule.get(
+            PrescriptionsNewRepository,
+          );
+          localRepository.create = jest.fn();
+
+          const mockPrescriptionData: CreatePrescriptionDto = {
+            medicines: [
+              {
+                medicineId: "med-123",
+                weight: 15,
+                notes: "每日三次，饭后服用",
+              },
+            ],
+            copies: 7,
+            notes: "注意休息",
+          };
+
+          const mockPrescription = createMockPrescription();
+          localRepository.create.mockResolvedValue(mockPrescription);
+
+          // 模拟10个并发创建请求
+          const concurrentRequests = Array.from({ length: 10 }, (_, i) =>
+            concurrentService.create(
+              {
+                ...mockPrescriptionData,
+                notes: `并发测试处方 ${i + 1}`,
+              },
+              `doctor-${i + 1}`,
+            ),
+          );
+
+          const startTime = Date.now();
+          const results = await Promise.all(concurrentRequests);
+          const endTime = Date.now();
+          const responseTime = endTime - startTime;
+
+          // 验证所有请求都成功
+          results.forEach((result) => {
+            expect(result.success).toBe(true);
+            expect(result.data).toEqual(mockPrescription);
+          });
+
+          // 验证响应时间 < 200ms
+          expect(responseTime).toBeLessThan(200);
+
+          // 验证repository被调用了正确的次数
+          expect(localRepository.create).toHaveBeenCalledTimes(10);
+        },
+      );
+
+      it.concurrent(
+        "should handle concurrent requests with different doctors",
+        async () => {
+          // 每个并发测试都重新设置mock以确保隔离
+          const localRepository = concurrentModule.get(
+            PrescriptionsNewRepository,
+          );
+          localRepository.create = jest.fn();
+
+          const mockPrescriptionData: CreatePrescriptionDto = {
+            medicines: [
+              {
+                medicineId: "med-456",
+                weight: 20,
+                notes: "每日两次",
+              },
+            ],
+            copies: 5,
+            notes: "并发测试",
+          };
+
+          const mockPrescription = createMockPrescription();
+          localRepository.create.mockResolvedValue(mockPrescription);
+
+          // 5个不同医生的并发请求
+          const doctorIds = [
+            "doctor-1",
+            "doctor-2",
+            "doctor-3",
+            "doctor-4",
+            "doctor-5",
+          ];
+          const concurrentRequests = doctorIds.map((doctorId) =>
+            concurrentService.create(mockPrescriptionData, doctorId),
+          );
+
+          const startTime = Date.now();
+          const results = await Promise.all(concurrentRequests);
+          const endTime = Date.now();
+
+          // 验证性能基准
+          expect(endTime - startTime).toBeLessThan(200);
+
+          // 验证所有结果
+          results.forEach((result, index) => {
+            expect(result.success).toBe(true);
+            expect(localRepository.create).toHaveBeenCalledWith({
+              doctorId: doctorIds[index],
+              medicines: mockPrescriptionData.medicines,
+              copies: mockPrescriptionData.copies,
+              notes: mockPrescriptionData.notes,
+            });
+          });
+        },
+      );
+    });
+
+    describe("查询处方 - 并发场景", () => {
+      it.concurrent(
+        "should handle multiple concurrent findOne requests",
+        async () => {
+          // 每个并发测试都重新设置mock以确保隔离
+          const localRepository = concurrentModule.get(
+            PrescriptionsNewRepository,
+          );
+          localRepository.findById = jest.fn();
+
+          const mockPrescription = createMockPrescription();
+          localRepository.findById.mockResolvedValue(mockPrescription);
+
+          // 10个并发查询请求
+          const concurrentQueries = Array.from({ length: 10 }, () =>
+            concurrentService.findOne("prescription-123", "doctor-123"),
+          );
+
+          const startTime = Date.now();
+          const results = await Promise.all(concurrentQueries);
+          const endTime = Date.now();
+
+          // 验证性能
+          expect(endTime - startTime).toBeLessThan(200);
+
+          // 验证所有结果
+          results.forEach((result) => {
+            expect(result.success).toBe(true);
+            expect(result.data).toEqual(mockPrescription);
+          });
+
+          expect(localRepository.findById).toHaveBeenCalledTimes(10);
+        },
+      );
+
+      it.concurrent(
+        "should handle concurrent findAll requests from different doctors",
+        async () => {
+          // 每个并发测试都重新设置mock以确保隔离
+          const localRepository = concurrentModule.get(
+            PrescriptionsNewRepository,
+          );
+          localRepository.findByDoctor = jest.fn();
+
+          const mockPaginatedResult = {
+            data: [createMockPrescription()],
+            total: 1,
+          };
+          localRepository.findByDoctor.mockResolvedValue(mockPaginatedResult);
+
+          const doctorIds = [
+            "doctor-1",
+            "doctor-2",
+            "doctor-3",
+            "doctor-4",
+            "doctor-5",
+          ];
+          const concurrentQueries = doctorIds.map((doctorId) =>
+            concurrentService.findAll(doctorId, { page: 1, limit: 20 }),
+          );
+
+          const startTime = Date.now();
+          const results = await Promise.all(concurrentQueries);
+          const endTime = Date.now();
+
+          // 性能验证
+          expect(endTime - startTime).toBeLessThan(200);
+
+          // 结果验证
+          results.forEach((result) => {
+            expect(result.success).toBe(true);
+            expect(result.data).toEqual(mockPaginatedResult.data);
+          });
+
+          expect(localRepository.findByDoctor).toHaveBeenCalledTimes(5);
+        },
+      );
+    });
+
+    describe("更新处方 - 并发场景", () => {
+      it.concurrent("should handle concurrent update requests", async () => {
+        // 每个并发测试都重新设置mock以确保隔离
+        const localRepository = concurrentModule.get(
+          PrescriptionsNewRepository,
+        );
+        localRepository.findById = jest.fn();
+        localRepository.update = jest.fn();
+
+        const mockPrescription = createMockPrescription();
+        const updatedPrescription = createMockPrescription({
+          notes: "并发更新测试",
+        });
+
+        localRepository.findById.mockResolvedValue(mockPrescription);
+        localRepository.update.mockResolvedValue(updatedPrescription);
+
+        // 5个并发更新请求
+        const concurrentUpdates = Array.from({ length: 5 }, (_, i) =>
+          concurrentService.update(
+            "prescription-123",
+            { notes: `并发更新 ${i + 1}` },
+            "doctor-123",
+          ),
+        );
+
+        const startTime = Date.now();
+        const results = await Promise.all(concurrentUpdates);
+        const endTime = Date.now();
+
+        // 性能验证
+        expect(endTime - startTime).toBeLessThan(200);
+
+        // 结果验证
+        results.forEach((result) => {
+          expect(result.success).toBe(true);
+        });
+
+        expect(localRepository.findById).toHaveBeenCalledTimes(5);
+        expect(localRepository.update).toHaveBeenCalledTimes(5);
+      });
+    });
+
+    describe("处方验证 - 并发场景", () => {
+      it.concurrent(
+        "should handle concurrent prescription verification",
+        async () => {
+          // 每个并发测试都重新设置mock以确保隔离
+          const localRepository = concurrentModule.get(
+            PrescriptionsNewRepository,
+          );
+          const localQRCodeService = concurrentModule.get(QRCodeService);
+          
+          const mockPrescription = createMockPrescription();
+          const mockQRData = {
+            prescriptionId: "prescription-123",
+            doctorId: "doctor-123",
+            issuedAt: "2023-01-01T00:00:00Z",
+            expiresAt: "2023-01-04T00:00:00Z",
+            verifyCode: "ABC123",
+          };
+
+          localRepository.findById = jest.fn().mockResolvedValue(mockPrescription);
+          localQRCodeService.parseQRCodeString = jest.fn().mockReturnValue(mockQRData);
+          localQRCodeService.verifyQRCodeData = jest.fn().mockReturnValue({
+            isValid: true,
+          });
+
+          // 8个并发验证请求
+          const concurrentVerifications = Array.from({ length: 8 }, (_, i) =>
+            concurrentService.verifyPrescription(`qr-code-${i + 1}`),
+          );
+
+          const startTime = Date.now();
+          const results = await Promise.all(concurrentVerifications);
+          const endTime = Date.now();
+
+          // 性能验证
+          expect(endTime - startTime).toBeLessThan(200);
+
+          // 结果验证
+          results.forEach((result) => {
+            expect(result.success).toBe(true);
+            expect(result.data.prescription).toEqual(mockPrescription);
+          });
+
+          expect(localQRCodeService.parseQRCodeString).toHaveBeenCalledTimes(8);
+          expect(localRepository.findById).toHaveBeenCalledTimes(8);
+        },
+      );
+    });
+
+    describe("混合操作 - 并发场景", () => {
+      it.concurrent("should handle mixed concurrent operations", async () => {
+        // 每个并发测试都重新设置mock以确保隔离
+        const localRepository = concurrentModule.get(
+          PrescriptionsNewRepository,
+        );
+        
+        const mockPrescription = createMockPrescription();
+        const mockPaginatedResult = {
+          data: [mockPrescription],
+          total: 1,
+        };
+
+        // 设置所有必要的mock
+        localRepository.create = jest.fn().mockResolvedValue(mockPrescription);
+        localRepository.findById = jest.fn().mockResolvedValue(mockPrescription);
+        localRepository.findByDoctor = jest.fn().mockResolvedValue(mockPaginatedResult);
+        localRepository.update = jest.fn().mockResolvedValue(mockPrescription);
+
+        // 混合并发操作：创建、查询、更新
+        const mixedOperations = [
+          concurrentService.create(
+            {
+              medicines: [
+                { medicineId: "med-123", weight: 15, notes: "用药说明" },
+              ],
+              copies: 7,
+              notes: "创建测试",
+            },
+            "doctor-1",
+          ),
+          concurrentService.findOne("prescription-123", "doctor-123"),
+          concurrentService.findAll("doctor-123", { page: 1, limit: 20 }),
+          concurrentService.update(
+            "prescription-123",
+            { notes: "更新测试" },
+            "doctor-123",
+          ),
+        ];
+
+        const startTime = Date.now();
+        const results = await Promise.all(mixedOperations);
+        const endTime = Date.now();
+
+        // 性能验证 - 混合操作应在200ms内完成
+        expect(endTime - startTime).toBeLessThan(200);
+
+        // 验证所有操作都成功
+        results.forEach((result) => {
+          expect(result.success).toBe(true);
+        });
+      });
+    });
+
+    describe("高负载压力测试", () => {
+      it.concurrent(
+        "should handle high load scenario with 50 concurrent requests",
+        async () => {
+          // 每个并发测试都重新设置mock以确保隔离
+          const localRepository = concurrentModule.get(
+            PrescriptionsNewRepository,
+          );
+          localRepository.create = jest.fn();
+          localRepository.findById = jest.fn();
+
+          const mockPrescription = createMockPrescription();
+          localRepository.create.mockResolvedValue(mockPrescription);
+          localRepository.findById.mockResolvedValue(mockPrescription);
+
+          // 50个混合并发请求
+          const highLoadRequests = Array.from({ length: 50 }, (_, i) => {
+            if (i % 2 === 0) {
+              // 偶数索引：创建请求
+              return concurrentService.create(
+                {
+                  medicines: [
+                    { medicineId: `med-${i}`, weight: 15, notes: "高负载测试" },
+                  ],
+                  copies: 5,
+                  notes: `高负载创建测试 ${i}`,
+                },
+                `doctor-${i % 10}`, // 循环使用10个医生ID
+              );
+            } else {
+              // 奇数索引：查询请求
+              return concurrentService.findOne(
+                `prescription-${i}`,
+                `doctor-${i % 10}`,
+              );
+            }
+          });
+
+          const startTime = Date.now();
+          const results = await Promise.all(highLoadRequests);
+          const endTime = Date.now();
+          const responseTime = endTime - startTime;
+
+          // 高负载场景下响应时间应在500ms内
+          expect(responseTime).toBeLessThan(500);
+
+          // 验证所有请求都成功
+          results.forEach((result) => {
+            expect(result.success).toBe(true);
+          });
+
+          // 验证mock调用次数
+          expect(localRepository.create).toHaveBeenCalledTimes(25); // 偶数索引
+          expect(localRepository.findById).toHaveBeenCalledTimes(25); // 奇数索引
+        },
+      );
+    });
+  });
+});

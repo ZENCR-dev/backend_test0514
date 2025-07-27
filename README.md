@@ -155,7 +155,7 @@ npm run start:dev
 
 6. **访问API文档**
 ```
-http://localhost:4001/api/docs
+http://localhost:4000/api/docs
 ```
 
 ---
@@ -274,7 +274,7 @@ async createOrder(@Body() createOrderDto: CreateOrderDto, @User() user: any) {
 ## 📚 API 文档
 
 ### Swagger UI
-开发环境访问：http://localhost:4001/api/docs
+开发环境访问：http://localhost:4000/api/docs
 
 ### 核心API端点 (MVP 1.0)
 - `POST /api/v1/auth/login` - 用户登录
@@ -346,7 +346,7 @@ npm run start
 docker build -t tcm-backend .
 
 # 运行容器
-docker run -p 4001:4001 tcm-backend
+docker run -p 4000:4000 tcm-backend
 ```
 
 ---

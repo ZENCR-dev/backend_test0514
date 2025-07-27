@@ -97,15 +97,75 @@ export class MedicinesService {
       },
     });
 
-    const formattedCategories = categories.map((item) => ({
-      category: item.category,
-      count: item._count.category,
-    }));
+    return categories.map((item) => item.category);
+  }
 
-    return {
-      success: true,
-      data: formattedCategories,
-    };
+  async getPopularMedicines(limit: number = 10) {
+    // 基于搜索频率或创建时间获取热门药品
+    // 这里使用创建时间作为热门度指标，实际项目中可以基于搜索统计
+    const medicines = await this.prisma.medicine.findMany({
+      where: {
+        status: "active",
+      },
+      orderBy: [
+        { createdAt: "desc" }, // 最新创建的药品
+        { name: "asc" }, // 按名称排序作为次要条件
+      ],
+      take: limit,
+      select: {
+        id: true,
+        name: true,
+        englishName: true,
+        chineseName: true,
+        pinyinName: true,
+        sku: true,
+        category: true,
+        description: true,
+        // 不包含价格等敏感信息
+      },
+    });
+
+    return medicines;
+  }
+
+  async getSearchSuggestions(query: string, limit: number = 5) {
+    // 获取搜索建议，基于药品名称匹配
+    const suggestions = await this.prisma.medicine.findMany({
+      where: {
+        status: "active",
+        OR: [
+          { name: { contains: query, mode: "insensitive" as const } },
+          { englishName: { contains: query, mode: "insensitive" as const } },
+          { pinyinName: { contains: query, mode: "insensitive" as const } },
+          { chineseName: { contains: query, mode: "insensitive" as const } },
+        ],
+      },
+      select: {
+        name: true,
+        englishName: true,
+        chineseName: true,
+        category: true,
+      },
+      take: limit,
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    // 返回去重的建议列表
+    const suggestionSet = new Set<string>();
+
+    suggestions.forEach((medicine) => {
+      if (medicine.name) suggestionSet.add(medicine.name);
+      if (medicine.englishName) suggestionSet.add(medicine.englishName);
+      if (medicine.chineseName) suggestionSet.add(medicine.chineseName);
+    });
+
+    return Array.from(suggestionSet)
+      .filter((suggestion) =>
+        suggestion.toLowerCase().includes(query.toLowerCase()),
+      )
+      .slice(0, limit);
   }
 
   async findOne(id: string) {

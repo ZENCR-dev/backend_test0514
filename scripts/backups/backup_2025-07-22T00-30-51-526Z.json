@@ -1,0 +1,359 @@
+{
+  "timestamp": "2025-07-22T00:30:51.535Z",
+  "tables": {
+    "users": [
+      {
+        "id": "cmddstcoj00006dzhvn18mjor",
+        "email": "admin@zencr.org",
+        "role": "admin",
+        "status": "approved",
+        "referralCode": "ADMIN001",
+        "referredBy": null,
+        "createdAt": "2025-07-22T00:30:39.475Z",
+        "updatedAt": "2025-07-22T00:30:39.475Z",
+        "password": "$2b$10$example.hash.for.admin.user",
+        "refreshToken": null,
+        "refreshTokenExp": null,
+        "profile": {
+          "id": "cmddstcoj00016dzh20ghx9la",
+          "userId": "cmddstcoj00006dzhvn18mjor",
+          "fullName": "系统管理员",
+          "phone": "+64-21-0000000",
+          "licenseNumber": "ADMIN001",
+          "address": {
+            "city": "Auckland",
+            "street": "123 Admin Street",
+            "country": "New Zealand",
+            "postalCode": "1010"
+          },
+          "preferences": {
+            "language": "zh-CN",
+            "timezone": "Pacific/Auckland"
+          },
+          "metadata": null,
+          "createdAt": "2025-07-22T00:30:39.475Z",
+          "updatedAt": "2025-07-22T00:30:39.475Z",
+          "specialization": null,
+          "clinic": null,
+          "qualifications": null,
+          "apc_expiry_date": null,
+          "apc_file_url": null,
+          "apc_upload_date": null
+        },
+        "practitionerAccount": null,
+        "operatedPharmacy": null
+      },
+      {
+        "id": "cmddstd2200026dzh28xn93qi",
+        "email": "doctor@test.com",
+        "role": "practitioner",
+        "status": "approved",
+        "referralCode": "DOC001",
+        "referredBy": null,
+        "createdAt": "2025-07-22T00:30:39.963Z",
+        "updatedAt": "2025-07-22T00:30:39.963Z",
+        "password": "$2b$10$example.hash.for.test.doctor",
+        "refreshToken": null,
+        "refreshTokenExp": null,
+        "profile": {
+          "id": "cmddstd2200036dzh5fzw89hq",
+          "userId": "cmddstd2200026dzh28xn93qi",
+          "fullName": "测试医生",
+          "phone": "+64-21-1111111",
+          "licenseNumber": "DOC001",
+          "address": {
+            "city": "Auckland",
+            "street": "456 Doctor Street",
+            "country": "New Zealand",
+            "postalCode": "1020"
+          },
+          "preferences": {
+            "language": "zh-CN",
+            "timezone": "Pacific/Auckland"
+          },
+          "metadata": null,
+          "createdAt": "2025-07-22T00:30:39.963Z",
+          "updatedAt": "2025-07-22T00:30:39.963Z",
+          "specialization": null,
+          "clinic": null,
+          "qualifications": null,
+          "apc_expiry_date": null,
+          "apc_file_url": null,
+          "apc_upload_date": null
+        },
+        "practitionerAccount": {
+          "id": "cmddstd2200046dzhieq0vrgx",
+          "practitionerId": "cmddstd2200026dzh28xn93qi",
+          "balance": "1000",
+          "creditLimit": "5000",
+          "usedCredit": "0",
+          "availableCredit": "5000",
+          "status": "active",
+          "version": 1,
+          "createdAt": "2025-07-22T00:30:39.963Z",
+          "updatedAt": "2025-07-22T00:30:39.963Z"
+        },
+        "operatedPharmacy": null
+      },
+      {
+        "id": "cmddstdj800056dzh2k4f39ix",
+        "email": "pharmacy@test.com",
+        "role": "pharmacy_operator",
+        "status": "approved",
+        "referralCode": "PHARM001",
+        "referredBy": null,
+        "createdAt": "2025-07-22T00:30:40.580Z",
+        "updatedAt": "2025-07-22T00:30:40.580Z",
+        "password": "$2b$10$example.hash.for.pharmacy.operator",
+        "refreshToken": null,
+        "refreshTokenExp": null,
+        "profile": {
+          "id": "cmddstdj800066dzh68nylzo7",
+          "userId": "cmddstdj800056dzh2k4f39ix",
+          "fullName": "药店操作员",
+          "phone": "+64-21-2222222",
+          "licenseNumber": "PHARM001",
+          "address": {
+            "city": "Auckland",
+            "street": "789 Pharmacy Street",
+            "country": "New Zealand",
+            "postalCode": "1030"
+          },
+          "preferences": {
+            "language": "zh-CN",
+            "timezone": "Pacific/Auckland"
+          },
+          "metadata": null,
+          "createdAt": "2025-07-22T00:30:40.580Z",
+          "updatedAt": "2025-07-22T00:30:40.580Z",
+          "specialization": null,
+          "clinic": null,
+          "qualifications": null,
+          "apc_expiry_date": null,
+          "apc_file_url": null,
+          "apc_upload_date": null
+        },
+        "practitionerAccount": null,
+        "operatedPharmacy": {
+          "id": "cmddstdwb00086dzh2xj3uw7k",
+          "name": "测试药店",
+          "address": {
+            "city": "Auckland",
+            "state": "Auckland",
+            "street": "789 Pharmacy Street",
+            "country": "New Zealand",
+            "postalCode": "1030"
+          },
+          "coordinates": "-36.848461,174.762188",
+          "contact": {
+            "email": "pharmacy@test.com",
+            "phone": "+64-21-2222222",
+            "website": "https://testpharmacy.com"
+          },
+          "licenseInfo": {
+            "issueDate": "2024-01-01",
+            "expiryDate": "2025-12-31",
+            "licenseNumber": "PHARM001",
+            "issuingAuthority": "New Zealand Health Authority"
+          },
+          "operatorId": "cmddstdj800056dzh2k4f39ix",
+          "serviceHours": {
+            "friday": {
+              "open": "09:00",
+              "close": "17:00"
+            },
+            "monday": {
+              "open": "09:00",
+              "close": "17:00"
+            },
+            "sunday": {
+              "closed": true
+            },
+            "tuesday": {
+              "open": "09:00",
+              "close": "17:00"
+            },
+            "saturday": {
+              "open": "10:00",
+              "close": "16:00"
+            },
+            "thursday": {
+              "open": "09:00",
+              "close": "17:00"
+            },
+            "wednesday": {
+              "open": "09:00",
+              "close": "17:00"
+            }
+          },
+          "status": "active",
+          "metadata": null,
+          "createdAt": "2025-07-22T00:30:41.052Z",
+          "updatedAt": "2025-07-22T00:30:41.052Z"
+        }
+      }
+    ],
+    "medicines": [],
+    "pharmacies": [
+      {
+        "id": "cmddstdwb00086dzh2xj3uw7k",
+        "name": "测试药店",
+        "address": {
+          "city": "Auckland",
+          "state": "Auckland",
+          "street": "789 Pharmacy Street",
+          "country": "New Zealand",
+          "postalCode": "1030"
+        },
+        "coordinates": "-36.848461,174.762188",
+        "contact": {
+          "email": "pharmacy@test.com",
+          "phone": "+64-21-2222222",
+          "website": "https://testpharmacy.com"
+        },
+        "licenseInfo": {
+          "issueDate": "2024-01-01",
+          "expiryDate": "2025-12-31",
+          "licenseNumber": "PHARM001",
+          "issuingAuthority": "New Zealand Health Authority"
+        },
+        "operatorId": "cmddstdj800056dzh2k4f39ix",
+        "serviceHours": {
+          "friday": {
+            "open": "09:00",
+            "close": "17:00"
+          },
+          "monday": {
+            "open": "09:00",
+            "close": "17:00"
+          },
+          "sunday": {
+            "closed": true
+          },
+          "tuesday": {
+            "open": "09:00",
+            "close": "17:00"
+          },
+          "saturday": {
+            "open": "10:00",
+            "close": "16:00"
+          },
+          "thursday": {
+            "open": "09:00",
+            "close": "17:00"
+          },
+          "wednesday": {
+            "open": "09:00",
+            "close": "17:00"
+          }
+        },
+        "status": "active",
+        "metadata": null,
+        "createdAt": "2025-07-22T00:30:41.052Z",
+        "updatedAt": "2025-07-22T00:30:41.052Z",
+        "operator": {
+          "id": "cmddstdj800056dzh2k4f39ix",
+          "email": "pharmacy@test.com",
+          "role": "pharmacy_operator",
+          "status": "approved",
+          "referralCode": "PHARM001",
+          "referredBy": null,
+          "createdAt": "2025-07-22T00:30:40.580Z",
+          "updatedAt": "2025-07-22T00:30:40.580Z",
+          "password": "$2b$10$example.hash.for.pharmacy.operator",
+          "refreshToken": null,
+          "refreshTokenExp": null
+        },
+        "account": {
+          "id": "cmddstdwb00096dzhqa893hv0",
+          "pharmacyId": "cmddstdwb00086dzh2xj3uw7k",
+          "balance": "0",
+          "pendingAmount": "0",
+          "status": "active",
+          "version": 1,
+          "createdAt": "2025-07-22T00:30:41.052Z",
+          "updatedAt": "2025-07-22T00:30:41.052Z"
+        },
+        "inventory": []
+      }
+    ],
+    "prescriptions": [],
+    "orders": [],
+    "systemConfigs": [
+      {
+        "key": "system.maintenance_mode",
+        "value": {
+          "enabled": false,
+          "message": "系统维护中"
+        },
+        "description": "系统维护模式配置",
+        "isActive": true,
+        "metadata": null,
+        "createdAt": "2025-07-22T00:30:41.663Z",
+        "updatedAt": "2025-07-22T00:30:41.663Z"
+      },
+      {
+        "key": "payment.default_currency",
+        "value": {
+          "symbol": "$",
+          "currency": "NZD"
+        },
+        "description": "默认支付货币",
+        "isActive": true,
+        "metadata": null,
+        "createdAt": "2025-07-22T00:30:41.844Z",
+        "updatedAt": "2025-07-22T00:30:41.844Z"
+      },
+      {
+        "key": "order.expiry_hours",
+        "value": {
+          "hours": 24
+        },
+        "description": "订单过期时间（小时）",
+        "isActive": true,
+        "metadata": null,
+        "createdAt": "2025-07-22T00:30:42.024Z",
+        "updatedAt": "2025-07-22T00:30:42.024Z"
+      },
+      {
+        "key": "pharmacy.service_radius_km",
+        "value": {
+          "radius": 50
+        },
+        "description": "药店服务半径（公里）",
+        "isActive": true,
+        "metadata": null,
+        "createdAt": "2025-07-22T00:30:42.204Z",
+        "updatedAt": "2025-07-22T00:30:42.204Z"
+      },
+      {
+        "key": "prescription.requires_verification",
+        "value": {
+          "enabled": true
+        },
+        "description": "处方需要验证",
+        "isActive": true,
+        "metadata": null,
+        "createdAt": "2025-07-22T00:30:42.383Z",
+        "updatedAt": "2025-07-22T00:30:42.383Z"
+      }
+    ],
+    "pharmacyInventory": [],
+    "pharmacyAccounts": [
+      {
+        "id": "cmddstdwb00096dzhqa893hv0",
+        "pharmacyId": "cmddstdwb00086dzh2xj3uw7k",
+        "balance": "0",
+        "pendingAmount": "0",
+        "status": "active",
+        "version": 1,
+        "createdAt": "2025-07-22T00:30:41.052Z",
+        "updatedAt": "2025-07-22T00:30:41.052Z"
+      }
+    ],
+    "pharmacyPriceLists": [],
+    "fulfillmentProofs": [],
+    "purchaseOrders": [],
+    "withdrawalRequests": []
+  }
+}

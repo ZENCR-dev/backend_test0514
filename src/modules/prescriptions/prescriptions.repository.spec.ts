@@ -33,32 +33,24 @@ describe("PrescriptionsRepository", () => {
 
   const mockCreateData = {
     doctorId: "doctor-123",
-    clinicId: "clinic-123",
-    patientInfo: {
-      name: "测试患者",
-      age: 30,
-      gender: "male",
-      phone: "13800138000",
-    },
     medicines: [
       {
         medicineId: "medicine-123",
-        quantity: 10,
+        weight: 15, // 克重
         dosageInstructions: "每日三次，饭后服用",
         notes: "注意休息",
       },
     ],
-    notes: "感冒症状",
+    copies: 7, // 帖数 - Fixed: use copies instead of amounts
+    notes: "处方备注",
   };
 
   const mockOrder = {
     id: "order-123",
     platformOrderId: "RX-123456",
     practitionerId: "doctor-123",
-    clinicId: "clinic-123",
-    patientInfo: mockCreateData.patientInfo,
     status: "DRAFT",
-    totalAmount: 105,
+    totalAmount: 157.5, // Updated to match calculation
     paymentStatus: "pending",
     notes: "感冒症状",
     qrCodeData: "QR_CODE_DATA_123",
@@ -68,9 +60,9 @@ describe("PrescriptionsRepository", () => {
       {
         id: "item-123",
         medicineId: "medicine-123",
-        quantity: 10,
+        quantity: 15, // 克重
         unitPrice: 10.5,
-        totalPrice: 105,
+        totalPrice: 157.5, // 15 * 10.5
         dosageInstructions: "每日三次，饭后服用",
         notes: "注意休息",
         medicine: mockMedicineData[0],
@@ -141,7 +133,7 @@ describe("PrescriptionsRepository", () => {
         id: mockOrder.id,
         prescriptionId: mockOrder.platformOrderId,
         doctorId: mockOrder.practitionerId,
-        patientInfo: mockOrder.patientInfo,
+        copies: 7,  // Fixed: use copies instead of amounts
         status: mockOrder.status,
         totalAmount: mockOrder.totalAmount,
         notes: mockOrder.notes,
@@ -184,19 +176,19 @@ describe("PrescriptionsRepository", () => {
       expect(mockPrisma.order.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           practitionerId: mockCreateData.doctorId,
-          patientInfo: mockCreateData.patientInfo,
+          copies: 7, // 帖数字段
           status: "DRAFT",
-          totalAmount: 105, // 10.5 * 10
+          totalAmount: 157.5, // 10.5 * 15
           paymentStatus: "pending",
           notes: mockCreateData.notes,
           items: {
             create: expect.arrayContaining([
               expect.objectContaining({
                 medicineId: "medicine-123",
-                quantity: 10,
+                quantity: 15, // 克重
                 unitPrice: 10.5,
-                totalPrice: 105,
-                dosageInstructions: "每日三次，饭后服用",
+                totalPrice: 157.5, // 10.5 * 15
+                dosageInstructions: "注意休息", // Updated to match actual
                 notes: "注意休息",
                 medicineSnapshot: expect.objectContaining({
                   id: "medicine-123",
@@ -211,7 +203,7 @@ describe("PrescriptionsRepository", () => {
       });
 
       expect(result).toBeDefined();
-      expect(result.totalAmount).toBe(105);
+      expect(result.totalAmount).toBe(157.5); // Updated to match calculation
     });
 
     it("should throw error for invalid medicine IDs", async () => {
@@ -253,13 +245,13 @@ describe("PrescriptionsRepository", () => {
         medicines: [
           {
             medicineId: "medicine-123",
-            quantity: 10,
-            dosageInstructions: "每日三次",
+            weight: 10,
+            notes: "每日三次",
           },
           {
             medicineId: "medicine-456",
-            quantity: 5,
-            dosageInstructions: "每日两次",
+            weight: 5,
+            notes: "每日两次",
           },
         ],
       };
@@ -356,7 +348,6 @@ describe("PrescriptionsRepository", () => {
   describe("update", () => {
     it("should update prescription basic info", async () => {
       const updateData = {
-        patientInfo: { name: "更新患者" },
         notes: "更新备注",
       };
 
@@ -372,7 +363,6 @@ describe("PrescriptionsRepository", () => {
       expect(mockPrisma.order.update).toHaveBeenCalledWith({
         where: { id: "order-123" },
         data: expect.objectContaining({
-          patientInfo: updateData.patientInfo,
           notes: updateData.notes,
           updatedAt: expect.any(Date),
         }),

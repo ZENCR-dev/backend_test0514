@@ -14,20 +14,13 @@ import {
 
 interface CreatePrescriptionData {
   doctorId: string;
-  patientInfo: {
-    name: string;
-    age?: number;
-    gender?: string;
-    phone?: string;
-    symptoms?: string;
-    diagnosis?: string;
-  };
   medicines: Array<{
     medicineId: string;
-    quantity: number;
-    dosageInstructions: string;
-    notes?: string;
+    weight: number; // 单味药克重
+    notes: string;
+    additionalNotes?: string;
   }>;
+  copies: number; // 帖数 - maps to database field
   notes?: string;
 }
 
@@ -78,7 +71,7 @@ export class PrescriptionsRepository {
     for (const medicine of data.medicines) {
       const medicineData = medicineMap.get(medicine.medicineId);
       if (medicineData) {
-        totalAmount += Number(medicineData.basePrice) * medicine.quantity;
+        totalAmount += Number(medicineData.basePrice) * medicine.weight;
       }
     }
 
@@ -87,22 +80,22 @@ export class PrescriptionsRepository {
       data: {
         platformOrderId: `${PRESCRIPTION_ID_PREFIX}-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
         practitionerId: data.doctorId,
-        patientInfo: data.patientInfo,
         status: PRESCRIPTION_STATUS.DRAFT,
         totalAmount: totalAmount,
         paymentStatus: PAYMENT_STATUS.PENDING,
         notes: data.notes,
+        copies: data.copies,
         items: {
           create: data.medicines.map((medicine) => {
             const medicineData = medicineMap.get(medicine.medicineId);
             const unitPrice = Number(medicineData.basePrice);
-            const totalPrice = unitPrice * medicine.quantity;
+            const totalPrice = unitPrice * medicine.weight;
             return {
               medicineId: medicine.medicineId,
-              quantity: medicine.quantity,
+              quantity: medicine.weight,
               unitPrice: unitPrice,
               totalPrice: totalPrice,
-              dosageInstructions: medicine.dosageInstructions,
+              dosageInstructions: medicine.notes,
               notes: medicine.notes,
               medicineSnapshot: {
                 id: medicineData.id,
@@ -228,8 +221,8 @@ export class PrescriptionsRepository {
       updatedAt: new Date(),
     };
 
-    if (data.patientInfo) {
-      updateData.patientInfo = data.patientInfo;
+    if (data.copies !== undefined) {
+      updateData.copies = data.copies;
     }
 
     if (data.notes) {
@@ -251,7 +244,7 @@ export class PrescriptionsRepository {
           select: { basePrice: true },
         });
         if (medicineData) {
-          totalAmount += Number(medicineData.basePrice) * medicine.quantity;
+          totalAmount += Number(medicineData.basePrice) * medicine.weight;
         }
       }
 
@@ -276,10 +269,10 @@ export class PrescriptionsRepository {
             data: {
               orderId: id,
               medicineId: medicine.medicineId,
-              quantity: medicine.quantity,
+              quantity: medicine.weight,
               unitPrice: medicineData.basePrice,
-              totalPrice: Number(medicineData.basePrice) * medicine.quantity,
-              dosageInstructions: medicine.dosageInstructions,
+              totalPrice: Number(medicineData.basePrice) * medicine.weight,
+              dosageInstructions: medicine.notes,
               notes: medicine.notes,
               medicineSnapshot: {
                 id: medicineData.id,
@@ -334,7 +327,7 @@ export class PrescriptionsRepository {
       id: order.id,
       prescriptionId: order.platformOrderId,
       doctorId: order.practitionerId,
-      patientInfo: order.patientInfo,
+      copies: order.copies, // 帖数
       status: order.status,
       totalAmount: order.totalAmount,
       notes: order.notes,
@@ -345,7 +338,7 @@ export class PrescriptionsRepository {
           medicineName: item.medicine?.name || item.medicineSnapshot?.name,
           chineseName:
             item.medicine?.chineseName || item.medicineSnapshot?.chineseName,
-          quantity: item.quantity,
+          weight: item.quantity, // 克重 (映射到quantity字段以保持数据库兼容性)
           unitPrice: item.unitPrice,
           totalPrice: item.totalPrice,
           dosageInstructions: item.dosageInstructions,

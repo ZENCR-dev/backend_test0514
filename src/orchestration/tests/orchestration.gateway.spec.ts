@@ -2,7 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { JwtService } from "@nestjs/jwt";
 import { AuthService } from "../../auth/auth.service";
 import { OrchestrationGateway } from "../gateways/orchestration.gateway";
-import { Logger, UnauthorizedException } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
 import { Socket, Server } from "socket.io";
 import { ORCHESTRATION_EVENTS } from "../../common/events/types";
 

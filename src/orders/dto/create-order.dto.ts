@@ -54,18 +54,6 @@ export class CreateOrderDto {
   @IsString()
   patientId?: string;
 
-  @ApiProperty({
-    description: "患者信息",
-    example: {
-      name: "张三",
-      phone: "021-12345678",
-      address: "上海市浦东新区",
-    },
-  })
-  @IsObject()
-  @IsNotEmpty()
-  patientInfo: any;
-
   @ApiProperty({ description: "订单总金额", example: 125.5, minimum: 0 })
   @IsNumber()
   @Min(0)

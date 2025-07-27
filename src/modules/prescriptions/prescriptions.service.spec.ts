@@ -1,17 +1,13 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import {
-  BadRequestException,
-  NotFoundException,
-  ForbiddenException,
-} from "@nestjs/common";
+import { NotFoundException, ForbiddenException } from "@nestjs/common";
 import { PrescriptionsService } from "./prescriptions.service";
-import { PrescriptionsRepository } from "./prescriptions.repository";
+import { PrescriptionsNewRepository } from "./prescriptions-new.repository";
 import { QRCodeService } from "./services/qr-code.service";
 import { CreatePrescriptionDto } from "./dto/create-prescription.dto";
 
 describe("PrescriptionsService", () => {
   let service: PrescriptionsService;
-  let repository: PrescriptionsRepository;
+  let repository: PrescriptionsNewRepository;
   let qrCodeService: QRCodeService;
 
   const mockRepository = {
@@ -29,26 +25,19 @@ describe("PrescriptionsService", () => {
     verifyQRCodeData: jest.fn(),
   };
 
-  // 标准的mock处方对象
+  // 标准的mock处方对象 - 隐私合规版本
   const createMockPrescription = (overrides = {}) => ({
     id: "prescription-123",
     prescriptionId: "RX-2023-001",
     doctorId: "doctor-123",
-    clinicId: "clinic-123",
-    patientInfo: {
-      name: "张三",
-      age: 35,
-      gender: "男",
-      phone: "13800138000",
-    },
     medicines: [
       {
         medicineId: "med-123",
-        quantity: 10,
-        dosageInstructions: "每日三次，饭后服用",
-        notes: "",
+        weight: 15, // 克重
+        notes: "每日三次，饭后服用",
       },
     ],
+    copies: 7, // 帖数
     status: "DRAFT",
     totalAmount: 150.0,
     notes: "注意休息",
@@ -56,10 +45,6 @@ describe("PrescriptionsService", () => {
     practitioner: {
       id: "doctor-123",
       name: "李医生",
-    },
-    clinic: {
-      id: "clinic-123",
-      name: "中医诊所",
     },
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -71,7 +56,7 @@ describe("PrescriptionsService", () => {
       providers: [
         PrescriptionsService,
         {
-          provide: PrescriptionsRepository,
+          provide: PrescriptionsNewRepository,
           useValue: mockRepository,
         },
         {
@@ -82,7 +67,9 @@ describe("PrescriptionsService", () => {
     }).compile();
 
     service = module.get<PrescriptionsService>(PrescriptionsService);
-    repository = module.get<PrescriptionsRepository>(PrescriptionsRepository);
+    repository = module.get<PrescriptionsNewRepository>(
+      PrescriptionsNewRepository,
+    );
     qrCodeService = module.get<QRCodeService>(QRCodeService);
 
     // 重置所有 mock
@@ -95,20 +82,14 @@ describe("PrescriptionsService", () => {
 
   describe("create", () => {
     const mockPrescriptionData: CreatePrescriptionDto = {
-      patientInfo: {
-        name: "张三",
-        age: 35,
-        gender: "男",
-        phone: "13800138000",
-      },
       medicines: [
         {
           medicineId: "med-123",
-          quantity: 10,
-          dosageInstructions: "每日三次，饭后服用",
-          notes: "",
+          weight: 15, // 克重
+          notes: "每日三次，饭后服用",
         },
       ],
+      copies: 7, // 帖数
       notes: "注意休息",
     };
 
@@ -120,8 +101,8 @@ describe("PrescriptionsService", () => {
 
       expect(mockRepository.create).toHaveBeenCalledWith({
         doctorId: "doctor-123",
-        patientInfo: mockPrescriptionData.patientInfo,
         medicines: mockPrescriptionData.medicines,
+        copies: mockPrescriptionData.copies,
         notes: mockPrescriptionData.notes,
       });
       expect(result.success).toBe(true);
@@ -237,7 +218,7 @@ describe("PrescriptionsService", () => {
     it("should update prescription successfully", async () => {
       const mockPrescription = createMockPrescription();
       const updatedPrescription = createMockPrescription({
-        patientInfo: { name: "李四" },
+        copies: 10,
         notes: "更新的备注",
       });
 
@@ -245,7 +226,7 @@ describe("PrescriptionsService", () => {
       mockRepository.update.mockResolvedValue(updatedPrescription);
 
       const updateData = {
-        patientInfo: { name: "李四" },
+        copies: 10,
         notes: "更新的备注",
       };
 
@@ -256,7 +237,7 @@ describe("PrescriptionsService", () => {
       );
 
       expect(mockRepository.update).toHaveBeenCalledWith("prescription-123", {
-        patientInfo: updateData.patientInfo,
+        copies: updateData.copies,
         notes: updateData.notes,
       });
       expect(result.success).toBe(true);
@@ -312,7 +293,7 @@ describe("PrescriptionsService", () => {
     it("should issue prescription successfully", async () => {
       const mockPrescription = createMockPrescription({ status: "DRAFT" });
       const updatedPrescription = createMockPrescription({ status: "PAID" });
-      const qrCodeData = { qrCodeString: "generated-qr-code" };
+      // const qrCodeData = { qrCodeString: "generated-qr-code" };
 
       mockRepository.findById.mockResolvedValue(mockPrescription);
       mockQRCodeService.updatePrescriptionQRCode.mockReturnValue({
@@ -350,7 +331,7 @@ describe("PrescriptionsService", () => {
       const mockPrescription = createMockPrescription();
       const mockQRData = {
         prescriptionId: "prescription-123",
-        patientName: "张三",
+        doctorId: "doctor-123",
         issuedAt: "2023-01-01T00:00:00Z",
         expiresAt: "2023-01-04T00:00:00Z",
         verifyCode: "ABC123",
@@ -378,4 +359,254 @@ describe("PrescriptionsService", () => {
       ).rejects.toThrow("处方验证失败: 无效的QR码格式");
     });
   });
+
+  // 边界条件测试套件
+  describe("边界条件测试", () => {
+    describe("create - 边界条件", () => {
+      it("should handle null medicines array", async () => {
+        const nullMedicinesData = {
+          medicines: null,
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(nullMedicinesData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 处方必须包含至少一种药品");
+      });
+
+      it("should handle undefined medicines array", async () => {
+        const undefinedMedicinesData = {
+          medicines: undefined,
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(undefinedMedicinesData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 处方必须包含至少一种药品");
+      });
+
+      it("should handle empty medicines array", async () => {
+        const emptyMedicinesData = {
+          medicines: [],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(emptyMedicinesData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 处方必须包含至少一种药品");
+      });
+
+      it("should handle medicine with null weight", async () => {
+        const nullWeightData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: null,
+              notes: "用药说明",
+            },
+          ],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(nullWeightData as any, "doctor-123"),
+        ).rejects.toThrow(
+          "创建处方失败: 药品信息不完整：缺少药品ID、克重或用药说明",
+        );
+      });
+
+      it("should handle medicine with zero weight", async () => {
+        const zeroWeightData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: 0,
+              notes: "用药说明",
+            },
+          ],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(zeroWeightData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 药品克重必须大于0");
+      });
+
+      it("should handle medicine with negative weight", async () => {
+        const negativeWeightData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: -5,
+              notes: "用药说明",
+            },
+          ],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(
+          service.create(negativeWeightData as any, "doctor-123"),
+        ).rejects.toThrow("创建处方失败: 药品克重必须大于0");
+      });
+
+      it("should handle null or undefined copies", async () => {
+        const nullCopiesData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: 15,
+              notes: "用药说明",
+            },
+          ],
+          copies: null,
+          notes: "测试备注",
+        };
+
+        // This should be handled by DTO validation, but test service behavior
+        await expect(
+          service.create(nullCopiesData as any, "doctor-123"),
+        ).rejects.toThrow();
+      });
+
+      it("should handle empty string notes", async () => {
+        const emptyNotesData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: 15,
+              notes: "",
+            },
+          ],
+          copies: 7,
+          notes: "",
+        };
+
+        await expect(
+          service.create(emptyNotesData as any, "doctor-123"),
+        ).rejects.toThrow(
+          "创建处方失败: 药品信息不完整：缺少药品ID、克重或用药说明",
+        );
+      });
+
+      it("should handle null doctorId", async () => {
+        const validData = {
+          medicines: [
+            {
+              medicineId: "med-123",
+              weight: 15,
+              notes: "用药说明",
+            },
+          ],
+          copies: 7,
+          notes: "测试备注",
+        };
+
+        await expect(service.create(validData as any, null)).rejects.toThrow();
+      });
+    });
+
+    describe("findOne - 边界条件", () => {
+      it("should handle null prescription id", async () => {
+        await expect(service.findOne(null, "doctor-123")).rejects.toThrow();
+      });
+
+      it("should handle undefined prescription id", async () => {
+        await expect(
+          service.findOne(undefined, "doctor-123"),
+        ).rejects.toThrow();
+      });
+
+      it("should handle empty string prescription id", async () => {
+        await expect(service.findOne("", "doctor-123")).rejects.toThrow(
+          "获取处方详情失败: 处方ID和医师ID不能为空",
+        );
+      });
+
+      it("should handle null doctor id", async () => {
+        await expect(
+          service.findOne("prescription-123", null),
+        ).rejects.toThrow();
+      });
+    });
+
+    describe("update - 边界条件", () => {
+      it("should handle empty update data", async () => {
+        const mockPrescription = createMockPrescription();
+        mockRepository.findById.mockResolvedValue(mockPrescription);
+        mockRepository.update.mockResolvedValue(mockPrescription);
+
+        const result = await service.update(
+          "prescription-123",
+          {},
+          "doctor-123",
+        );
+
+        expect(result.success).toBe(true);
+        expect(mockRepository.update).toHaveBeenCalledWith(
+          "prescription-123",
+          {},
+        );
+      });
+
+      it("should handle update with null values", async () => {
+        const mockPrescription = createMockPrescription();
+        mockRepository.findById.mockResolvedValue(mockPrescription);
+        mockRepository.update.mockResolvedValue(mockPrescription);
+
+        const updateData = {
+          notes: null,
+          copies: null,
+        };
+
+        const result = await service.update(
+          "prescription-123",
+          updateData as any,
+          "doctor-123",
+        );
+
+        expect(result.success).toBe(true);
+        // Should not include null values in update
+        expect(mockRepository.update).toHaveBeenCalledWith(
+          "prescription-123",
+          {},
+        );
+      });
+    });
+
+    describe("verifyPrescription - 边界条件", () => {
+      it("should handle null QR code string", async () => {
+        await expect(service.verifyPrescription(null)).rejects.toThrow(
+          "处方验证失败:",
+        );
+      });
+
+      it("should handle undefined QR code string", async () => {
+        await expect(service.verifyPrescription(undefined)).rejects.toThrow(
+          "处方验证失败:",
+        );
+      });
+
+      it("should handle empty string QR code", async () => {
+        await expect(service.verifyPrescription("")).rejects.toThrow(
+          "处方验证失败:",
+        );
+      });
+
+      it("should handle very long QR code string", async () => {
+        const longQrCode = "a".repeat(10000);
+        mockQRCodeService.parseQRCodeString.mockReturnValue(null);
+
+        await expect(service.verifyPrescription(longQrCode)).rejects.toThrow(
+          "处方验证失败: 无效的QR码格式",
+        );
+      });
+    });
+  });
+
 });

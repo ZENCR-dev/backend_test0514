@@ -1410,9 +1410,70 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
     orderId: string,
     amount: Decimal,
   ): Promise<boolean> {
-    // TODO: 实现重复支付检查逻辑
-    // 这里应该查询数据库中是否已存在相同订单的支付记录
-    return false;
+    try {
+      // 1. 查询已存在的支付记录
+      const existingPayments = await this.prisma.payment.findMany({
+        where: {
+          orderId: orderId,
+          status: {
+            in: ["pending", "processing", "completed"],
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      if (existingPayments.length === 0) {
+        return false;
+      }
+
+      // 2. 检查是否存在相同金额的支付
+      const duplicatePayment = existingPayments.find((payment) =>
+        payment.amount.equals(amount),
+      );
+
+      if (duplicatePayment) {
+        this.logger.warn(
+          `Duplicate payment detected for order ${orderId}: existing payment ${duplicatePayment.id} with amount ${amount}`,
+        );
+        return true;
+      }
+
+      // 3. 检查是否存在已完成的支付（任何金额）
+      const completedPayment = existingPayments.find(
+        (payment) => payment.status === "completed",
+      );
+
+      if (completedPayment) {
+        this.logger.warn(
+          `Order ${orderId} already has completed payment ${completedPayment.id}, blocking new payment attempt`,
+        );
+        return true;
+      }
+
+      // 4. 检查待处理支付数量（防止并发多次创建）
+      const pendingPayments = existingPayments.filter(
+        (payment) =>
+          payment.status === "pending" || payment.status === "processing",
+      );
+
+      if (pendingPayments.length >= 2) {
+        this.logger.warn(
+          `Too many pending payments for order ${orderId}: ${pendingPayments.length} payments found`,
+        );
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      this.logger.error(
+        `Failed to check duplicate payment for order ${orderId}:`,
+        error,
+      );
+      // 在错误情况下，采用保守策略，假设存在重复支付
+      return true;
+    }
   }
 
   /**
@@ -1424,13 +1485,127 @@ export class PaymentService implements IPaymentEngine, OnModuleDestroy {
     amount: Decimal,
   ): Promise<RefundResponse | null> {
     try {
-      // 查询是否已存在相同的退款记录
-      // 这里可以根据业务需求实现，比如查询退款记录表
-      // 当前返回null表示没有重复退款
+      // 1. 查询已存在的退款记录（从支付表中查找退款记录）
+      const existingRefunds = await this.prisma.payment.findMany({
+        where: {
+          orderId: orderId,
+          paymentMethod: "refund",
+          status: {
+            in: ["pending", "processing", "completed"],
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      // 2. 检查是否存在相同金额和交易ID的退款
+      const exactMatch = existingRefunds.find(
+        (refund) =>
+          refund.amount.equals(amount) &&
+          refund.providerTransactionId === transactionId,
+      );
+
+      if (exactMatch) {
+        this.logger.warn(
+          `Exact duplicate refund found for order ${orderId}: ${exactMatch.id}`,
+        );
+
+        return {
+          id: exactMatch.providerTransactionId || exactMatch.id,
+          amount: exactMatch.amount.toNumber(),
+          status: this.mapPaymentStatusToRefundStatus(exactMatch.status),
+          orderId: orderId,
+          refundedAt: exactMatch.updatedAt,
+        };
+      }
+
+      // 3. 检查退款总额是否超过原始支付金额
+      const totalRefunded = existingRefunds.reduce(
+        (total, refund) => total.add(refund.amount),
+        new Decimal(0),
+      );
+
+      // 获取原始支付金额
+      const originalPayments = await this.prisma.payment.findMany({
+        where: {
+          orderId: orderId,
+          paymentMethod: {
+            in: ["stripe", "clinic_account"],
+          },
+          status: "completed",
+        },
+      });
+
+      const totalPaid = originalPayments.reduce(
+        (total, payment) => total.add(payment.amount),
+        new Decimal(0),
+      );
+
+      if (totalRefunded.add(amount).gt(totalPaid)) {
+        this.logger.warn(
+          `Refund amount ${amount} would exceed total paid amount ${totalPaid} for order ${orderId} (already refunded: ${totalRefunded})`,
+        );
+
+        throw new BadRequestException(
+          `Refund amount would exceed total paid amount. Total paid: ${totalPaid}, already refunded: ${totalRefunded}, requested: ${amount}`,
+        );
+      }
+
+      // 4. 检查是否在短时间内有相同金额的退款请求（防止并发重复）
+      const recentRefunds = existingRefunds.filter((refund) => {
+        const refundTime = new Date(refund.createdAt);
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        return refundTime > fiveMinutesAgo && refund.amount.equals(amount);
+      });
+
+      if (recentRefunds.length > 0) {
+        this.logger.warn(
+          `Recent duplicate refund detected for order ${orderId}: ${recentRefunds[0].id}`,
+        );
+
+        return {
+          id: recentRefunds[0].providerTransactionId || recentRefunds[0].id,
+          amount: recentRefunds[0].amount.toNumber(),
+          status: this.mapPaymentStatusToRefundStatus(recentRefunds[0].status),
+          orderId: orderId,
+          refundedAt: recentRefunds[0].updatedAt,
+        };
+      }
+
       return null;
     } catch (error) {
-      this.logger.warn(`Failed to check duplicate refund: ${error.message}`);
+      this.logger.error(
+        `Failed to check duplicate refund for order ${orderId}:`,
+        error,
+      );
+
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      // 在其他错误情况下，返回null继续处理
       return null;
+    }
+  }
+
+  /**
+   * 将支付状态映射为退款状态
+   */
+  private mapPaymentStatusToRefundStatus(
+    paymentStatus: string,
+  ): "pending" | "succeeded" | "failed" {
+    switch (paymentStatus) {
+      case "pending":
+      case "processing":
+        return "pending";
+      case "completed":
+        return "succeeded";
+      case "failed":
+      case "cancelled":
+        return "failed";
+      default:
+        return "pending";
     }
   }
 

@@ -8,6 +8,7 @@ import {
   UseGuards,
   Request,
   UnauthorizedException,
+  Res,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthLoginDto } from "./dto/auth-login.dto";
@@ -52,15 +53,27 @@ export class AuthController {
     type: LoginResponseV12Dto,
   })
   @ApiResponse({ status: 401, description: "Invalid credentials." })
-  async login(@Body() authLoginDto: AuthLoginDto) {
+  async login(@Body() authLoginDto: AuthLoginDto, @Res() res: any) {
     const result = await this.authService.login(authLoginDto);
 
     if (!result.success) {
-      throw new UnauthorizedException(result.message || "Invalid credentials");
+      // 返回标准格式的401错误响应
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: "UNAUTHORIZED",
+          message: result.message || "Invalid credentials",
+          details: null,
+        },
+        meta: {
+          timestamp: new Date().toISOString(),
+        },
+      });
     }
 
     // 转换为 v1.2 响应格式
-    return this.authService.transformToLoginResponseV12(result);
+    const response = this.authService.transformToLoginResponseV12(result);
+    return res.status(200).json(response);
   }
 
   @Get("me")

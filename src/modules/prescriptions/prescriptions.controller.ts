@@ -18,16 +18,20 @@ import {
   ApiQuery,
 } from "@nestjs/swagger";
 import { PrescriptionsService } from "./prescriptions.service";
+import { PrescriptionPaymentService } from "./services/prescription-payment.service";
 import { CreatePrescriptionDto } from "./dto/create-prescription.dto";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator";
 
 @ApiTags("prescriptions")
-@Controller("prescriptions")
+@Controller("prescriptions") // Fixed: Add route prefix for prescriptions
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth("jwt")
 export class PrescriptionsController {
-  constructor(private readonly prescriptionsService: PrescriptionsService) {}
+  constructor(
+    private readonly prescriptionsService: PrescriptionsService,
+    private readonly prescriptionPaymentService: PrescriptionPaymentService,
+  ) {}
 
   @Post()
   @ApiOperation({
@@ -215,5 +219,108 @@ export class PrescriptionsController {
       data: summary,
       message: "获取分类统计成功",
     };
+  }
+
+  // ===== 处方支付相关API端点 =====
+
+  @Post(":id/pay-with-balance")
+  @ApiOperation({
+    summary: "使用余额支付处方",
+    description: "使用医师账户余额支付处方费用",
+  })
+  @ApiParam({ name: "id", description: "处方ID" })
+  @ApiResponse({
+    status: 200,
+    description: "余额支付成功",
+    schema: {
+      type: "object",
+      properties: {
+        success: { type: "boolean", example: true },
+        data: {
+          type: "object",
+          properties: {
+            status: { type: "string", example: "paid" },
+            paymentMethod: { type: "string", example: "balance" },
+            transactionId: { type: "string", example: "txn_123456" },
+            remainingBalance: { type: "number", example: 150.5 },
+          },
+        },
+        message: { type: "string", example: "余额支付成功" },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: "余额不足或处方状态不允许支付",
+  })
+  async payWithBalance(@Param("id") id: string, @CurrentUser() user: any) {
+    return this.prescriptionPaymentService.payWithBalance(id, user.id);
+  }
+
+  @Post(":id/pay-with-stripe")
+  @ApiOperation({
+    summary: "使用Stripe支付处方",
+    description: "创建Stripe支付意图用于处方支付",
+  })
+  @ApiParam({ name: "id", description: "处方ID" })
+  @ApiResponse({
+    status: 200,
+    description: "Stripe支付意图创建成功",
+    schema: {
+      type: "object",
+      properties: {
+        success: { type: "boolean", example: true },
+        data: {
+          type: "object",
+          properties: {
+            prescriptionId: { type: "string", example: "prescription_123" },
+            paymentIntentId: { type: "string", example: "pi_123456" },
+            clientSecret: { type: "string", example: "pi_123456_secret_abc" },
+            amount: { type: "number", example: 50.0 },
+            currency: { type: "string", example: "NZD" },
+            status: { type: "string", example: "requires_payment_method" },
+          },
+        },
+        message: { type: "string", example: "Stripe支付意图创建成功" },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: "处方状态不允许支付",
+  })
+  async payWithStripe(@Param("id") id: string, @CurrentUser() user: any) {
+    return this.prescriptionPaymentService.payWithStripe(id, user.id);
+  }
+
+  @Get(":id/payment-status")
+  @ApiOperation({
+    summary: "获取处方支付状态",
+    description: "获取指定处方的支付状态信息",
+  })
+  @ApiParam({ name: "id", description: "处方ID" })
+  @ApiResponse({
+    status: 200,
+    description: "成功获取支付状态",
+    schema: {
+      type: "object",
+      properties: {
+        success: { type: "boolean", example: true },
+        data: {
+          type: "object",
+          properties: {
+            prescriptionId: { type: "string", example: "prescription_123" },
+            status: { type: "string", example: "paid" },
+            totalAmount: { type: "number", example: 50.0 },
+            currency: { type: "string", example: "NZD" },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" },
+          },
+        },
+      },
+    },
+  })
+  async getPaymentStatus(@Param("id") id: string, @CurrentUser() user: any) {
+    return this.prescriptionPaymentService.getPaymentStatus(id, user.id);
   }
 }

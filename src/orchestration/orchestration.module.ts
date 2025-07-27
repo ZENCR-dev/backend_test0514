@@ -6,7 +6,9 @@ import { EventEmitterModule } from "@nestjs/event-emitter";
 import { OrchestrationGateway } from "./gateways/orchestration.gateway";
 import { OrchestrationService } from "./services/orchestration.service";
 import { EventPersistenceService } from "./services/event-persistence.service";
+import { StandardWebSocketHandlerService } from "./services/standard-websocket-handler.service";
 import { OrchestrationHealthController } from "./controllers/orchestration.controller";
+import { WebSocketEventEmitterService } from "../common/services/websocket-event-emitter.service";
 
 import { AuthModule } from "../auth/auth.module";
 import { OrdersModule } from "../orders/orders.module";
@@ -64,8 +66,15 @@ import { PrismaService } from "../prisma/prisma.service";
     OrchestrationGateway,
     OrchestrationService,
     EventPersistenceService,
+    StandardWebSocketHandlerService,
+    WebSocketEventEmitterService,
     PrismaService,
   ],
-  exports: [OrchestrationGateway, OrchestrationService],
+  exports: [
+    OrchestrationGateway,
+    OrchestrationService,
+    WebSocketEventEmitterService,
+    StandardWebSocketHandlerService,
+  ],
 })
 export class OrchestrationModule {}

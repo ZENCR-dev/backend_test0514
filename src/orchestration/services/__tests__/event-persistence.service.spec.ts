@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EventPersistenceService } from "../event-persistence.service";
 import { PrismaService } from "../../../prisma/prisma.service";
-import { Logger } from "@nestjs/common";
 import { EventProcessingStatus } from "@prisma/client";
 
 describe("EventPersistenceService", () => {

@@ -73,7 +73,7 @@ describe("OrderService", () => {
   describe("createOrder", () => {
     const mockCreateOrderRequest: ICreateOrderRequest = {
       practitionerId: "practitioner-1",
-      patientInfo: { name: "张三", phone: "021-12345678" },
+      patientId: "patient-123",
       totalAmount: 125.5,
       items: [
         {
@@ -319,7 +319,7 @@ describe("OrderService", () => {
       // Arrange
       const mockOrderData: ICreateOrderRequest = {
         practitionerId: "practitioner-1",
-        patientInfo: { name: "张三" },
+        patientId: "patient-123",
         totalAmount: 125.5,
         items: [
           {
@@ -348,7 +348,7 @@ describe("OrderService", () => {
       // Arrange
       const mockOrderData: ICreateOrderRequest = {
         practitionerId: "practitioner-1",
-        patientInfo: { name: "张三" },
+        patientId: "patient-123",
         totalAmount: 100.0, // 错误的总金额
         items: [
           {

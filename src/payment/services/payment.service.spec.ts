@@ -1,6 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { EventEmitter2 } from "@nestjs/event-emitter";
-import { Logger } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { PractitionerAccountService } from "../../practitioner-account/services/practitioner-account.service";
 import { PaymentService } from "./payment.service";

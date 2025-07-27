@@ -10,7 +10,7 @@ import {
   IsObject,
   ValidateNested,
 } from "class-validator";
-import { Type, Transform } from "class-transformer";
+import { Transform } from "class-transformer";
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import {
   PaymentMethod,
