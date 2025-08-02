@@ -48,7 +48,9 @@
       "Bash(git checkout:*)",
       "Bash(git commit:*)",
       "Bash(npx eslint \"src/common/services/api-log-query.service.ts\" \"src/common/dto/api-log-query.dto.ts\")",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(git reset:*)",
+      "Bash(find /Users/renjie/Library/CloudStorage/GoogleDrive-info@zencr.org/其他计算机/我的笔记本电脑/backend_test0514/recycle -type f -name \"*.ts\" -o -name \"*.md\")"
     ],
     "deny": []
   }

@@ -50,21 +50,12 @@
 - 功能：当前具体执行任务的实时管理
 - 更新频率：实时更新
 
-**当前任务树路径**：
-```
-PRDSOPMVP2.0 > Phase 3.2财务操作增强 > Day15-批量API开发进展 > 实现批量PO审批接口
-```
-
 ### SuperClaude集成
 全局配置已可用，直接使用/命令语法：
 - `/build --nest --prisma --persona-backend` - 后端开发
 - `/analyze --api --ddd --persona-architect` - 架构分析
 - `/test --coverage --e2e --persona-qa` - 质量保证
 - `/scan --security --owasp --persona-security` - 安全扫描
-
-### Context Engineering
-项目上下文：@configs/context/INITIAL.md
-PRP模板：@configs/context/prp-base.md
 
 ---
 

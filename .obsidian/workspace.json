@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "588880105f70d418",
+        "id": "6af88227bc031b0e",
         "type": "tabs",
         "children": [
           {
-            "id": "0cec9ebc3993138a",
+            "id": "325aa41eebda14a2",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "recycle/docs/supabase-migration-guide.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "新标签页"
+              "title": "supabase-migration-guide"
             }
           }
         ]
@@ -49,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "getuser",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -70,7 +74,8 @@
               "title": "书签"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -164,44 +169,44 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "97738e03700095fa",
+  "active": "7a5bd92662fc829d",
   "lastOpenFiles": [
-    "performance-verification.js",
-    "src/admin/services/__tests__/batch-withdrawal.service.spec.ts",
-    "src/admin/services/__tests__/batch-invoice.service.spec.ts",
-    "node_modules/zod/src/v4/core/tests/locales/tr.test.ts",
-    "node_modules/zod/src/v4/core/tests/locales/ru.test.ts",
-    "node_modules/zod/src/v4/core/tests/locales/be.test.ts",
-    "node_modules/zod/src/v4/core/tests/locales/en.test.ts",
-    "node_modules/zod/src/v4/classic/tests/stringbool.test.ts",
-    "node_modules/zod/src/v4/classic/tests/void.test.ts",
-    "node_modules/zod/src/v4/classic/tests/validations.test.ts",
-    "node_modules/zod/src/v4/classic/tests/union.test.ts",
-    "node_modules/zod/README.md",
-    "node_modules/@types/stripe/README.md",
-    "node_modules/xml2js/README.md",
-    "node_modules/xmlhttprequest-ssl/README.md",
-    "node_modules/yoctocolors-cjs/readme.md",
-    "node_modules/webpack-sources/README.md",
-    "node_modules/type-fest/readme.md",
-    "node_modules/ts-api-utils/README.md",
-    "node_modules/ts-api-utils/LICENSE.md",
-    "node_modules/v8-compile-cache-lib/README.md",
-    "node_modules/v8-compile-cache-lib/CHANGELOG.md",
-    "node_modules/wcwidth/docs/index.md",
-    "node_modules/wcwidth/Readme.md",
-    "node_modules/toidentifier/README.md",
-    "node_modules/toidentifier/HISTORY.md",
-    "node_modules/test-exclude/node_modules/minimatch/README.md",
-    "node_modules/test-exclude/node_modules/glob/README.md",
-    "node_modules/test-exclude/node_modules/brace-expansion/README.md",
-    "node_modules/test-exclude/README.md",
-    "node_modules/test-exclude/CHANGELOG.md",
-    "node_modules/symbol-observable/CHANGELOG.md",
-    "node_modules/symbol-observable/README.md",
-    "node_modules/tsconfig-paths/node_modules/strip-bom/readme.md",
-    "node_modules/tsconfig-paths/README.md",
-    "node_modules/tsconfig-paths/CHANGELOG.md",
+    "node_modules/axios/README.md",
+    "node_modules/class-transformer/README.md",
+    "prd-reverse-engineering/final-docs/03-Backend-Architecture-Specification.md",
+    "websocket-fix-guide.md",
+    "recycle/docs/supabase-migration-guide.md",
+    "SOP1.3devdocs/READMEs/superclaude/README.md",
+    "SOP1.3devdocs/READMEs/superclaude/COMMANDS.md",
+    "SOP1.3devdocs/READMEs/superclaude/CHANGELOG.md",
+    "SOP1.3devdocs/READMEs/superclaude/CLAUDE.md",
+    "SOP1.3devdocs/READMEs/superclaude/CONTRIBUTING.md",
+    "node_modules/ecdsa-sig-formatter/README.md",
+    "node_modules/jsonwebtoken/README.md",
+    "node_modules/jwa/README.md",
+    "node_modules/jws/readme.md",
+    "prd-reverse-engineering/final-docs/READMEbackend_modified.md",
+    "recycle/docs/README.md",
+    "prd-reverse-engineering/drafts/jwts.mdx",
+    "prd-reverse-engineering/drafts/signing-keys.mdx",
+    "recycle/README.md",
+    "recycle/migration-output/full-medicines-seed-data.sql",
+    "recycle/migration-output/generate-full-seed.js",
+    "recycle/migration-output/complete-seed-data.sql",
+    "recycle/migration-output",
+    "recycle/migration-tools/index.ts",
+    "recycle/migration-tools/seed-data-generator.ts",
+    "recycle/migration-tools/type-sync-generator.ts",
+    "recycle/migration-tools/rls-policy-generator.ts",
+    "prd-reverse-engineering/final-docs/Frontend-Coordination-Response.md",
+    "prd-reverse-engineering/final-docs/prd_review_analysis.md",
+    "prd-reverse-engineering/final-docs/backend_reuse_directive.md",
+    "prd-reverse-engineering/final-docs/frontend_reuse_directive.md",
+    "prd-reverse-engineering/final-docs/READMEfrontend-revised.md",
+    "prd-reverse-engineering/final-docs/README.md",
+    "prd-reverse-engineering/drafts/supabase auth README (1).md",
+    "prd-reverse-engineering/drafts/Supabase starter kit README (1).md",
+    "prd-reverse-engineering/final-docs/READMEfrontend reviewed.md",
     "node_modules/istanbul-reports/lib/html-spa/assets/sort-arrow-sprite.png",
     "node_modules/istanbul-reports/lib/html/assets/sort-arrow-sprite.png",
     "node_modules/istanbul-reports/lib/html/assets/favicon.png",
